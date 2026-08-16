@@ -1,0 +1,331 @@
+import "server-only";
+
+import { and, asc, eq, ne, sql } from "drizzle-orm";
+
+import { db } from "../db";
+import {
+  documents,
+  hospitalDocuments,
+  hospitalInsurers,
+  hospitalQuotes,
+  hospitals,
+  insurancePolicy,
+} from "../schema";
+import type { HospitalCover, Policy } from "@/domain/insurance";
+
+export type Hospital = typeof hospitals.$inferSelect;
+export type HospitalQuote = typeof hospitalQuotes.$inferSelect;
+export type HospitalInsurer = typeof hospitalInsurers.$inferSelect;
+
+/**
+ * Candidate places to give birth.
+ *
+ * The interaction model deliberately mirrors picking a product: compare
+ * candidates, mark one picked, the others go quiet. Exactly one picked, held by
+ * a partial unique index rather than by application care.
+ */
+
+/** How many of the fields that decide the outcome are actually filled in. */
+const COMPLETENESS_FIELDS = [
+  "type",
+  "address",
+  "mapsUrl",
+  "phone",
+  "whatsapp",
+  "website",
+  "instagram",
+  "distanceKm",
+  "driveMinutesNormal",
+  "driveMinutesPeak",
+  "hasIgd24h",
+  "hasNicu",
+  "nicuLevel",
+  "supportsImd",
+  "roomingIn",
+  "hasLactationConsultant",
+  "allowsHusbandInRoom",
+  "allowsPhotographer",
+  "depositIdr",
+  "notes",
+] as const satisfies readonly (keyof Hospital)[];
+
+export const COMPLETENESS_TOTAL = COMPLETENESS_FIELDS.length;
+
+export function completeness(h: Hospital): number {
+  return COMPLETENESS_FIELDS.filter((f) => {
+    const v = h[f];
+    // false is an answer. Null is not.
+    return v !== null && v !== undefined && v !== "";
+  }).length;
+}
+
+export async function listHospitals(): Promise<Hospital[]> {
+  const rows = await db.select().from(hospitals).orderBy(asc(hospitals.name));
+
+  // Picked, then shortlisted, then ruled out — where you are up to, not what
+  // these places are.
+  const rank = { picked: 0, shortlisted: 1, ruled_out: 2 } as const;
+  return rows.sort(
+    (a, b) =>
+      rank[a.decision as keyof typeof rank] -
+      rank[b.decision as keyof typeof rank],
+  );
+}
+
+export async function getHospital(id: string) {
+  const hospital = await db.query.hospitals.findFirst({
+    where: eq(hospitals.id, id),
+  });
+  if (!hospital) return null;
+
+  const [quotes, insurers, papers] = await Promise.all([
+    db
+      .select()
+      .from(hospitalQuotes)
+      .where(eq(hospitalQuotes.hospitalId, id))
+      .orderBy(asc(hospitalQuotes.deliveryType), asc(hospitalQuotes.roomClass)),
+    db
+      .select()
+      .from(hospitalInsurers)
+      .where(eq(hospitalInsurers.hospitalId, id)),
+    db
+      .select({
+        documentId: hospitalDocuments.documentId,
+        name: documents.name,
+        required: hospitalDocuments.required,
+        copiesRequired: hospitalDocuments.copiesRequired,
+        notes: hospitalDocuments.notes,
+      })
+      .from(hospitalDocuments)
+      .innerJoin(documents, eq(documents.id, hospitalDocuments.documentId))
+      .where(eq(hospitalDocuments.hospitalId, id))
+      .orderBy(asc(documents.sortOrder)),
+  ]);
+
+  return { hospital, quotes, insurers, papers };
+}
+
+export async function getPickedHospital(): Promise<Hospital | null> {
+  const row = await db.query.hospitals.findFirst({
+    where: eq(hospitals.decision, "picked"),
+  });
+  return row ?? null;
+}
+
+export async function createHospital(
+  input: { name: string; address?: string | null },
+  by: string,
+): Promise<string> {
+  const [row] = await db
+    .insert(hospitals)
+    .values({
+      name: input.name,
+      address: input.address ?? null,
+      decision: "shortlisted",
+      createdBy: by,
+      updatedBy: by,
+    })
+    .returning({ id: hospitals.id });
+  return row.id;
+}
+
+export async function updateHospital(
+  id: string,
+  patch: Partial<Omit<Hospital, "id" | "decision" | "createdAt" | "createdBy">>,
+  by: string,
+): Promise<void> {
+  await db
+    .update(hospitals)
+    .set({ ...patch, updatedBy: by, updatedAt: new Date() })
+    .where(eq(hospitals.id, id));
+}
+
+/**
+ * Picking one demotes any other in the same transaction — the partial unique
+ * index would otherwise reject the write, and a failed save on this screen is
+ * indistinguishable from the app being broken.
+ *
+ * Ruling one out requires a reason, and it is never deleted.
+ */
+export async function setDecision(
+  id: string,
+  decision: "shortlisted" | "picked" | "ruled_out",
+  by: string,
+  reason?: string | null,
+): Promise<void> {
+  if (decision === "ruled_out" && !reason?.trim()) {
+    throw new Error("Say why it was ruled out — it is kept, not deleted.");
+  }
+
+  await db.transaction(async (tx) => {
+    if (decision === "picked") {
+      await tx
+        .update(hospitals)
+        .set({ decision: "shortlisted", updatedBy: by, updatedAt: new Date() })
+        .where(and(eq(hospitals.decision, "picked"), ne(hospitals.id, id)));
+    }
+
+    await tx
+      .update(hospitals)
+      .set({
+        decision,
+        decisionReason: decision === "ruled_out" ? reason!.trim() : null,
+        updatedBy: by,
+        updatedAt: new Date(),
+      })
+      .where(eq(hospitals.id, id));
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   Quotes and insurers
+   --------------------------------------------------------------------------- */
+
+export async function upsertQuote(
+  input: {
+    hospitalId: string;
+    deliveryType: string;
+    roomClass: string;
+    priceIdr?: string | null;
+    nightsIncluded?: number | null;
+    includes?: string | null;
+    excludes?: string | null;
+    source?: string | null;
+    quotedOn?: string | null;
+  },
+): Promise<void> {
+  await db
+    .insert(hospitalQuotes)
+    .values(input)
+    .onConflictDoUpdate({
+      target: [
+        hospitalQuotes.hospitalId,
+        hospitalQuotes.deliveryType,
+        hospitalQuotes.roomClass,
+      ],
+      set: {
+        priceIdr: input.priceIdr ?? null,
+        nightsIncluded: input.nightsIncluded ?? null,
+        includes: input.includes ?? null,
+        excludes: input.excludes ?? null,
+        source: input.source ?? null,
+        quotedOn: input.quotedOn ?? null,
+      },
+    });
+}
+
+export async function deleteQuote(id: string): Promise<void> {
+  await db.delete(hospitalQuotes).where(eq(hospitalQuotes.id, id));
+}
+
+export async function upsertInsurer(
+  input: typeof hospitalInsurers.$inferInsert,
+): Promise<void> {
+  await db.insert(hospitalInsurers).values(input);
+}
+
+export async function updateInsurer(
+  id: string,
+  patch: Partial<typeof hospitalInsurers.$inferInsert>,
+): Promise<void> {
+  await db.update(hospitalInsurers).set(patch).where(eq(hospitalInsurers.id, id));
+}
+
+export async function deleteInsurer(id: string): Promise<void> {
+  await db.delete(hospitalInsurers).where(eq(hospitalInsurers.id, id));
+}
+
+/**
+ * What this hospital asks you to bring.
+ *
+ * Replaces the whole set in one transaction rather than diffing: it is a short
+ * list edited on one screen, and a half-applied requirement list is worse than
+ * a slightly heavier write.
+ */
+export async function setHospitalDocuments(
+  hospitalId: string,
+  wanted: { documentId: number; copiesRequired: number; notes?: string | null }[],
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(hospitalDocuments)
+      .where(eq(hospitalDocuments.hospitalId, hospitalId));
+
+    if (wanted.length === 0) return;
+
+    await tx.insert(hospitalDocuments).values(
+      wanted.map((w) => ({
+        hospitalId,
+        documentId: w.documentId,
+        required: true,
+        copiesRequired: w.copiesRequired,
+        notes: w.notes ?? null,
+      })),
+    );
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   The policy — one row for the household, not one per hospital
+   --------------------------------------------------------------------------- */
+
+export async function getPolicy(): Promise<Policy | null> {
+  const row = await db.query.insurancePolicy.findFirst();
+  if (!row) return null;
+  return {
+    insurerName: row.insurerName,
+    policyStartedOn: row.policyStartedOn,
+    maternityWaitingPeriodMonths: row.maternityWaitingPeriodMonths,
+    roomEntitlement: row.roomEntitlement,
+  };
+}
+
+export async function savePolicy(
+  patch: Partial<typeof insurancePolicy.$inferInsert>,
+  by: string,
+): Promise<void> {
+  const existing = await db.query.insurancePolicy.findFirst();
+  if (existing) {
+    await db
+      .update(insurancePolicy)
+      .set({ ...patch, updatedBy: by, updatedAt: new Date() })
+      .where(eq(insurancePolicy.id, existing.id));
+    return;
+  }
+  await db
+    .insert(insurancePolicy)
+    .values({ ...patch, createdBy: by, updatedBy: by });
+}
+
+/** The hospital's own line on your insurer, if anyone has checked. */
+export function coverFor(
+  insurers: HospitalInsurer[],
+  policy: Policy | null,
+): HospitalCover | null {
+  if (!policy?.insurerName) return null;
+  const match = insurers.find(
+    (i) => i.insurerName.toLowerCase() === policy.insurerName!.toLowerCase(),
+  );
+  if (!match) return null;
+  return {
+    insurerName: match.insurerName,
+    accepted: match.accepted,
+    settlement: match.settlement as "cashless" | "reimbursement" | null,
+    requiresPreauth: match.requiresPreauth,
+    preauthLeadDays: match.preauthLeadDays,
+  };
+}
+
+/** How many places are still in play — used for the "N ruled out" collapse. */
+export async function hospitalCounts() {
+  const rows = await db
+    .select({
+      decision: hospitals.decision,
+      n: sql<number>`count(*)::int`,
+    })
+    .from(hospitals)
+    .groupBy(hospitals.decision);
+  return Object.fromEntries(rows.map((r) => [r.decision, r.n])) as Partial<
+    Record<"picked" | "shortlisted" | "ruled_out", number>
+  >;
+}
