@@ -14,8 +14,10 @@ import {
 } from "@/server/services/things";
 
 import {
+  addLinkAction,
   archiveThingAction,
   saveThingAction,
+  setMaterialsAction,
   unarchiveThingAction,
 } from "../../actions";
 
@@ -155,6 +157,57 @@ export default async function EditThing({
           </BarSecondary>
         </BottomBar>
       </form>
+
+      <div className="px-[18px] pb-[13px]">
+        {/* A card that opens the platform's own app. No embeds. */}
+        <form action={addLinkAction}>
+          <input type="hidden" name="itemId" value={id} />
+          <Card>
+            <Field
+              label="A review or a video worth keeping"
+              hint="Tracking bits get stripped, so the same link twice stays one."
+            >
+              <TextInput
+                name="url"
+                type="url"
+                placeholder="https://tiktok.com/…"
+              />
+            </Field>
+            <button
+              type="submit"
+              className="border-ln2 text-ink mt-[6px] min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
+            >
+              Keep this link
+            </button>
+          </Card>
+        </form>
+
+        {/* Prompted only where the category says it changes a decision, and
+            never required. Nobody fills this in for a hundred things. */}
+        {detail.promptsMaterials && (
+          <form action={setMaterialsAction} className="mt-[13px]">
+            <input type="hidden" name="itemId" value={id} />
+            <Card>
+              <Field
+                label="What is it made of?"
+                hint="Separate them with commas. Anything new gets remembered."
+              >
+                <TextInput
+                  name="materials"
+                  defaultValue={data.materials.map((m) => m.name).join(", ")}
+                  placeholder="Katun, PPSU"
+                />
+              </Field>
+              <button
+                type="submit"
+                className="border-ln2 text-ink mt-[6px] min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
+              >
+                Save what it&rsquo;s made of
+              </button>
+            </Card>
+          </form>
+        )}
+      </div>
 
       {/* An ordinary action. Not destructive, and not behind a confirm. */}
       <div className="px-[18px] pb-[20px]">

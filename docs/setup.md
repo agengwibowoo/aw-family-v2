@@ -109,7 +109,17 @@ built, not configured.
 Private is not optional. This bucket holds scans of KTP, Kartu Keluarga, the marriage book
 and insurance cards. See `docs/adr/0007`.
 
+Then paste `supabase/storage-policies.sql` into the SQL editor and run it. It sets the 10MB
+size ceiling and the accepted image types, and denies the browser every kind of access —
+the app reaches storage with the secret key from `src/server/services/scans.ts`, which is
+the only module allowed to. It refuses to run if the bucket is missing or public, so
+running it is also how you check you got the previous step right.
+
+Until both are done the papers screen still works; it just shows an empty photo slot. The
+words and the copy counts are the part that matters at 3am.
+
 - [ ] Bucket `media` created, private
+- [ ] `supabase/storage-policies.sql` applied
 
 ---
 

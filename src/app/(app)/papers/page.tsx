@@ -1,6 +1,7 @@
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { PhotoSlot } from "@/components/photo-slot";
+import { ScanUpload } from "@/components/scan-upload";
 import { ReadinessBanner } from "@/components/readiness-banner";
 import { todayInHousehold } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
@@ -11,7 +12,15 @@ import {
   type PaperLine,
 } from "@/server/services/papers";
 
-import { seenChangeAction, setCopiesAction, toggleHaveAction } from "./actions";
+import { signedScanUrls } from "@/server/services/scans";
+
+import {
+  attachPaperScanAction,
+  seenChangeAction,
+  setCopiesAction,
+  signPaperScanAction,
+  toggleHaveAction,
+} from "./actions";
 
 /**
  * S5 — Papers for the hospital.
@@ -29,6 +38,11 @@ export default async function Papers() {
   const origin = await getOrigin();
   const dueDate = origin?.dueDate ?? todayInHousehold();
   const pack = await getPapersPack(dueDate);
+
+  // Short-lived, always. A cached URL is worthless at 3am because it has
+  // expired, so offline reads come from cached bytes rather than a long
+  // expiry (ADR-0007).
+  const scanUrls = await signedScanUrls(pack.lines.flatMap((l) => l.scans));
 
   const ready = pack.missing.length === 0 && pack.lines.length > 0;
 
@@ -95,7 +109,7 @@ export default async function Papers() {
           </div>
           <Stack>
             {pack.missing.map((line) => (
-              <PaperCard key={line.documentId} line={line} />
+              <PaperCard key={line.documentId} line={line} scanUrls={scanUrls} />
             ))}
           </Stack>
         </section>
@@ -140,7 +154,16 @@ export default async function Papers() {
   );
 }
 
-function PaperCard({ line }: { line: PaperLine }) {
+function PaperCard({
+  line,
+  scanUrls,
+}: {
+  line: PaperLine;
+  scanUrls: Map<string, string>;
+}) {
+  const sign = signPaperScanAction.bind(null, line.documentId);
+  const attach = attachPaperScanAction.bind(null, line.documentId);
+
   return (
     <Card>
       <div className="flex items-start justify-between gap-3">
@@ -156,7 +179,20 @@ function PaperCard({ line }: { line: PaperLine }) {
             <span className="text-ink3 text-[13px]">From {line.issuedBy}</span>
           )}
         </span>
-        <PhotoSlot size="row" src={line.scans[0] ?? null} />
+      </div>
+
+      {/* The photograph is the proof, at the size you can actually read a KTP
+          number off. */}
+      <div className="mt-[13px] flex gap-[9px] overflow-x-auto">
+        {line.scans.map((path) => (
+          <PhotoSlot
+            key={path}
+            size="scan"
+            src={scanUrls.get(path) ?? null}
+            alt={line.name}
+          />
+        ))}
+        <ScanUpload signAction={sign} attachAction={attach} />
       </div>
 
       <div className="mt-[13px] flex flex-wrap items-center gap-[12px]">

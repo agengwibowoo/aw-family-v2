@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { checkbox, count, number, oneOf, text } from "@/lib/form";
 import { requireApproved } from "@/server/auth";
+import { addLink, removeLink, setThingMaterials } from "@/server/services/links";
 import {
   archiveThing,
   createCandidate,
@@ -149,4 +150,50 @@ export async function setCandidateDecisionAction(formData: FormData) {
 
   await setCandidateDecision(id, decision, user.id, text(formData.get("reason")));
   refresh(itemId ?? undefined);
+}
+
+/**
+ * A link somebody pasted.
+ *
+ * Tracking parameters are stripped first, so the same product shared twice is
+ * one link rather than two. A failed preview still saves.
+ */
+export async function addLinkAction(formData: FormData) {
+  const user = await requireApproved();
+  const itemId = text(formData.get("itemId"));
+  const url = text(formData.get("url"));
+  if (!itemId || !url) return;
+
+  await addLink({ itemId }, url, user.id, text(formData.get("note")));
+  refresh(itemId);
+}
+
+export async function removeLinkAction(formData: FormData) {
+  await requireApproved();
+  const id = text(formData.get("id"));
+  const itemId = text(formData.get("itemId"));
+  if (!id) return;
+  await removeLink(id);
+  refresh(itemId ?? undefined);
+}
+
+/**
+ * What it's made of.
+ *
+ * Asked only where the category says it is worth asking, never required, and a
+ * material nobody has recorded before joins the vocabulary rather than being
+ * refused.
+ */
+export async function setMaterialsAction(formData: FormData) {
+  await requireApproved();
+  const itemId = text(formData.get("itemId"));
+  if (!itemId) return;
+
+  const names = (text(formData.get("materials")) ?? "")
+    .split(",")
+    .map((n) => n.trim())
+    .filter(Boolean);
+
+  await setThingMaterials(itemId, names);
+  refresh(itemId);
 }
