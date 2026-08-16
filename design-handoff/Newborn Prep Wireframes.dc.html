@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:'Patrick Hand',system-ui,sans-serif}
+a{color:#1f5fa8}a:hover{color:#14406f}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-sub{font:400 12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5);margin:0 0 26px;max-width:760px}
+.dv-grp{font:600 11px/1 system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:rgba(0,0,0,.42);margin:34px 0 16px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.1)}
+.dv-opts{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px;max-width:1240px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:30px 0 0;font:12px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+.pr{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.ph{width:390px;min-height:760px;box-sizing:border-box;border:2px solid #1a1a1a;border-radius:22px;background:#fff;overflow:hidden;display:flex;flex-direction:column;font-size:16px;color:#1a1a1a;flex:none}
+.ph.sm{min-height:0}
+.st{height:20px;flex:none;border-bottom:1px solid #e2ded4;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font:400 9px/1 ui-monospace,Menlo,monospace;color:#9c968a}
+.hd{padding:11px 14px;border-bottom:2px solid #1a1a1a;display:flex;align-items:center;gap:10px;flex:none}
+.hd h3{margin:0;font:400 19px/1.15 'Patrick Hand',sans-serif}
+.bk{font:400 15px/1 'Patrick Hand',sans-serif;color:#1a1a1a}
+.bd{padding:13px 14px 16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.bb{margin-top:auto;border-top:2px solid #1a1a1a;padding:10px 12px;display:flex;gap:9px;background:#faf9f6;flex:none}
+.btn{min-height:48px;box-sizing:border-box;border:1.5px solid #1a1a1a;border-radius:9px;display:grid;place-items:center;padding:0 12px;font-size:16px;flex:1;text-align:center;line-height:1.1;background:#fff}
+.btn.pri{background:#1a1a1a;color:#fff}
+.btn.sm{min-height:40px;font-size:14px}
+.btn.gh{border-style:dashed;color:#5d574a}
+.tabs{margin-top:auto;border-top:2px solid #1a1a1a;display:flex;flex:none;background:#faf9f6}
+.tabs div{flex:1;min-height:52px;display:grid;place-items:center;font-size:14px;color:#6e6859;border-right:1px solid #ddd8cc}
+.tabs div:last-child{border-right:0}
+.tabs div.on{color:#1a1a1a;background:#fff;box-shadow:inset 0 -3px 0 #1a1a1a}
+.sec{font:600 10px/1 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8b8577;margin:2px 0 -4px}
+.row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #e6e2d8}
+.row:last-child{border-bottom:0}
+.row .gw{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.nm{font-size:16px;line-height:1.15;overflow-wrap:anywhere}
+.mt{font-size:13px;color:#7d7768;line-height:1.2}
+.chip{display:inline-block;border:1px solid #1a1a1a;border-radius:11px;padding:1px 8px;font-size:12px;line-height:1.5;white-space:nowrap}
+.chip.q{border-style:dashed;color:#7d7768}
+.chip.k{background:#1a1a1a;color:#fff}
+.card{border:1.5px solid #1a1a1a;border-radius:11px;padding:12px;display:flex;flex-direction:column;gap:9px}
+.card.q{border-style:dashed}
+.bar{height:12px;border:1.5px solid #1a1a1a;border-radius:7px;overflow:hidden;display:flex}
+.bar i{background:#1a1a1a;display:block}
+.box{background:repeating-linear-gradient(45deg,#eceae3 0 5px,#f7f6f2 5px 10px);border:1px solid #cfc9bb;display:grid;place-items:center;font:400 10px/1.3 ui-monospace,Menlo,monospace;color:#8b8577;text-align:center;padding:4px}
+.th{width:46px;height:46px;flex:none;border-radius:6px}
+.mny{font-family:ui-monospace,Menlo,monospace;font-size:13px;letter-spacing:.04em}
+.big{font-size:34px;line-height:1}
+.ttl{font-size:22px;line-height:1.1}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0;border-bottom:1px dotted #ddd8cc}
+.kv b{font-weight:400}
+.kv span:last-child{color:#514c41;text-align:right}
+.notes{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;max-width:390px;font:400 12.5px/1.45 'Kalam',cursive;color:#1f5fa8}
+.notes li{padding-left:14px;position:relative}
+.notes li:before{content:"→";position:absolute;left:0;top:0}
+.notes li b{font-weight:700;color:#14406f}
+.cap{font:400 13px/1.4 'Kalam',cursive;color:#6e6859;margin:0}
+.stk{display:flex;flex-direction:column;gap:9px}
+.wide{width:1060px;box-sizing:border-box;border:2px solid #1a1a1a;border-radius:12px;background:#fff;overflow:hidden;display:flex;flex-direction:column;flex:none;font-size:15px;color:#1a1a1a}
+.prose{max-width:640px;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:22px 24px;font:400 14px/1.65 system-ui,sans-serif;color:#2b2620}
+.prose h4{margin:0 0 4px;font:600 15px/1.3 system-ui,sans-serif}
+.prose h5{margin:20px 0 4px;font:600 13px/1.3 system-ui,sans-serif}
+.prose p{margin:0 0 10px}
+.prose ul{margin:0 0 10px;padding-left:20px}
+.prose li{margin-bottom:5px}
+.prose em{color:#1f5fa8;font-style:normal;font-family:'Kalam',cursive}
+</style></helmet>
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Clickable — journeys 1 and 3, on the wireframes from <a class="dv-oid" href="#t1">1</a></span></div>
+<p class="dv-sub">Both are live: tap them. The tap counter under each phone is the review criterion from §14 made visible — if a journey costs more taps than the count shown, it has failed the three-second budget, not the reviewer’s patience.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Journey 1 · land cold from a chat link, save, land somewhere sensible</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:760px;min-height:0">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<sc-if value="{{ j1_land }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><h3 style="flex:1">Add what we got</h3><span class="bk">✕</span></div>
+<div class="bd" style="gap:14px">
+<div class="card q" style="padding:9px 11px"><div class="mt">You came from a message. There’s nothing behind this screen.</div></div>
+<div style="display:flex;gap:11px;align-items:center"><div class="box" style="width:56px;height:56px;flex:none">photo</div><div class="gw"><div class="ttl">Popok newborn</div><div class="mt">4 of 12 so far · <span style="text-decoration:underline">not this?</span></div></div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">How many did you get?</div>
+<div style="display:flex;gap:9px;align-items:center">
+<div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px;cursor:pointer" onClick="{{ dec1 }}">−</div>
+<div class="card" style="flex:1;min-height:60px;align-items:center;justify-content:center"><div class="big" style="font-size:30px">{{ n1 }}</div></div>
+<div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px;cursor:pointer" onClick="{{ inc1 }}">+</div>
+</div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">What did it cost? <span style="color:#a8a296">— you can skip this</span></div><div class="card q" style="padding:14px 12px"><div class="nm" style="color:#a8a296">Rp</div></div></div>
+<div class="card q" style="padding:11px"><div class="mt">Everything else — where from, brand, photos — <span style="text-decoration:underline">add later if you want</span></div></div>
+</div>
+<div class="bb"><div class="btn pri" style="min-height:58px;font-size:19px;cursor:pointer" onClick="{{ save1 }}">Save it</div></div>
+</sc-if>
+<sc-if value="{{ j1_saved }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><h3>Today</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:13px;gap:7px;border-width:2px">
+<div class="ttl" style="font-size:21px">Got it — {{ n1 }} more nappies.</div>
+<div class="mt" style="font-size:15px">{{ n1_total }} of 12 now.</div>
+<div style="display:flex;gap:9px"><div class="btn sm" style="flex:0 0 110px;cursor:pointer" onClick="{{ reset1 }}">Undo</div><div class="btn sm gh" style="cursor:pointer" onClick="{{ again1 }}">Add another</div></div>
+</div>
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span><span class="mt" style="margin-left:auto">14 Oct</span></div>
+<div class="sec">Needs doing</div>
+<div class="card"><div class="nm">Pick a hospital</div><div class="mt">3 on the shortlist · 2 half filled in</div><div style="display:flex;gap:9px"><div class="btn pri sm">Compare them</div><div class="btn sm" style="flex:0 0 84px">Later</div></div></div>
+<div class="card"><div class="nm">Check-up</div><div class="mt">Tomorrow 10:00 · RS Bunda · bring buku KIA</div></div>
+<div style="margin-top:4px"><div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:5px"><span>Hospital bag</span><span class="mt">4 of 11</span></div><div class="bar"><i style="width:36%"></i></div></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</sc-if>
+</div>
+<div style="display:flex;gap:10px;align-items:center;margin-top:4px"><span class="chip q">{{ t1_label }}</span><span class="cap">budget: 2 taps and a save · <span style="text-decoration:underline;cursor:pointer" onClick="{{ reset1 }}">start over</span></span></div>
+</div>
+<ul class="notes" style="max-width:330px">
+<li>Tap Save without touching anything and it still works — <b>the count and the price are both pre-answered.</b> That is the whole three-second claim.</li>
+<li>Saving lands on Today, the one screen that makes sense with no history, with the confirmation at the top instead of a toast.</li>
+<li><b>Undo is in the confirmation</b>, not a snackbar that has already gone. Tapping it here returns you to the landing so you can see the round trip.</li>
+<li>Not drawn as interactive: “not this?” opens the search in <a class="dv-oid" href="#2b">2b</a>; offline shows the same card reading “Saved on your phone.”</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Journey 3 · nothing urgent, find something, add what we got</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:760px;min-height:0">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+
+<sc-if value="{{ j3_today }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span style="font-size:13px;color:#7d7768">Tue 14 Aug</span></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span><span class="mt" style="margin-left:auto">14 Oct</span></div>
+<div class="card" style="padding:18px 14px;gap:8px;align-items:center;text-align:center"><div class="ttl">Nothing needs doing today.</div><div class="mt" style="font-size:15px">The hospital bag is packed for now. Next thing due 15 Sep.</div></div>
+<div style="margin-top:2px"><div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:5px"><span>Hospital bag</span><span class="mt">11 of 11</span></div><div class="bar"><i style="width:100%"></i></div></div>
+<div class="sec">Coming up</div>
+<div class="row"><div class="gw"><div class="nm">Check-up</div><div class="mt">Thu 21 Aug 10:00 · RS Bunda</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Hospital bag, second pass</div><div class="mt">15 Sep · week 36</div></div><span class="mt">›</span></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px;cursor:pointer" onClick="{{ find3 }}">Find a thing</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_find }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span class="bk" style="cursor:pointer" onClick="{{ reset3 }}">‹</span><div class="card q" style="flex:1;padding:6px 10px;border-radius:9px"><input value="{{ q }}" onChange="{{ type }}" placeholder="botol, popok, bottle…" style="width:100%;border:0;outline:0;background:transparent;font:400 16px 'Patrick Hand',sans-serif;color:#1a1a1a"></div></div>
+<div class="bd" style="gap:2px">
+<sc-if value="{{ untyped }}" hint-placeholder-val="{{ true }}">
+<div class="mt" style="margin-bottom:8px">Type any part of a name, in English or Indonesian.</div>
+<div class="sec">Or jump to</div>
+<div class="row"><div class="gw"><div class="nm">Hospital bag</div><div class="mt">11 things · all done</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Everything for 0–3 months</div><div class="mt">31 things · 12 still needed</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Things family could give</div><div class="mt">65 things</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">All 117 things</div></div><span class="mt">›</span></div>
+</sc-if>
+<sc-if value="{{ typed }}" hint-placeholder-val="{{ true }}">
+<div class="mt" style="margin-bottom:4px">{{ hitLabel }}</div>
+<sc-for list="{{ hits }}" as="it" hint-placeholder-count="3">
+<div class="row" style="cursor:pointer" onClick="{{ it.open }}"><div class="box th">photo</div><div class="gw"><div class="nm">{{ it.name }}</div><div class="mt">{{ it.meta }}</div></div><span class="chip">{{ it.chip }}</span></div>
+</sc-for>
+<sc-if value="{{ noHits }}" hint-placeholder-val="{{ true }}">
+<div class="card q" style="margin-top:10px;padding:12px;gap:5px"><div class="nm" style="font-size:16px">Nothing matches that.</div><div class="mt">Try part of the word, or <span style="text-decoration:underline">add it as a new thing</span>.</div></div>
+</sc-if>
+</sc-if>
+</div>
+<div class="bb" style="background:#eceae3"><div class="mt" style="font-size:12px">keyboard</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_item }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span class="bk" style="cursor:pointer" onClick="{{ find3 }}">‹</span><h3 style="flex:1">{{ selName }}</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:12px">
+<div style="display:flex;gap:12px;align-items:flex-start"><div class="box" style="width:104px;height:104px;flex:none">photo</div><div class="gw" style="gap:5px"><div class="ttl">{{ selCount }}</div><div class="mt">{{ selMeta }}</div><span class="chip">{{ selChip }}</span></div></div>
+<div class="sec">What we have</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Pigeon · Wide Neck PPSU 240ml</div><div class="mt">4 of them · Tokopedia · 2 Aug · <span class="mny">Rp•••••</span></div></div></div>
+<div class="sec">Ones we’re looking at</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Dr. Brown’s · Natural Flow</div><div class="mt">Mothercare · <span class="mny">Rp•••••</span></div></div><span class="chip">Looking at it</span></div>
+<div class="sec">Videos and reviews</div>
+<div style="display:flex;gap:9px"><div class="stk" style="gap:4px;width:106px"><div class="box" style="height:124px">tiktok</div><div class="mt" style="font-size:11.5px">Botol PPSU vs kaca</div></div><div class="stk" style="gap:4px;width:106px"><div class="box" style="height:124px">youtube</div><div class="mt" style="font-size:11.5px">How to sterilise</div></div></div>
+<div class="sec">What it’s made of</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">PPSU</span><span class="chip">Silicone teat</span></div>
+</div>
+<div class="bb"><div class="btn pri" style="cursor:pointer" onClick="{{ ask3 }}">+ Add</div><div class="btn" style="flex:0 0 104px">Change this</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_ask }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><h3 style="flex:1">Add to {{ selName }}</h3><span class="bk" style="cursor:pointer" onClick="{{ back3 }}">✕</span></div>
+<div class="bd" style="gap:14px;justify-content:center">
+<div class="ttl" style="text-align:center">Already got it, or still looking?</div>
+<div class="btn pri" style="min-height:60px;font-size:18px;cursor:pointer" onClick="{{ count3 }}">Already got it</div>
+<div class="btn" style="min-height:60px;font-size:18px;cursor:pointer" onClick="{{ looking3 }}">Still looking</div>
+</div>
+<div class="bb" style="background:#fff;border-top:0"><div class="cap" style="text-align:center;width:100%">one decision, two words each</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_count }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><h3 style="flex:1">Add what we got</h3><span class="bk" style="cursor:pointer" onClick="{{ back3 }}">✕</span></div>
+<div class="bd" style="gap:14px">
+<div style="display:flex;gap:11px;align-items:center"><div class="box" style="width:56px;height:56px;flex:none">photo</div><div class="gw"><div class="ttl">{{ selName }}</div><div class="mt">{{ selCount }} so far</div></div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">How many did you get?</div>
+<div style="display:flex;gap:9px;align-items:center">
+<div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px;cursor:pointer" onClick="{{ dec3 }}">−</div>
+<div class="card" style="flex:1;min-height:60px;align-items:center;justify-content:center"><div class="big" style="font-size:30px">{{ n3 }}</div></div>
+<div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px;cursor:pointer" onClick="{{ inc3 }}">+</div>
+</div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">What did it cost? <span style="color:#a8a296">— you can skip this</span></div><div class="card q" style="padding:14px 12px"><div class="nm" style="color:#a8a296">Rp</div></div></div>
+<div class="card q" style="padding:11px"><div class="mt">Where from, brand, photos — <span style="text-decoration:underline">add later if you want</span></div></div>
+</div>
+<div class="bb"><div class="btn pri" style="min-height:58px;font-size:19px;cursor:pointer" onClick="{{ save3 }}">Save it</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_looking }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><h3 style="flex:1">One we’re looking at</h3><span class="bk" style="cursor:pointer" onClick="{{ back3 }}">✕</span></div>
+<div class="bd" style="gap:14px">
+<div class="mt">For {{ selName }}</div>
+<div class="stk" style="gap:5px"><div class="mt">What’s it called?</div><div class="card q" style="padding:12px"><div class="nm" style="color:#a8a296">Wide Neck PPSU 240ml</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">Who makes it?</div><div class="card q" style="padding:12px"><div class="nm" style="color:#a8a296">Pigeon</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">Where did you see it?</div><div class="card q" style="padding:12px"><div class="nm" style="color:#a8a296">Tokopedia</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">Roughly how much? <span style="color:#a8a296">— you can skip this</span></div><div class="card q" style="padding:12px"><div class="nm" style="color:#a8a296">Rp</div></div></div>
+<div class="card q" style="padding:11px"><div class="mt">Paste a TikTok or a shop link and it lands here as a card.</div></div>
+</div>
+<div class="bb"><div class="btn pri" style="cursor:pointer" onClick="{{ back3 }}">Save it</div></div>
+</sc-if>
+
+<sc-if value="{{ j3_saved }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span class="bk" style="cursor:pointer" onClick="{{ back3 }}">‹</span><h3 style="flex:1">{{ selName }}</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:13px;gap:7px;border-width:2px">
+<div class="ttl" style="font-size:21px">Got it — {{ n3_line }}.</div>
+<div class="mt" style="font-size:15px">{{ n3_total }} now.</div>
+<div style="display:flex;gap:9px"><div class="btn sm" style="flex:0 0 110px;cursor:pointer" onClick="{{ back3 }}">Undo</div><div class="btn sm gh" style="cursor:pointer" onClick="{{ count3 }}">Add another</div></div>
+</div>
+<div class="sec">What we have</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">{{ n3_line }}</div><div class="mt">Just now · no shop yet · <span style="text-decoration:underline">fill it in</span></div></div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Pigeon · Wide Neck PPSU 240ml</div><div class="mt">4 of them · Tokopedia · 2 Aug</div></div></div>
+<div class="sec">Ones we’re looking at</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Dr. Brown’s · Natural Flow</div><div class="mt">Mothercare</div></div><span class="chip">Looking at it</span></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add</div><div class="btn" style="flex:0 0 104px">Change this</div></div>
+</sc-if>
+</div>
+<div style="display:flex;gap:10px;align-items:center;margin-top:4px"><span class="chip q">{{ t3_label }}</span><span class="cap">budget: 6 taps end to end · <span style="text-decoration:underline;cursor:pointer" onClick="{{ reset3 }}">start over</span></span></div>
+</div>
+<ul class="notes" style="max-width:330px">
+<li>Search is real — <b>type “bottle” and it finds <em>Botol susu</em></b>. Mixed-language names with English synonyms, which §16 says the data demands.</li>
+<li>Empty query shows the jump-to block rather than a blank screen: it answers before asking, even here.</li>
+<li>“Still looking” goes to the candidate form, so you can see that both branches of the one question exist and neither teaches her a concept.</li>
+<li>Saving lands back on the item with the confirmation on top — <b>not on Today</b>, because this time she has history and context to return to. Same component, different destination.</li>
+<li>Six taps: Find → botol → Botol susu → + Add → Already got it → Save.</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “wire journey 2, the hospital compare” · “hi-fi pass on <a class="dv-oid" href="#1b">1b</a> and <a class="dv-oid" href="#1i">1i</a>” · “test <a class="dv-oid" href="#1c">1c</a> against <a class="dv-oid" href="#1b">1b</a> as a clickable pair”</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Newborn Prep — Wave 1 + Wave 2 wireframes, phone at 390pt</span></div>
+<p class="dv-sub">Greyscale, low-fi, one hand. Blue handwriting is annotation, not interface. Every screen drawn as if it were arrived at cold from a chat link. No banned word from §6 appears in any interface string — and no screen's hierarchy depends on a price, since money is hidden by default everywhere.</p>
+
+<div class="dv-grp">Decision #1 — one app, two landings, or two surfaces</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>The three shapes at nav level, drawn to scale</div>
+<div class="dv-card" style="padding:20px">
+<div class="pr">
+<div class="stk">
+<p class="cap">A · one app, power behind “More”</p>
+<div class="ph sm" style="min-height:300px">
+<div class="st"><span>9:41</span><span>▮</span></div>
+<div class="bd" style="gap:8px">
+<div class="box" style="height:38px">countdown</div>
+<div class="box" style="height:60px">needs doing</div>
+<div class="box" style="height:44px">progress</div>
+<div class="box" style="height:30px;border-style:dashed">budget · breakdowns · admin<br>(all behind More)</div>
+</div>
+<div class="tabs"><div class="on">Today</div><div>List</div><div>Dates</div><div>More</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>She never meets his screens. But <b>“More” becomes a junk drawer</b> — and he does budget work three taps deep on desktop.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">B · same screens, different landing</p>
+<div class="ph sm" style="min-height:300px">
+<div class="st"><span>9:41</span><span>▮</span></div>
+<div class="bd" style="gap:8px">
+<div class="box" style="height:38px">countdown</div>
+<div class="box" style="height:60px">needs doing</div>
+<div class="box" style="height:44px">progress</div>
+<div class="box" style="height:30px;border-style:dashed">Money view reachable,<br>never the landing</div>
+</div>
+<div class="tabs"><div class="on">Today</div><div>List</div><div>Dates</div><div>Money</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Her tab bar and his tab bar are the same four tabs; only <b>tab 1 differs by account</b> — his opens on Money.</li><li>Deep links keep working for both, because there is one URL per screen.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">C · two surfaces, shared data</p>
+<div class="ph sm" style="min-height:300px">
+<div class="st"><span>9:41</span><span>▮</span></div>
+<div class="bd" style="gap:8px">
+<div class="box" style="height:38px">countdown</div>
+<div class="box" style="height:88px">needs doing<br>(her surface only)</div>
+<div class="box" style="height:30px;border-style:dashed">no route to his surface</div>
+</div>
+<div class="tabs"><div class="on">Today</div><div>Find</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Cleanest for her, <b>most expensive to build and maintain</b> — and a chat link into a screen that only exists on his surface dead-ends her.</li></ul>
+</div>
+<div class="stk" style="max-width:330px">
+<p class="cap">Recommendation</p>
+<div class="prose" style="max-width:330px;font-size:13.5px">
+<h4>B, with one change</h4>
+<p>B is right, and the reason isn’t taste: <em>every screen is a landing page</em> (§4.3) makes two surfaces structurally wrong. If she can arrive at any URL from a chat link, then every URL has to work for her — which is what a shared screen set with a per-account landing gives you for free.</p>
+<p>The change: <b>depth is a layer, not a tab.</b> Money is not a fourth destination she has to ignore; it is what the Money tab shows him and what a “see the detail” link opens for her, in place, on the same screen. See <a class="dv-oid" href="#1n">1n</a> — one item screen, two densities.</p>
+<p>A fails because “More” is where you put things you couldn’t place. C fails because it breaks deep links.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">S1 · Today — three shapes, plus its states</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Cards — the straight read of §S1</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span style="font-size:13px;color:#7d7768">Tue 14 Aug</span></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span><span class="mt" style="margin-left:auto">14 Oct</span></div>
+<div class="sec">Needs doing</div>
+<div class="card">
+<div class="nm" style="font-size:18px">Get 8 more newborn nappies</div>
+<div class="mt">Hospital bag · wanted by 15 Sep</div>
+<div style="display:flex;gap:9px"><div class="btn pri" style="font-size:15px">Add what we got</div><div class="btn" style="flex:0 0 92px;font-size:15px">Later</div></div>
+</div>
+<div class="card">
+<div class="nm" style="font-size:18px">Pick a hospital</div>
+<div class="mt">3 on the shortlist · 2 half filled in</div>
+<div style="display:flex;gap:9px"><div class="btn pri" style="font-size:15px">Compare them</div><div class="btn" style="flex:0 0 92px;font-size:15px">Later</div></div>
+</div>
+<div class="card">
+<div class="nm" style="font-size:18px">Check-up</div>
+<div class="mt">Tomorrow 10:00 · RS Bunda · bring buku KIA</div>
+<div style="display:flex;gap:9px"><div class="btn" style="font-size:15px">See the details</div></div>
+</div>
+<div style="margin-top:4px">
+<div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:5px"><span>Hospital bag</span><span class="mt">4 of 11</span></div>
+<div class="bar"><i style="width:36%"></i></div>
+</div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Countdown, ≤3 cards, one bar, two thumb actions. <b>Nothing else.</b> No money, no categories, no filters.</li>
+<li>Each card is one sentence and one action — cause §3.2 (filters before answers) never arises: the app has already chosen.</li>
+<li>“Later” hides that card 7 days and promotes the next candidate. Ranking is the deterministic rule in Part IV §A.3, so “why is this here?” is answerable.</li>
+<li>The appointment card has no “Later” — you can’t dismiss a fact.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>One thing at a time — the postpartum bet</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span style="font-size:13px;color:#7d7768">61 days · 14 Oct</span></div>
+<div class="bd">
+<div class="card" style="padding:16px;gap:12px">
+<div class="mt">Next thing</div>
+<div class="ttl" style="font-size:26px">Get 8 more newborn nappies</div>
+<div class="mt">Hospital bag · wanted by 15 Sep</div>
+<div class="box" style="height:120px">item photo</div>
+</div>
+<div class="card q" style="padding:10px 12px;gap:4px">
+<div class="mt">Then</div>
+<div class="nm">Pick a hospital · Check-up tomorrow 10:00</div>
+</div>
+<div style="margin-top:auto">
+<div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:5px"><span>Hospital bag</span><span class="mt">4 of 11</span></div>
+<div class="bar"><i style="width:36%"></i></div>
+</div>
+</div>
+<div class="bb" style="flex-direction:column;gap:8px">
+<div style="display:flex;gap:9px;width:100%"><div class="btn pri" style="min-height:56px;font-size:18px">Add what we got</div><div class="btn" style="flex:0 0 92px;min-height:56px">Later</div></div>
+<div style="display:flex;gap:9px;width:100%"><div class="btn sm gh">Find a thing</div><div class="btn sm gh">See all 3</div></div>
+</div>
+</div>
+</div>
+<ul class="notes">
+<li>Same data, one decision on screen. The other two collapse into a line of text she can tap.</li>
+<li><b>Worth testing against <a class="dv-oid" href="#1b">1b</a> one-handed.</b> My read: <a class="dv-oid" href="#1b">1b</a> wins before birth (she is planning), this wins after (she is coping). It could be the same screen with a density that follows the birth date.</li>
+<li>Risk: hides that there are only three things, so “am I done?” is unanswerable at a glance.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Nothing urgent — the empty state as good news</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span style="font-size:13px;color:#7d7768">Tue 14 Aug</span></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span><span class="mt" style="margin-left:auto">14 Oct</span></div>
+<div class="card" style="padding:18px 14px;gap:8px;align-items:center;text-align:center">
+<div class="ttl">Nothing needs doing today.</div>
+<div class="mt" style="font-size:15px">The hospital bag is packed for now. Next thing due 15 Sep.</div>
+</div>
+<div style="margin-top:2px">
+<div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:5px"><span>Hospital bag</span><span class="mt">11 of 11</span></div>
+<div class="bar"><i style="width:100%"></i></div>
+</div>
+<div class="sec">Coming up</div>
+<div class="row"><div class="gw"><div class="nm">Check-up</div><div class="mt">Thu 21 Aug 10:00 · RS Bunda</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Hospital bag, second pass</div><div class="mt">15 Sep · week 36</div></div><span class="mt">›</span></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>Answer to §15.6.</b> An empty Today should read like a receipt, not a void: a plain sentence saying you’re clear, a bar at full, and the next date so the quiet is dated rather than suspicious.</li>
+<li>No illustration, no “All caught up!” celebration. She’ll see this state most days; anything performative gets old by week two.</li>
+<li>The two thumb actions never disappear — an empty screen still has to be a place you can do the two things.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1e">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Today · loading, offline, and after the birth</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Loading — cache first, never a spinner</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><h3>Today</h3></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span></div>
+<div class="box" style="height:96px">card · from cache,<br>checking for newer</div>
+<div class="box" style="height:96px;opacity:.6">card</div>
+<div class="box" style="height:26px;opacity:.4">bar</div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Countdown is computed on device, so it is <b>never a skeleton</b>. Cards render from cache within 1s (AC6) and update in place.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">Offline — hospital basement</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>no signal</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span class="chip q">Offline · showing 2h ago</span></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span></div>
+<div class="card"><div class="nm">Check-up</div><div class="mt">Tomorrow 10:00 · RS Bunda</div></div>
+<div class="card q" style="align-items:center"><div class="mt" style="text-align:center">Anything you add now will be saved when you’re back online.</div></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Reading works (C6). Writing is <b>accepted, queued, and said out loud</b> — never blocked, never silently lost.</li><li>The document pack <a class="dv-oid" href="#1i">1i</a> is the one screen that must be fully readable offline; it is the 3am screen.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">After the birth — card types change</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Today</h3><span style="font-size:13px;color:#7d7768">6 weeks old</span></div>
+<div class="bd">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">6</span><span style="font-size:17px">weeks old</span></div>
+<div class="sec">Needs doing</div>
+<div class="card"><div class="nm">Detergent is nearly gone</div><div class="mt">Half a bottle left last time you looked</div><div style="display:flex;gap:9px"><div class="btn pri sm">Add what we got</div><div class="btn sm" style="flex:0 0 78px">Later</div></div></div>
+<div class="card"><div class="nm">6 bottles need cleaning</div><div style="display:flex;gap:9px"><div class="btn pri sm">Clean them all</div></div></div>
+<div class="card q"><div class="nm">Clothes: 3–6 months</div><div class="mt">2 of 8 · likely needed late Jan</div></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Same three slots, different card types. The countdown becomes an age — <b>the screen doesn’t change shape on 14 Oct</b>, only its contents.</li><li>The third card is the operations→buying loop (P4), stated as a range and never as a certainty.</li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="dv-grp">Wave 1 · S2–S5 — hospitals and the document pack</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1f">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>S2 · Hospital list</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Where to give birth</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:10px">
+<div class="card" style="gap:7px;padding:11px 12px">
+<div style="display:flex;gap:8px;align-items:baseline"><span class="chip k">Picked this one</span><span class="mt" style="margin-left:auto">everything filled in</span></div>
+<div class="ttl">RS Bunda Menteng</div>
+<div class="mt">25 min normally · 55 min in traffic · 8.4 km</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">Baby intensive care</span><span class="chip">Insurance pays direct</span></div>
+<div class="mt">Normal birth, kelas 1 · <span class="mny">Rp•••••</span></div>
+<div class="card q" style="padding:8px 10px;gap:2px;border-color:#1a1a1a"><div class="nm" style="font-size:15px">Your insurance covers this birth.</div><div class="mt">Waiting period was met in June.</div></div>
+</div>
+<div class="card" style="gap:7px;padding:11px 12px">
+<div style="display:flex;gap:8px;align-items:baseline"><span class="chip">Shortlisted</span><span class="mt" style="margin-left:auto">7 of 30 filled in</span></div>
+<div class="ttl">RSIA Tambak</div>
+<div class="mt">18 min normally · 40 min in traffic · 5.1 km</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip q">Baby intensive care — not filled in</span></div>
+<div class="mt">No prices yet</div>
+<div class="bar" style="height:7px"><i style="width:23%"></i></div>
+</div>
+<div class="card" style="gap:7px;padding:11px 12px;opacity:.62">
+<div style="display:flex;gap:8px;align-items:baseline"><span class="chip">Ruled out</span><span class="mt" style="margin-left:auto">too far in traffic</span></div>
+<div class="ttl">RS Hermina Kemayoran</div>
+<div class="mt">32 min normally · 80 min in traffic</div>
+</div>
+</div>
+<div class="bb"><div class="btn pri">Compare 2</div><div class="btn" style="flex:0 0 108px">+ Add one</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Decision word first, name second — the list is read to answer “where are we up to”, not “what are these places”.</li>
+<li><b>Completeness is a sentence, not a percentage badge</b>: “7 of 30 filled in”, plus a bar. Half-filled entries stay in the list, they don’t hide.</li>
+<li>The covers-this-birth sentence is computed and appears on the card, the detail <a class="dv-oid" href="#1g">1g</a> and the compare <a class="dv-oid" href="#1h">1h</a>. Never two dates to reason about.</li>
+<li>Ruled-out entries dim and drop to the bottom but are never deleted; the reason shows so it isn’t re-litigated.</li>
+<li><b>Money hidden:</b> the price line reads <span class="mny">Rp•••••</span> and carries no meaning the row needs. Every other fact on the card still ranks it.</li>
+<li>Long list state (12 hospitals): ruled-out ones collapse into “4 ruled out ›”.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1g">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>S3 · Hospital detail — the long, careful form</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">RS Bunda Menteng</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:11px">
+<div class="card q" style="padding:11px;gap:3px;border-color:#1a1a1a;border-style:solid">
+<div class="nm" style="font-size:17px">Your insurance covers this birth.</div>
+<div class="mt">The 12-month waiting period ended 3 June 2026. Caesar is covered too, up to a lower amount.</div>
+</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap"><span class="chip k">Picked this one</span><span class="chip q">change</span></div>
+<div class="sec">Getting there</div>
+<div class="kv"><b>In traffic</b><span>55 min</span></div>
+<div class="kv"><b>Normally</b><span>25 min · 8.4 km</span></div>
+<div class="kv"><b>Open at 2am</b><span>Yes, emergency room</span></div>
+<div class="sec">Medical</div>
+<div class="kv"><b>Baby intensive care</b><span>Yes · level 2B</span></div>
+<div class="kv"><b>Husband in the room</b><span>Yes</span></div>
+<div class="kv"><b>Baby stays with you</b><span>Yes</span></div>
+<div class="kv"><b>Breastfeeding help</b><span>Not filled in</span></div>
+<div class="sec">Money</div>
+<div class="kv"><b>Normal, kelas 1</b><span><span class="mny">Rp•••••</span></span></div>
+<div class="kv"><b>Caesar, kelas 1</b><span><span class="mny">Rp•••••</span></span></div>
+<div class="kv"><b>Deposit on arrival</b><span><span class="mny">Rp•••••</span></span></div>
+<div class="kv"><b>Prices from</b><span>Phone call, 2 Aug · 12 days ago</span></div>
+<div class="sec">Insurance · Policies · Our visit · Decision</div>
+<div class="card q" style="padding:9px 11px"><div class="mt">4 more groups, collapsed. Each opens in place.</div></div>
+</div>
+<div class="bb"><div class="btn pri">Fill in what’s missing</div><div class="btn" style="flex:0 0 96px">Compare</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Seven groups per §S3, collapsed by default so arriving cold shows the <b>whole shape of the decision</b> on one screen.</li>
+<li>“Not filled in” is written out. It is never a blank, a dash, or a “No”.</li>
+<li>Grouped as questions rather than schema: <em>Open at 2am</em>, <em>Baby stays with you</em>, <em>Deposit on arrival</em>.</li>
+<li>The form is long on purpose (§S2) — no step wizard, no progress gate, saves as you go.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1h">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>S4 · Compare — the hardest screen in Wave 1</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Compare</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:0;padding:0">
+<div style="display:flex;border-bottom:2px solid #1a1a1a;position:sticky;top:0;background:#fff">
+<div style="flex:0 0 96px;padding:9px 10px;font-size:12px;color:#8b8577;border-right:1px solid #ddd8cc">3 places</div>
+<div style="flex:1;padding:9px 8px;font-size:14px;line-height:1.1;border-right:1px solid #ddd8cc">RS Bunda<br><span class="chip k" style="font-size:10px">Picked</span></div>
+<div style="flex:1;padding:9px 8px;font-size:14px;line-height:1.1;border-right:1px solid #ddd8cc">RSIA Tambak</div>
+<div style="flex:1;padding:9px 8px;font-size:14px;line-height:1.1">RS Pondok<br><span class="mt" style="font-size:11px">swipe for more ›</span></div>
+</div>
+<div style="padding:10px 12px;border-bottom:1px solid #e6e2d8;background:#faf9f6">
+<div class="sec" style="margin:0 0 6px">Does insurance cover the birth</div>
+<div style="display:flex;gap:8px">
+<div class="card q" style="flex:1;padding:8px;gap:2px;border-color:#1a1a1a;border-style:solid"><div class="nm" style="font-size:14px">Covered</div><div class="mt" style="font-size:11.5px">waiting period met</div></div>
+<div class="card q" style="flex:1;padding:8px;gap:2px"><div class="nm" style="font-size:14px">Not filled in</div><div class="mt" style="font-size:11.5px">insurer unknown</div></div>
+<div class="card q" style="flex:1;padding:8px;gap:2px;border-style:solid"><div class="nm" style="font-size:14px">Pay, then claim</div><div class="mt" style="font-size:11.5px">no direct billing</div></div>
+</div>
+</div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">In traffic</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">55 min</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">40 min</div><div style="flex:1;padding:9px 8px;font-size:14px">80 min</div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Baby intensive care</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes · 2B</div><div style="flex:1;padding:9px 8px;font-size:13px;color:#8b8577;border-right:1px solid #ddd8cc;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:9px 8px;font-size:14px">No</div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Open at 2am</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:14px">Yes</div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Husband in the room</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:13px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Baby stays with you</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:14px;border-right:1px solid #ddd8cc">Yes</div><div style="flex:1;padding:9px 8px;font-size:14px">Yes</div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Normal birth</div><div style="flex:1;padding:9px 8px;border-right:1px solid #ddd8cc"><span class="mny">Rp•••••</span></div><div style="flex:1;padding:9px 8px;font-size:13px;color:#8b8577;border-right:1px solid #ddd8cc;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:9px 8px"><span class="mny">Rp•••••</span></div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Caesar</div><div style="flex:1;padding:9px 8px;border-right:1px solid #ddd8cc"><span class="mny">Rp•••••</span></div><div style="flex:1;padding:9px 8px;font-size:13px;color:#8b8577;border-right:1px solid #ddd8cc;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:9px 8px"><span class="mny">Rp•••••</span> <span class="chip q" style="font-size:10px">asked 4 months ago</span></div></div>
+<div style="display:flex;border-bottom:1px solid #e6e2d8"><div style="flex:0 0 96px;padding:9px 10px;font-size:13px;color:#514c41;border-right:1px solid #ddd8cc">Deposit on arrival</div><div style="flex:1;padding:9px 8px;border-right:1px solid #ddd8cc"><span class="mny">Rp•••••</span></div><div style="flex:1;padding:9px 8px;font-size:13px;color:#8b8577;border-right:1px solid #ddd8cc;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:9px 8px"><span class="mny">Rp•••••</span></div></div>
+<div style="padding:11px 12px;display:flex;gap:8px;align-items:center"><span class="chip q">6 more rows</span><span class="mt" style="font-size:12.5px">the ones nobody has filled in for any place are hidden</span></div>
+</div>
+<div class="bb"><div class="btn pri">Pick RS Bunda</div><div class="btn" style="flex:0 0 96px">Rule one out</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>Answer to §15.3.</b> Three columns fit on 390pt if the label column is short and the values are short. So the design work is <em>editing the attributes</em>, not scrolling sideways: 10 rows, ordered by how much they change the decision, everything else behind “6 more rows”.</li>
+<li>The insurance answer is lifted out of the table into a full-width band at the top — <b>it is the one fact that can cause financial harm</b>, so it never competes with a row of numbers.</li>
+<li>Blank cells are hatched and say <em>not filled in</em>. A hatched cell can never be misread as “no” or “zero”, which a dash or an empty box can.</li>
+<li>Stale prices carry “asked 4 months ago” inline (over 60 days). The flag sits on the value, not in a legend.</li>
+<li>A fourth hospital scrolls the column strip horizontally; the label column is sticky. Rows blank for <b>every</b> place are dropped entirely — comparing nothing against nothing is noise.</li>
+<li>The primary action is the decision, in the thumb zone, naming the place: “Pick RS Bunda”. One tap out of compare and into the document pack.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1i">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>S5 · Document pack — the 3am screen</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Not ready — the state that matters</p>
+<div class="ph">
+<div class="st"><span>3:04</span><span>no signal</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Papers for the hospital</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:15px;gap:6px;align-items:center;text-align:center;border-width:2.5px">
+<div class="ttl" style="font-size:25px">Not ready yet</div>
+<div class="mt" style="font-size:15px">2 things missing out of 8. RS Bunda needs all of them.</div>
+</div>
+<div class="sec">Missing</div>
+<div class="row" style="align-items:flex-start">
+<div class="box th" style="border-style:dashed">no<br>photo</div>
+<div class="gw"><div class="nm">Kartu Keluarga</div><div class="mt">Need 3 copies · none made</div><div class="mt">No photo of it yet</div></div>
+<span class="mt">›</span>
+</div>
+<div class="row" style="align-items:flex-start">
+<div class="box th" style="border-style:dashed">no<br>photo</div>
+<div class="gw"><div class="nm">Insurance card</div><div class="mt">Need 2 copies · 2 made</div><div class="mt">Runs out 30 Sep — before the due date</div></div>
+<span class="mt">›</span>
+</div>
+<div class="sec">Ready · 6</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">KTP suami</div><div class="mt">Have it · 3 of 3 copies</div></div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">KTP istri</div><div class="mt">Have it · 3 of 3 copies</div></div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Buku nikah</div><div class="mt">Have it · 2 of 2 copies</div></div></div>
+<div class="row" style="opacity:.75"><div class="mt">Buku KIA · Hasil USG · Hasil lab — all ready</div></div>
+</div>
+<div class="bb"><div class="btn pri">Photograph a paper</div></div>
+</div>
+<ul class="notes">
+<li>One unmistakable state at the top, then <b>only the missing things above the fold</b>. The six that are done are proof, not work.</li>
+<li>Copy counts are first-class — “Need 3 copies · none made” is the line that gets forgotten at 3am.</li>
+<li>Expiry is stated in relation to the due date, not as a bare date: <em>“before the due date”</em> does the arithmetic for her.</li>
+<li>Fully readable offline (C6) — this screen is cached whole, photos included.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">Ready · and the two other states</p>
+<div class="ph">
+<div class="st"><span>3:04</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Papers for the hospital</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:15px;gap:6px;align-items:center;text-align:center;border-width:2.5px;background:#1a1a1a;color:#fff">
+<div class="ttl" style="font-size:25px">All 8 ready</div>
+<div class="mt" style="font-size:15px;color:#e8e5dd">Everything RS Bunda asks for, copies made, photos taken.</div>
+</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">KTP suami</div><div class="mt">Have it · 3 of 3 copies</div></div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Kartu Keluarga</div><div class="mt">Have it · 3 of 3 copies</div></div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Insurance card</div><div class="mt">Have it · 2 of 2 · good until 30 Sep 2027</div></div></div>
+<div class="row" style="opacity:.75"><div class="mt">5 more, all ready ›</div></div>
+<div class="card q" style="padding:10px 11px;gap:3px">
+<div class="mt"><b>No hospital picked yet:</b> the pack shows the papers every hospital asks for, and a line saying the list may grow once one is picked.</div>
+</div>
+<div class="card q" style="padding:10px 11px;gap:3px">
+<div class="mt"><b>Hospital changed:</b> a banner says what changed — “RS Pondok also wants a referral letter” — rather than silently re-scoring the pack.</div>
+</div>
+</div>
+<div class="bb"><div class="btn">Photograph a paper</div><div class="btn" style="flex:0 0 118px">Show all</div></div>
+</div>
+<ul class="notes">
+<li>Ready is the one place a solid black card is worth it — <b>it should be legible from arm’s length, half awake.</b></li>
+<li>Merges with the packing list at week 36 (S17): papers and objects on one screen, one readiness sentence.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Wave 1 · S6–S7 — schedule</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1j">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>S6 · Schedule list — fixed dates vs windows</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Dates</h3><span class="chip q">+ Add</span></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:12px;gap:5px">
+<div class="mt">Tomorrow · Wed 15 Aug</div>
+<div class="ttl">Check-up</div>
+<div class="mt">10:00 · dr. Sari · RS Bunda · both of us going</div>
+<div class="mt">Bring buku KIA</div>
+</div>
+<div class="sec">Coming up</div>
+<div class="row"><div style="flex:0 0 54px;text-align:center"><div style="font-size:19px;line-height:1">21</div><div class="mt" style="font-size:11px">Aug</div></div><div class="gw"><div class="nm">Prenatal yoga</div><div class="mt">17:00 · Studio Senayan · Adinda</div></div></div>
+<div class="row"><div style="flex:0 0 54px;text-align:center"><div style="font-size:19px;line-height:1">02</div><div class="mt" style="font-size:11px">Sep</div></div><div class="gw"><div class="nm">Blood test</div><div class="mt">07:00 · Lab Prodia · don’t eat beforehand</div></div></div>
+<div class="row" style="align-items:stretch">
+<div style="flex:0 0 54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><div style="width:2px;height:12px;background:#1a1a1a"></div><div class="mt" style="font-size:10px;text-align:center;line-height:1.1">any day<br>between</div><div style="width:2px;height:12px;background:#1a1a1a"></div></div>
+<div class="gw"><div class="nm">Hospital tour</div><div class="mt">10 Sep — 24 Sep · RS Bunda · book a slot</div><div class="bar" style="height:6px;margin-top:3px"><i style="width:0"></i></div></div>
+</div>
+<div class="row" style="align-items:stretch">
+<div style="flex:0 0 54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><div style="width:2px;height:12px;background:#1a1a1a"></div><div class="mt" style="font-size:10px;text-align:center;line-height:1.1">any day<br>between</div><div style="width:2px;height:12px;background:#1a1a1a"></div></div>
+<div class="gw"><div class="nm">BCG and polio drops</div><div class="mt">Baby · first month after birth</div><div class="mt" style="font-size:11.5px">From the IDAI schedule · check with your paediatrician</div></div>
+</div>
+<div class="sec">Been and done</div>
+<div class="row"><div class="gw"><div class="nm">6 past dates</div><div class="mt">Two have scan photos</div></div><span class="mt">›</span></div>
+</div>
+<div class="tabs"><div>Today</div><div>List</div><div class="on">Dates</div><div>Money</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>Windows get their own shape:</b> a bracket instead of a date block, and the words “any day between”. A range must never look like a fixed appointment with a typo.</li>
+<li>Tomorrow’s event is promoted out of the list into a card — the list is scanned for “what’s next”, so the answer shouldn’t need scanning.</li>
+<li>Past is collapsed to one row (§S6) and says what’s in it, so it reads like an archive rather than a truncation.</li>
+<li>Seeded immunisations carry their source and a plain line deferring to the paediatrician. No reminders designed here — the chat assistant owns those.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1k">
+<div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>S7 · Appointment detail — before and after</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Before — what to bring</p>
+<div class="ph sm" style="min-height:600px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Check-up</h3></div>
+<div class="bd" style="gap:11px">
+<div class="ttl" style="font-size:24px">Tomorrow, 10:00</div>
+<div class="mt" style="font-size:15px">dr. Sari · RS Bunda Menteng · both of us going</div>
+<div class="card" style="padding:11px;gap:6px">
+<div class="sec" style="margin:0">Bring</div>
+<div class="row" style="padding:5px 0"><div class="gw"><div class="nm">Buku KIA</div></div><span class="chip q">tick</span></div>
+<div class="row" style="padding:5px 0"><div class="gw"><div class="nm">Insurance card</div></div><span class="chip q">tick</span></div>
+</div>
+<div class="card q" style="padding:11px;gap:4px"><div class="sec" style="margin:0">Before you go</div><div class="mt" style="font-size:14px">Don’t eat for 8 hours. Drink water.</div></div>
+<div class="kv"><b>Getting there</b><span>25 min · open in maps</span></div>
+<div class="kv"><b>Likely to cost</b><span><span class="mny">Rp•••••</span></span></div>
+</div>
+<div class="bb"><div class="btn pri">It’s done</div><div class="btn" style="flex:0 0 100px">Change it</div></div>
+</div>
+</div>
+<div class="stk">
+<p class="cap">After — what happened</p>
+<div class="ph sm" style="min-height:600px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Check-up</h3><span class="chip k">Done</span></div>
+<div class="bd" style="gap:11px">
+<div class="ttl" style="font-size:24px">Tue 12 Aug, 10:00</div>
+<div class="mt" style="font-size:15px">dr. Sari · RS Bunda Menteng</div>
+<div class="sec">Scan photos</div>
+<div style="display:flex;gap:8px"><div class="box" style="width:96px;height:120px">scan</div><div class="box" style="width:96px;height:120px">scan</div><div class="box" style="width:96px;height:120px;border-style:dashed">+ add</div></div>
+<div class="sec">Notes</div>
+<div class="card q" style="padding:11px"><div class="mt" style="font-size:14px">Growth on track, 2.1 kg. Next check-up in two weeks. Iron tablets.</div></div>
+<div class="kv"><b>Cost</b><span><span class="mny">Rp•••••</span></span></div>
+</div>
+<div class="bb"><div class="btn pri">Add a photo</div><div class="btn" style="flex:0 0 104px">Add a note</div></div>
+</div>
+<ul class="notes" style="max-width:340px"><li>Same screen, two halves swapped by the date — <b>never a tab she has to choose.</b></li><li>Scan photos are the thing she comes back for, so after the event they sit above the notes.</li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="dv-grp">Wave 2 · S8 — the checklist, two ways to survive 500 items</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1l">
+<div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>S8-A · Opens on the age band you’re in</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>The list</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:11px">
+<div style="display:flex;align-items:baseline;gap:8px"><div class="ttl">Hospital bag</div><span class="mt" style="margin-left:auto">4 of 11</span></div>
+<div class="bar"><i style="width:36%"></i></div>
+<div class="mt">Wanted by 15 Sep · <span style="text-decoration:underline">what age ›</span></div>
+<div class="row"><div class="gw"><div class="nm">Popok newborn</div><div class="mt">4 of 12 · could be a gift</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Pembalut bersalin</div><div class="mt">0 of 2 packs</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Botol susu</div><div class="mt">6 of 6</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Waslap</div><div class="mt">10 of 6</div></div><span class="chip">More than enough</span></div>
+<div class="row"><div class="gw"><div class="nm">Korset</div><div class="mt">1 of 1</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Baju bayi lengan panjang newborn size</div><div class="mt">2 of 8 · could be a gift</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Bedong instan</div><div class="mt">0 of 4</div></div><span class="chip">Still need this</span></div>
+<div class="row" style="border-bottom:0;padding-top:14px"><div class="btn gh sm" style="flex:1">Show the other 106 things</div></div>
+</div>
+<div class="bb"><div class="btn pri">Find a thing</div><div class="btn" style="flex:0 0 104px">Narrow it</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>Answer to §15.4.</b> The list never opens on 500 items, so it never needs a filter bar: it opens on <b>the one band you are in</b>, which is 11 rows. Everything else is one deliberate tap away.</li>
+<li>Three facts per row and nothing else (§S8): name, how many we have of how many we need, one word. Gift-eligible is a phrase in the meta line, not a badge column.</li>
+<li>Search is a <b>bottom-third primary action</b>, not a magnifier in the top corner she can’t reach. “Narrow it” opens a sheet — one entry point, never a permanent bar.</li>
+<li>“More than enough” replaces the worst word in the app. Note it reads as good news at 10 of 6.</li>
+<li>Long names wrap to two lines and the row grows. The word chip never shrinks or truncates.</li>
+<li>Empty states differ in words: <em>nothing here yet</em> · <em>nothing matches “botol”</em> · <em>all 11 done</em>.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1m">
+<div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>S8-B · Search is the list</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Landing — one answer, one field</p>
+<div class="ph" style="min-height:700px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><h3>The list</h3></div>
+<div class="bd" style="gap:11px">
+<div class="card" style="padding:12px;gap:4px"><div class="mt">Right now</div><div class="ttl">7 things still needed for the hospital bag</div><div class="btn pri sm" style="margin-top:6px">See those 7</div></div>
+<div class="sec">Or jump to</div>
+<div class="row"><div class="gw"><div class="nm">Everything for 0–3 months</div><div class="mt">31 things · 12 still needed</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Things family could give</div><div class="mt">65 things</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">All 117 things</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Don’t need any more</div><div class="mt">4 things, kept for later</div></div><span class="mt">›</span></div>
+</div>
+<div class="bb"><div class="btn pri" style="min-height:52px">Type what you’re after</div></div>
+</div>
+<ul class="notes" style="max-width:340px"><li>Scales past thousands without changing shape, because the landing is <b>an answer plus a search field</b> rather than a list at all.</li><li>Riskier: she may not know the word to type, and browsing costs an extra tap every time.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">Typing — mixed-language matching</p>
+<div class="ph" style="min-height:700px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><div class="card q" style="flex:1;padding:8px 11px;border-radius:9px"><div class="nm" style="font-size:15px">botol|</div></div></div>
+<div class="bd" style="gap:2px">
+<div class="mt">5 things match “botol”</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Botol susu</div><div class="mt">6 of 6 · Nursing &amp; Feeding</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Sikat botol</div><div class="mt">0 of 1 · Nursing &amp; Feeding</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Sterilizer botol</div><div class="mt">1 of 1</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Botol air minum ibu</div><div class="mt">1 of 1</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Penjepit botol</div><div class="mt">0 of 1 · could be a gift</div></div><span class="chip">Still need this</span></div>
+<div class="card q" style="margin-top:10px;padding:10px"><div class="mt">Nothing here? <span style="text-decoration:underline">Add “botol” as a new thing</span></div></div>
+</div>
+<div class="bb" style="background:#eceae3"><div class="mt" style="font-size:12px">keyboard</div></div>
+</div>
+<ul class="notes" style="max-width:340px"><li>Photos appear in results and not in the list — <b>here she is identifying, there she is scanning.</b></li><li>Matching has to cover English and Indonesian names plus synonyms, since the data is mixed and the interface is not (§16). “bottle” must find <em>Botol susu</em>.</li><li>“Nothing matches” always offers the way onward: add it.</li></ul>
+</div>
+</div>
+</div>
+<ul class="notes" style="max-width:760px"><li><b>My recommendation:</b> ship <a class="dv-oid" href="#1l">1l</a>, and steal the jump-to block from <a class="dv-oid" href="#1m">1m</a> as what “Show the other 106 things” opens. A band-scoped list is the right default because it answers before asking; a search-first landing asks her to have a word in mind, which at 3am she won’t.</li></ul>
+</div>
+</div>
+
+<div class="dv-grp">Wave 2 · S9–S11 — items, and the three-second purchase</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1n">
+<div class="dv-olabel"><a class="dv-oid" href="#1n">1n</a>S9 · Item detail — where the three levels disappear</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Her density (the default for everyone)</p>
+<div class="ph" style="min-height:840px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Botol susu</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:12px">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div class="box" style="width:104px;height:104px;flex:none">photo</div>
+<div class="gw" style="gap:5px"><div class="ttl">4 of 6</div><div class="mt">Nursing &amp; Feeding · hospital bag · could be a gift</div><span class="chip">Still need this</span></div>
+</div>
+<div class="sec">What we have</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Pigeon · Wide Neck PPSU 240ml</div><div class="mt">4 of them · Tokopedia · 2 Aug · <span class="mny">Rp•••••</span></div></div></div>
+<div class="sec">Ones we’re looking at</div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Dr. Brown’s · Natural Flow</div><div class="mt">Mothercare · <span class="mny">Rp•••••</span></div></div><span class="chip">Looking at it</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Philips Avent · Natural Response</div><div class="mt">Shopee</div></div><span class="chip q">Ruled out</span></div>
+<div class="sec">Videos and reviews</div>
+<div style="display:flex;gap:9px">
+<div class="stk" style="gap:4px;width:112px"><div class="box" style="height:132px">tiktok<br>thumbnail</div><div class="mt" style="font-size:11.5px;line-height:1.25">Botol PPSU vs kaca — @mombabyid</div></div>
+<div class="stk" style="gap:4px;width:112px"><div class="box" style="height:132px">youtube<br>thumbnail</div><div class="mt" style="font-size:11.5px;line-height:1.25">How to sterilise properly</div></div>
+<div class="stk" style="gap:4px;width:112px"><div class="box" style="height:132px;border-style:dashed">no preview</div><div class="mt" style="font-size:11.5px;line-height:1.25">Blog: wide neck round-up</div></div>
+</div>
+<div class="mt" style="font-size:12.5px">Reviews · How to use it · Where to buy</div>
+<div class="sec">What it’s made of</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">PPSU</span><span class="chip">Silicone teat</span><span class="chip q">+ add</span></div>
+<div class="sec">Notes</div>
+<div class="card q" style="padding:11px"><div class="mt" style="font-size:14px">Wide neck only — the narrow ones don’t fit the steriliser.</div></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add</div><div class="btn" style="flex:0 0 104px">Change this</div></div>
+</div>
+<ul class="notes">
+<li><b>Answer to §15.2.</b> The two lists stay visible but are titled in her words — <em>What we have</em>, <em>Ones we’re looking at</em> — and she is never asked to classify anything. <b>One “+ Add” button; the branch is a question, not a concept.</b></li>
+<li>Nothing on the screen is called an option or a purchase. The difference is demonstrated by the sections rather than taught.</li>
+<li>Ruled-out entries stay, dimmed with a dashed chip. His comparison work is not deleted to simplify her screen — it is <em>quieter</em>.</li>
+<li>Links are cards with thumbnail, title, platform — no inline players. Missing preview degrades to a dashed card that still opens.</li>
+<li>Materials are chips, optional, only prompted for clothing, feeding, toiletries, bath. “Commonly irritating” would appear as a plain word in the chip row, never an alert colour or icon.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">The Add question · and his density, in place</p>
+<div class="ph sm" style="min-height:300px">
+<div class="hd"><h3 style="flex:1">Add to Botol susu</h3><span class="bk">✕</span></div>
+<div class="bd" style="gap:12px;justify-content:center">
+<div class="ttl" style="text-align:center">Already got it, or still looking?</div>
+<div class="btn pri" style="min-height:60px;font-size:18px">Already got it</div>
+<div class="btn" style="min-height:60px;font-size:18px">Still looking</div>
+</div>
+</div>
+<ul class="notes" style="max-width:340px"><li>One decision per screen (§4.5), two words each, both in the thumb zone. <b>Keep it — I couldn’t improve on it.</b> The only change: it is a sheet over the item, so she can see what she is adding to.</li></ul>
+<div class="ph sm" style="min-height:430px;margin-top:6px">
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Botol susu · the detail</h3><span class="chip k">money shown</span></div>
+<div class="bd" style="gap:8px;padding-top:10px">
+<div class="sec">Ones we’re looking at</div>
+<div style="display:flex;gap:0;font-size:12px;color:#8b8577;border-bottom:1.5px solid #1a1a1a;padding-bottom:5px"><div style="flex:1">Name</div><div style="flex:0 0 86px">Rough price</div><div style="flex:0 0 74px">Where</div></div>
+<div style="display:flex;font-size:13px;padding:7px 0;border-bottom:1px solid #e6e2d8"><div style="flex:1">Pigeon Wide Neck PPSU</div><div style="flex:0 0 86px" class="mny">Rp180.000</div><div style="flex:0 0 74px">Tokopedia</div></div>
+<div style="display:flex;font-size:13px;padding:7px 0;border-bottom:1px solid #e6e2d8"><div style="flex:1">Dr. Brown’s Natural Flow</div><div style="flex:0 0 86px" class="mny">Rp245.000</div><div style="flex:0 0 74px">Mothercare</div></div>
+<div style="display:flex;font-size:13px;padding:7px 0;border-bottom:1px solid #e6e2d8;opacity:.6"><div style="flex:1">Philips Avent</div><div style="flex:0 0 86px" class="mny">Rp310.000</div><div style="flex:0 0 74px">Shopee</div></div>
+<div class="sec" style="margin-top:6px">What we spent</div>
+<div style="display:flex;font-size:13px;padding:7px 0;border-bottom:1px solid #e6e2d8"><div style="flex:1">Pigeon · 4 of them · 2 Aug</div><div style="flex:0 0 86px" class="mny">Rp720.000</div><div style="flex:0 0 74px">Tokopedia</div></div>
+<div class="mt" style="margin-top:6px">Spent on this so far: <span class="mny">Rp720.000</span> · rough price for the 2 still needed: <span class="mny">Rp360.000</span></div>
+</div>
+<div class="bb"><div class="btn">Add a candidate</div><div class="btn" style="flex:0 0 96px">Edit</div></div>
+</div>
+<ul class="notes" style="max-width:340px"><li><b>This is the layer, not a separate app.</b> Same URL plus “the detail”: a comparison table with rough prices for his side of §15.2, reached from her screen by one link and from his Money tab directly.</li><li>Only one price per row here — the decoy <em>actual price</em> on candidates comes off the form entirely (Part IV §C).</li><li>Money shown is a per-session toggle, off by default for both accounts (C4).</li></ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1o">
+<div class="dv-olabel"><a class="dv-oid" href="#1o">1o</a>S10 · Add or change a thing</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">✕</span><h3 style="flex:1">A new thing we need</h3></div>
+<div class="bd" style="gap:14px">
+<div class="stk" style="gap:5px"><div class="mt">What is it?</div><div class="card q" style="padding:12px"><div class="nm" style="color:#a8a296">Bedong instan</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">How many do we need?</div><div style="display:flex;gap:9px;align-items:center"><div class="btn" style="flex:0 0 56px;min-height:52px;font-size:24px">−</div><div class="card" style="flex:1;min-height:52px;align-items:center;justify-content:center"><div class="ttl">4</div></div><div class="btn" style="flex:0 0 56px;min-height:52px;font-size:24px">+</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">What sort of thing?</div><div class="card q" style="padding:12px"><div class="nm">Clothing</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">What age is it for?</div><div class="card q" style="padding:12px"><div class="nm">Hospital bag</div></div></div>
+<div class="stk" style="gap:5px"><div class="mt">Could family give this as a gift?</div><div style="display:flex;gap:9px"><div class="btn" style="min-height:48px">Yes</div><div class="btn pri" style="min-height:48px">No</div></div></div>
+<div class="card q" style="padding:11px;gap:7px">
+<div class="mt"><b>Everything below is optional.</b></div>
+<div class="mt">How important · photos · brands and shops to try · what it’s made of · notes</div>
+</div>
+</div>
+<div class="bb"><div class="btn pri">Save it</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Fields are questions in her words. “What age is it for?” replaces the banned word; “What sort of thing?” replaces category jargon.</li>
+<li>Only four questions are above the optional divider — <b>a thing can exist with a name and a number.</b></li>
+<li>Materials only appear in the optional block for clothing, feeding, toiletries and bath. Never blocking, never prompted for the other five categories.</li>
+<li>“Don’t need any more” lives on the edit version of this screen as an ordinary action, not a destructive one behind a confirm.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1p">
+<div class="dv-olabel"><a class="dv-oid" href="#1p">1p</a>S11-A · Arrived from a chat link — the primary case</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Cold landing · item already known</p>
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><h3 style="flex:1">Add what we got</h3><span class="bk">✕</span></div>
+<div class="bd" style="gap:14px">
+<div style="display:flex;gap:11px;align-items:center"><div class="box" style="width:56px;height:56px;flex:none">photo</div><div class="gw"><div class="ttl">Popok newborn</div><div class="mt">4 of 12 so far · <span style="text-decoration:underline">not this?</span></div></div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">How many did you get?</div><div style="display:flex;gap:9px;align-items:center"><div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px">−</div><div class="card" style="flex:1;min-height:60px;align-items:center;justify-content:center"><div class="big" style="font-size:30px">2</div></div><div class="btn" style="flex:0 0 64px;min-height:60px;font-size:26px">+</div></div></div>
+<div class="stk" style="gap:6px"><div class="mt" style="font-size:15px">What did it cost? <span style="color:#a8a296">— you can skip this</span></div><div class="card q" style="padding:14px 12px"><div class="nm" style="color:#a8a296">Rp</div></div></div>
+<div class="card q" style="padding:11px"><div class="mt">Everything else — where from, brand, photos — <span style="text-decoration:underline">add later if you want</span></div></div>
+</div>
+<div class="bb"><div class="btn pri" style="min-height:58px;font-size:19px">Save it</div></div>
+</div>
+<ul class="notes">
+<li><b>Two taps and a save.</b> Land, tap +, tap Save — three seconds, one hand, thumb never leaves the bottom third. Price is optional and cannot block the save.</li>
+<li>No back history, so the header has <b>✕ not ‹</b> — and “not this?” is the escape hatch if the link resolved to the wrong thing.</li>
+<li>The count starts at 1, not 0, because the commonest answer is “I got one”.</li>
+<li>Money hidden doesn’t affect this screen: <b>she can enter a price she is not shown back.</b></li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">Saved · where a cold landing goes next</p>
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><h3>Today</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:13px;gap:7px;border-width:2px">
+<div class="ttl" style="font-size:21px">Got it — 2 more nappies.</div>
+<div class="mt" style="font-size:15px">6 of 12 now.</div>
+<div style="display:flex;gap:9px"><div class="btn sm" style="flex:0 0 110px">Undo</div><div class="btn sm gh">Add another</div></div>
+</div>
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span></div>
+<div class="sec">Needs doing</div>
+<div class="card q"><div class="nm">Pick a hospital</div><div class="mt">3 on the shortlist</div></div>
+<div class="card q"><div class="nm">Check-up tomorrow 10:00</div></div>
+</div>
+<div class="bb"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 118px">Find a thing</div></div>
+</div>
+<ul class="notes">
+<li>Saving from a cold link lands on <b>Today</b> — the one screen that makes sense with no history — with the confirmation at the top, not a toast that vanishes.</li>
+<li><b>Undo sits in the confirmation</b>, where she is already looking, for the whole 15-minute window.</li>
+<li>Offline variant: same card, reading “Saved on your phone. It’ll sync when you have signal.”</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1q">
+<div class="dv-olabel"><a class="dv-oid" href="#1q">1q</a>S11-B · One-tap variant — no screen at all</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">From the Today card</p>
+<div class="ph sm" style="min-height:430px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><h3>Today</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="opacity:.35"><div class="nm">Get 8 more newborn nappies</div><div class="mt">Hospital bag · 15 Sep</div></div>
+<div class="card" style="opacity:.35"><div class="nm">Pick a hospital</div></div>
+</div>
+<div class="card" style="margin:0;border-radius:16px 16px 0 0;border-width:2px 2px 0;padding:16px 14px;gap:13px">
+<div style="display:flex;gap:10px;align-items:center"><div class="box" style="width:48px;height:48px;flex:none">photo</div><div class="gw"><div class="nm" style="font-size:18px">Popok newborn</div><div class="mt">4 of 12</div></div><span class="bk">✕</span></div>
+<div style="display:flex;gap:8px"><div class="btn pri" style="min-height:56px;font-size:20px">1</div><div class="btn" style="min-height:56px;font-size:20px">2</div><div class="btn" style="min-height:56px;font-size:20px">3</div><div class="btn" style="min-height:56px;font-size:16px">more</div></div>
+<div class="btn gh sm">Add the price and the shop too</div>
+</div>
+</div>
+<ul class="notes" style="max-width:340px"><li>The sheet <b>is</b> the form: tapping a number saves and closes. One tap total, ~1.5 seconds.</li><li>Only for the reached-with-item-known case, and only for counts of 1–3, which covers most of what she records.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">Trade-off</p>
+<div class="prose" style="max-width:330px;font-size:13.5px">
+<h4>Where I’d land</h4>
+<p><a class="dv-oid" href="#1p">1p</a> as the deep-link screen, <a class="dv-oid" href="#1q">1q</a> as the in-app sheet from a Today card. They are the same action at two levels of commitment, and the URL decides which you get.</p>
+<p><em>The risk with <a class="dv-oid" href="#1q">1q</a>:</em> a save with no confirmation step is a mis-tap away from wrong data, and she is half asleep. So the sheet closes into the same <b>confirmation-with-Undo card</b> as <a class="dv-oid" href="#1p">1p</a> — the safety is in the undo, not in an “are you sure”.</p>
+<p>Both refuse to ask for a shop, a brand or a photo. Every one of those is a decision she may not have an answer to, and per §2 that is where she abandons.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="dv-grp">Wave 2 · S12–S15 — his screen, the registry, and getting in</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1r">
+<div class="dv-olabel"><a class="dv-oid" href="#1r">1r</a>S12 · Money — his landing, scoped to the band</div>
+<div class="dv-card">
+<div class="ph">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd" style="justify-content:space-between"><h3>Money</h3><span class="chip q">show money</span></div>
+<div class="bd" style="gap:12px">
+<div style="display:flex;align-items:baseline;gap:9px"><span class="big">61</span><span style="font-size:17px">days to go</span></div>
+<div class="card" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><div class="nm" style="font-size:17px">Hospital bag</div><span class="chip q">what age ›</span></div>
+<div class="bar"><i style="width:36%"></i></div>
+<div class="mt">4 of 11 things · 36%</div>
+<div style="display:flex;justify-content:space-between"><span class="mt">Spent</span><span class="mny">Rp•••••</span></div>
+<div style="display:flex;justify-content:space-between"><span class="mt">Still to come, roughly</span><span class="mny">Rp•••••</span></div>
+</div>
+<div class="sec">By sort of thing</div>
+<div class="row"><div class="gw"><div class="nm">Nursing &amp; Feeding</div><div class="bar" style="height:7px;margin-top:4px"><i style="width:72%"></i></div></div><span class="mny" style="flex:0 0 78px;text-align:right">Rp•••••</span></div>
+<div class="row"><div class="gw"><div class="nm">Clothing</div><div class="bar" style="height:7px;margin-top:4px"><i style="width:25%"></i></div></div><span class="mny" style="flex:0 0 78px;text-align:right">Rp•••••</span></div>
+<div class="row"><div class="gw"><div class="nm">For Mom</div><div class="bar" style="height:7px;margin-top:4px"><i style="width:50%"></i></div></div><span class="mny" style="flex:0 0 78px;text-align:right">Rp•••••</span></div>
+<div class="row"><div class="gw"><div class="mt">6 more sorts ›</div></div></div>
+<div class="sec">How important</div>
+<div class="row"><div class="gw"><div class="nm">Essential</div><div class="mt">28 of 34 got</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Recommended</div><div class="mt">9 of 41 got</div></div><span class="mt">›</span></div>
+<div class="row" style="border-bottom:0;padding-top:12px"><div class="btn gh sm" style="flex:1">All 117 things, all ages</div></div>
+</div>
+<div class="tabs"><div>Today</div><div>List</div><div>Dates</div><div class="on">Money</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Light rework only. Two changes: <b>percentages scope to the current band</b> by default with an explicit way out to all-time, and every amount obeys the hidden default.</li>
+<li>Notice the bars still work with money hidden — <b>they measure things, not rupiah</b>, which is what C4 demands of every layout.</li>
+<li>Same four tabs as her account. He simply lands here; she lands on Today. That is the whole of shape B.</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1s">
+<div class="dv-olabel"><a class="dv-oid" href="#1s">1s</a>S13 · Gift registry — read only</div>
+<div class="dv-card">
+<div class="ph" style="min-height:600px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Things family could give</h3></div>
+<div class="bd" style="gap:11px">
+<div class="card q" style="padding:11px"><div class="mt" style="font-size:14px">65 things we’d happily be given. Only people you’ve let in can see this.</div></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Popok newborn</div><div class="mt">4 of 12 · Nursing &amp; Feeding</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Bedong instan</div><div class="mt">0 of 4</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="box th">photo</div><div class="gw"><div class="nm">Waslap</div><div class="mt">10 of 6</div></div><span class="chip">More than enough</span></div>
+<div class="row" style="opacity:.6"><div class="box th">photo</div><div class="gw"><div class="nm">Botol susu</div><div class="mt">6 of 6</div></div><span class="chip k">Got it</span></div>
+<div class="mt" style="margin-top:6px">Sorted by what’s still needed. No prices shown to anyone.</div>
+</div>
+<div class="bb"><div class="btn">Share with family</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Minor pass. Vocabulary corrected, no prices at all (not even behind the toggle), sorted by need rather than by category.</li>
+<li>Read-only for guests; the share action is his. No public link (§7 non-goals).</li>
+</ul>
+</div>
+
+<div class="dv-opt" id="1t">
+<div class="dv-olabel"><a class="dv-oid" href="#1t">1t</a>S14 · Getting in — three states, each with a way out</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">Signed out</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="bd" style="justify-content:center;gap:14px;text-align:center">
+<div class="ttl">Newborn Prep</div>
+<div class="mt" style="font-size:15px">Private. Just for the two of you.</div>
+</div>
+<div class="bb" style="flex-direction:column"><div class="btn pri" style="min-height:52px">Sign in with Google</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>The deep-link case: after signing in she lands on <b>the screen the link pointed at</b>, not on Today.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">Signed in, waiting to be let in</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="bd" style="justify-content:center;gap:13px;text-align:center">
+<div class="ttl">You’re signed in as adinda@…</div>
+<div class="mt" style="font-size:15px">Someone in the household has to let you in. We’ve told them you’re waiting.</div>
+<div class="card q" style="padding:10px"><div class="mt">Asked 2 minutes ago</div></div>
+</div>
+<div class="bb" style="flex-direction:column;gap:8px"><div class="btn pri" style="min-height:52px">Ask again</div><div class="btn gh sm">Sign in as someone else</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Currently a dead end. Now it says <b>who has to act, that they were told, and when</b> — plus two ways out.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">No longer let in</p>
+<div class="ph sm" style="min-height:420px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="bd" style="justify-content:center;gap:13px;text-align:center">
+<div class="ttl">This account can’t open the app</div>
+<div class="mt" style="font-size:15px">Someone in the household turned off access for adinda@… on 2 Aug.</div>
+</div>
+<div class="bb" style="flex-direction:column;gap:8px"><div class="btn pri" style="min-height:52px">Ask to be let back in</div><div class="btn gh sm">Sign in as someone else</div></div>
+</div>
+<ul class="notes" style="max-width:300px"><li>Stated as a fact with a date, never as an accusation, and never as a bare error. <b>An access screen with no action is a dead end</b> — that is the actual bug here.</li></ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1u">
+<div class="dv-olabel"><a class="dv-oid" href="#1u">1u</a>S15 · Who can get in</div>
+<div class="dv-card">
+<div class="ph" style="min-height:560px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Who can get in</h3></div>
+<div class="bd" style="gap:11px">
+<div class="sec">Waiting · 1</div>
+<div class="card" style="gap:9px;padding:11px">
+<div class="gw"><div class="nm">ibu.sri@gmail.com</div><div class="mt">Asked 2 days ago</div></div>
+<div style="display:flex;gap:8px"><div class="btn pri sm">Let them in</div><div class="btn sm" style="flex:0 0 86px">Say no</div></div>
+</div>
+<div class="sec">In the household</div>
+<div class="row"><div class="gw"><div class="nm">adinda@…</div><div class="mt">Since 12 Jun · sees everything</div></div><span class="chip q">manage</span></div>
+<div class="row"><div class="gw"><div class="nm">you@…</div><div class="mt">Since 12 Jun · runs the household</div></div></div>
+<div class="sec">Turned off</div>
+<div class="row" style="opacity:.65"><div class="gw"><div class="nm">old.phone@…</div><div class="mt">Turned off 2 Aug</div></div><span class="chip q">let back in</span></div>
+</div>
+<div class="bb"><div class="btn">Invite someone</div></div>
+</div>
+</div>
+<ul class="notes">
+<li>Minor pass; the only structural note is that “manage” is where a <b>limited kind of access</b> would one day appear (a grandparent or nanny who can only mark things clean or dirty). Not designed, not blocked.</li>
+<li>“Waiting” is at the top because that is the only row that ever needs action.</li>
+</ul>
+</div>
+</div>
+
+<div class="dv-grp">Desktop · his screens only — S3, S4, S8, S12</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1v">
+<div class="dv-olabel"><a class="dv-oid" href="#1v">1v</a>The phone layout, stretched — not redesigned</div>
+<div class="dv-card" style="padding:20px">
+<div class="stk" style="gap:22px">
+<div class="stk" style="gap:8px">
+<p class="cap">S4 · Compare — the one screen desktop genuinely improves</p>
+<div class="wide">
+<div class="hd" style="padding:11px 16px"><h3 style="flex:1">Compare · where to give birth</h3><span class="chip k">money shown</span><span class="chip q">6 hidden rows</span></div>
+<div style="display:flex;padding:12px 16px;gap:12px;border-bottom:1px solid #e6e2d8;background:#faf9f6;align-items:stretch">
+<div style="flex:0 0 150px;font-size:13px;color:#8b8577;display:flex;align-items:center">Does insurance cover the birth</div>
+<div class="card q" style="flex:1;padding:9px;border-style:solid;gap:2px"><div class="nm" style="font-size:14px">Covered</div><div class="mt" style="font-size:12px">waiting period met 3 Jun</div></div>
+<div class="card q" style="flex:1;padding:9px;gap:2px"><div class="nm" style="font-size:14px">Not filled in</div><div class="mt" style="font-size:12px">insurer unknown</div></div>
+<div class="card q" style="flex:1;padding:9px;border-style:solid;gap:2px"><div class="nm" style="font-size:14px">Pay, then claim</div><div class="mt" style="font-size:12px">no direct billing</div></div>
+<div class="card q" style="flex:1;padding:9px;border-style:solid;gap:2px"><div class="nm" style="font-size:14px">Covered</div><div class="mt" style="font-size:12px">caesar limit lower</div></div>
+</div>
+<div style="display:flex;padding:0 16px"><div style="flex:0 0 150px"></div><div style="flex:1;padding:9px 8px;font-size:15px;border-right:1px solid #ece8de">RS Bunda <span class="chip k" style="font-size:10px">Picked</span></div><div style="flex:1;padding:9px 8px;font-size:15px;border-right:1px solid #ece8de">RSIA Tambak</div><div style="flex:1;padding:9px 8px;font-size:15px;border-right:1px solid #ece8de">RS Pondok</div><div style="flex:1;padding:9px 8px;font-size:15px">RS Hermina</div></div>
+<div style="display:flex;padding:0 16px;border-top:1.5px solid #1a1a1a"><div style="flex:0 0 150px;padding:8px 0;font-size:13px;color:#514c41">In traffic</div><div style="flex:1;padding:8px;font-size:14px">55 min</div><div style="flex:1;padding:8px;font-size:14px">40 min</div><div style="flex:1;padding:8px;font-size:14px">80 min</div><div style="flex:1;padding:8px;font-size:14px">35 min</div></div>
+<div style="display:flex;padding:0 16px;border-top:1px solid #e6e2d8"><div style="flex:0 0 150px;padding:8px 0;font-size:13px;color:#514c41">Baby intensive care</div><div style="flex:1;padding:8px;font-size:14px">Yes · 2B</div><div style="flex:1;padding:8px;font-size:13px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:8px;font-size:14px">No</div><div style="flex:1;padding:8px;font-size:14px">Yes · 2A</div></div>
+<div style="display:flex;padding:0 16px;border-top:1px solid #e6e2d8"><div style="flex:0 0 150px;padding:8px 0;font-size:13px;color:#514c41">Normal birth</div><div style="flex:1;padding:8px" class="mny">Rp32.000.000</div><div style="flex:1;padding:8px;font-size:13px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:8px"><span class="mny">Rp24.500.000</span> <span class="chip q" style="font-size:10px">4 months old</span></div><div style="flex:1;padding:8px" class="mny">Rp38.000.000</div></div>
+<div style="display:flex;padding:0 16px;border-top:1px solid #e6e2d8"><div style="flex:0 0 150px;padding:8px 0;font-size:13px;color:#514c41">Caesar</div><div style="flex:1;padding:8px" class="mny">Rp48.000.000</div><div style="flex:1;padding:8px;font-size:13px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:8px" class="mny">Rp39.000.000</div><div style="flex:1;padding:8px" class="mny">Rp55.000.000</div></div>
+<div style="display:flex;padding:0 16px;border-top:1px solid #e6e2d8"><div style="flex:0 0 150px;padding:8px 0;font-size:13px;color:#514c41">Deposit on arrival</div><div style="flex:1;padding:8px" class="mny">Rp10.000.000</div><div style="flex:1;padding:8px;font-size:13px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div><div style="flex:1;padding:8px" class="mny">Rp8.000.000</div><div style="flex:1;padding:8px" class="mny">Rp15.000.000</div></div>
+<div class="bb" style="justify-content:flex-end;background:#fff"><div class="btn" style="flex:0 0 150px">Rule one out</div><div class="btn pri" style="flex:0 0 170px">Pick RS Bunda</div></div>
+</div>
+<ul class="notes" style="max-width:1060px"><li>Four columns instead of three, six hidden rows still hidden, <b>identical row order and identical wording.</b> Desktop earns width, not a different information architecture — otherwise the two of them are looking at different apps while on the phone to a hospital.</li></ul>
+</div>
+<div class="pr">
+<div class="stk" style="gap:8px">
+<p class="cap">S8 · The list — a second column, same rows</p>
+<div class="wide" style="width:640px;min-height:300px">
+<div class="hd" style="padding:10px 14px"><h3 style="flex:1">The list</h3><span class="chip q">Narrow it</span><span class="chip q">show money</span></div>
+<div style="display:flex;flex:1">
+<div style="flex:0 0 176px;border-right:1px solid #e6e2d8;padding:12px;display:flex;flex-direction:column;gap:9px;font-size:14px">
+<div class="mt">What age</div>
+<div style="font-weight:400;text-decoration:underline">Hospital bag · 11</div>
+<div>Before the birth · 24</div>
+<div>0–3 months · 31</div>
+<div>3–6 months · 18</div>
+<div>6+ months · 33</div>
+<div class="mt" style="margin-top:8px">Things family could give · 65</div>
+<div class="mt">Don’t need any more · 4</div>
+</div>
+<div style="flex:1;padding:12px 14px">
+<div class="row"><div class="gw"><div class="nm">Popok newborn</div><div class="mt">4 of 12 · could be a gift</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Pembalut bersalin</div><div class="mt">0 of 2 packs</div></div><span class="chip">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Botol susu</div><div class="mt">6 of 6</div></div><span class="chip k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Waslap</div><div class="mt">10 of 6</div></div><span class="chip">More than enough</span></div>
+</div>
+</div>
+</div>
+<ul class="notes" style="max-width:640px"><li>The mobile “Narrow it” sheet becomes a persistent left column on desktop — <b>the one place a permanent filter surface is allowed</b>, because it is his screen and there is room for it without displacing the answer.</li></ul>
+</div>
+<div class="stk" style="gap:8px">
+<p class="cap">S3 · Hospital detail · S12 · Money</p>
+<div class="wide" style="width:380px;min-height:300px">
+<div class="hd" style="padding:10px 14px"><h3 style="flex:1">RS Bunda Menteng</h3></div>
+<div style="display:flex;flex:1">
+<div style="flex:0 0 120px;border-right:1px solid #e6e2d8;padding:11px;display:flex;flex-direction:column;gap:8px;font-size:13px"><div style="text-decoration:underline">Getting there</div><div>Medical</div><div>Money</div><div>Insurance</div><div>Policies</div><div>Our visit</div><div>Decision</div></div>
+<div style="flex:1;padding:11px 12px"><div class="card q" style="padding:9px;border-style:solid;margin-bottom:9px"><div class="nm" style="font-size:14px">Your insurance covers this birth.</div></div><div class="kv"><b>In traffic</b><span>55 min</span></div><div class="kv"><b>Normally</b><span>25 min</span></div><div class="kv"><b>Open at 2am</b><span>Yes</span></div></div>
+</div>
+</div>
+<ul class="notes" style="max-width:380px"><li>The seven collapsed groups become a jump list; all seven open at once. Nothing is added and nothing is renamed.</li><li>S12 Money follows the same rule: the three roll-ups sit side by side instead of stacked. <b>Breakpoint stays 880px</b> — no reason to move it.</li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Wave 3 · sketch level only — S16, S17, S18</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1w">
+<div class="dv-olabel"><a class="dv-oid" href="#1w">1w</a>Counters, packing, and the record for the doctor</div>
+<div class="dv-card" style="padding:18px">
+<div class="pr">
+<div class="stk">
+<p class="cap">S16 · Counters — three shapes for §15.5</p>
+<div class="ph sm" style="min-height:660px">
+<div class="st"><span>21:34</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Botol susu · 6</h3></div>
+<div class="bd" style="gap:14px">
+<div class="stk" style="gap:6px"><div class="mt"><b>a · steppers</b> — precise, two taps per bottle</div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">Clean</div></div><div style="display:flex;gap:8px;align-items:center"><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">−</div><div class="ttl" style="width:34px;text-align:center">4</div><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">+</div></div></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">Being used</div></div><div style="display:flex;gap:8px;align-items:center"><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">−</div><div class="ttl" style="width:34px;text-align:center">0</div><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">+</div></div></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">Dirty</div></div><div style="display:flex;gap:8px;align-items:center"><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">−</div><div class="ttl" style="width:34px;text-align:center">2</div><div class="btn" style="flex:0 0 48px;min-height:48px;font-size:22px">+</div></div></div>
+</div>
+<div class="stk" style="gap:6px"><div class="mt"><b>b · tap the pile</b> — six targets, tap to move one along</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<div class="box" style="width:52px;height:52px;border-style:solid">clean</div><div class="box" style="width:52px;height:52px;border-style:solid">clean</div><div class="box" style="width:52px;height:52px;border-style:solid">clean</div><div class="box" style="width:52px;height:52px;border-style:solid">clean</div><div class="box" style="width:52px;height:52px">dirty</div><div class="box" style="width:52px;height:52px">dirty</div>
+</div>
+<div class="mt" style="font-size:12px">Objects on screen, but she still never identifies one.</div>
+</div>
+<div class="stk" style="gap:6px"><div class="mt"><b>c · the whole-batch button</b> — one tap, no counting</div>
+<div class="card" style="padding:12px;gap:9px"><div class="nm" style="font-size:17px">4 clean · 2 dirty</div><div class="btn pri" style="min-height:54px;font-size:18px">Clean all 6</div><div style="display:flex;gap:8px"><div class="btn sm">Just used one</div><div class="btn sm">One’s dirty</div></div></div>
+</div>
+</div>
+</div>
+<ul class="notes" style="max-width:360px">
+<li><b>My answer to §15.5: c, with a inside it.</b> The thing she does at 21:30 is not arithmetic — it is “these are all dirty now”. So the default is a single whole-batch button, and the steppers are underneath for the odd correction.</li>
+<li>Steppers alone fail the half-asleep test: six taps to move three bottles, each one mis-tappable, with no undo target.</li>
+<li>Tapping the pile is charming and wrong — it puts individual objects on screen, which is exactly what Part V §2 says she should never have to think about.</li>
+<li>Consumables get four words, not a number: <b>Full · Half · Low · Empty</b>, as four buttons of equal weight.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">S17 · Packing — “not ready to pack”</p>
+<div class="ph sm" style="min-height:660px">
+<div class="st"><span>7:12</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Hospital bag</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card" style="padding:14px;gap:5px;align-items:center;text-align:center;border-width:2.5px"><div class="ttl">Not ready to pack</div><div class="mt" style="font-size:15px">2 lines waiting · 9 packed</div></div>
+<div class="sec">Waiting</div>
+<div class="row" style="align-items:flex-start"><div class="gw"><div class="nm">Botol susu — need 4</div><div class="mt">2 clean · 2 in the steriliser</div><div class="mt">Ready in about 20 minutes</div></div></div>
+<div class="row" style="align-items:flex-start"><div class="gw"><div class="nm">Kartu Keluarga — need 3 copies</div><div class="mt">No copies made yet</div></div></div>
+<div class="sec">Packed · 9</div>
+<div class="row"><div class="gw"><div class="nm">Bedong instan · 4</div></div><span class="chip k">In the bag</span></div>
+<div class="row"><div class="gw"><div class="nm">KTP suami · 3 copies</div></div><span class="chip k">In the bag</span></div>
+<div class="row" style="opacity:.7"><div class="mt">7 more in the bag ›</div></div>
+</div>
+<div class="bb"><div class="btn pri">Mark something packed</div></div>
+</div>
+<ul class="notes" style="max-width:360px"><li>Objects and papers on <b>one list with one readiness sentence</b> — the S5 pack merges in here at week 36 rather than living alongside it.</li><li>A blocked line always says why, and where predictable, when it clears.</li></ul>
+</div>
+<div class="stk">
+<p class="cap">S18 · Skin record — a record, not a finding</p>
+<div class="ph sm" style="min-height:660px">
+<div class="st"><span>9:41</span><span>▮ ▮ ▮</span></div>
+<div class="hd"><span class="bk">‹</span><h3 style="flex:1">Skin record</h3></div>
+<div class="bd" style="gap:12px">
+<div class="card q" style="padding:10px 11px"><div class="mt" style="font-size:13.5px">A dated record to show your paediatrician. This app doesn’t work out causes.</div></div>
+<div class="row" style="align-items:flex-start"><div class="box th">photo</div><div class="gw"><div class="nm">Tue 12 Aug · rash</div><div class="mt">Cheeks · mild</div><div class="mt">In use that day: baby wash, laundry detergent, 2 muslins</div></div></div>
+<div class="row" style="align-items:flex-start"><div class="box th">photo</div><div class="gw"><div class="nm">Fri 1 Aug · redness</div><div class="mt">Neck · mild</div><div class="mt">In use that day: baby wash, cotton bodysuits</div></div></div>
+<div class="card q" style="padding:11px;gap:5px"><div class="sec" style="margin:0">Seen in both records</div><div class="mt" style="font-size:14px">Fragrance — 2 times<br>Cotton — 2 times</div><div class="mt" style="font-size:12.5px">Counts only. Shown once there are 3 records or more.</div></div>
+<div class="btn gh sm">Print a dated summary</div>
+</div>
+<div class="bb"><div class="btn pri">Add what happened</div></div>
+</div>
+<ul class="notes" style="max-width:360px"><li>No severity score, no ranking, no “likely cause”, no colour. The counts block is deliberately dull and <b>hidden entirely below three records.</b></li><li>Exposures are suggested from what was in use that day and confirmed — nobody reconstructs them from memory.</li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Components and rationale</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1x">
+<div class="dv-olabel"><a class="dv-oid" href="#1x">1x</a>Shared components — 15, in situ</div>
+<div class="dv-card" style="padding:20px">
+<div class="pr" style="gap:26px">
+<div class="stk" style="gap:14px;width:330px">
+<div class="stk" style="gap:6px"><p class="cap">1 · item row</p><div class="card q" style="padding:8px 11px"><div class="row" style="border:0;padding:4px 0"><div class="gw"><div class="nm">Popok newborn</div><div class="mt">4 of 12 · could be a gift</div></div><span class="chip">Still need this</span></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">2 · action card</p><div class="card" style="padding:11px"><div class="nm">Get 8 more newborn nappies</div><div class="mt">Hospital bag · 15 Sep</div><div style="display:flex;gap:8px;margin-top:7px"><div class="btn pri sm">Add what we got</div><div class="btn sm" style="flex:0 0 76px">Later</div></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">3 · progress bar</p><div class="bar"><i style="width:36%"></i></div><div class="mt">4 of 11 · never a bare percentage</div></div>
+<div class="stk" style="gap:6px"><p class="cap">4 · word chip</p><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">Still need this</span><span class="chip k">Got it</span><span class="chip">More than enough</span><span class="chip q">Ruled out</span><span class="chip">Looking at it</span><span class="chip k">Picked this one</span></div></div>
+<div class="stk" style="gap:6px"><p class="cap">5 · counter row</p><div class="row" style="border:0"><div class="gw"><div class="nm">Dirty</div></div><div style="display:flex;gap:8px;align-items:center"><div class="btn" style="flex:0 0 44px;min-height:44px;font-size:20px">−</div><div class="ttl" style="width:30px;text-align:center">2</div><div class="btn" style="flex:0 0 44px;min-height:44px;font-size:20px">+</div></div></div></div>
+</div>
+<div class="stk" style="gap:14px;width:330px">
+<div class="stk" style="gap:6px"><p class="cap">6 · money value · two states</p><div style="display:flex;gap:12px;align-items:baseline"><span class="mny">Rp•••••</span><span class="chip q">hidden, the default</span></div><div style="display:flex;gap:12px;align-items:baseline"><span class="mny">Rp180.000</span><span class="chip q">shown</span></div><div class="mt">Both occupy the same width, so no layout moves when it flips.</div></div>
+<div class="stk" style="gap:6px"><p class="cap">7 · photo strip</p><div style="display:flex;gap:7px"><div class="box" style="width:56px;height:56px">photo</div><div class="box" style="width:56px;height:56px">photo</div><div class="box" style="width:56px;height:56px;border-style:dashed">+ add</div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">8 · link card</p><div style="display:flex;gap:8px"><div class="stk" style="gap:4px;width:96px"><div class="box" style="height:112px">tiktok</div><div class="mt" style="font-size:11px">Botol PPSU vs kaca</div></div><div class="stk" style="gap:4px;width:96px"><div class="box" style="height:112px;border-style:dashed">no preview</div><div class="mt" style="font-size:11px">Blog round-up</div></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">9 · paper row</p><div class="row" style="border:0;align-items:flex-start"><div class="box th" style="border-style:dashed">no<br>photo</div><div class="gw"><div class="nm">Kartu Keluarga</div><div class="mt">Need 3 copies · none made</div></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">10 · comparison column · with the blank cell</p><div style="display:flex;border:1px solid #ddd8cc"><div style="flex:1;padding:7px;font-size:13px;border-right:1px solid #ddd8cc">Yes · 2B</div><div style="flex:1;padding:7px;font-size:12.5px;color:#8b8577;background:repeating-linear-gradient(45deg,#f2f0ea 0 4px,#fafaf7 4px 8px)">not filled in</div></div></div>
+</div>
+<div class="stk" style="gap:14px;width:330px">
+<div class="stk" style="gap:6px"><p class="cap">11 · date and range</p><div style="display:flex;gap:16px"><div style="text-align:center;width:54px"><div style="font-size:19px;line-height:1">21</div><div class="mt" style="font-size:11px">Aug</div></div><div style="display:flex;gap:7px;align-items:center"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:2px;height:11px;background:#1a1a1a"></div><div class="mt" style="font-size:10px">any day<br>between</div><div style="width:2px;height:11px;background:#1a1a1a"></div></div><div class="mt">10 Sep — 24 Sep</div></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">12 · bottom action bar</p><div style="border:1.5px solid #1a1a1a;border-radius:9px;overflow:hidden"><div class="bb" style="margin:0;border-top:0"><div class="btn pri">+ Add what we got</div><div class="btn" style="flex:0 0 104px">Find</div></div></div><div class="mt">48pt minimum, one line of copy, always in the bottom third.</div></div>
+<div class="stk" style="gap:6px"><p class="cap">13 · empty state · three kinds</p><div class="card q" style="padding:10px;gap:6px"><div class="mt"><b>nothing yet</b> — Nothing on this list yet. Add the first thing.</div><div class="mt"><b>nothing matches</b> — Nothing matches “botol”. Add it as a new thing?</div><div class="mt"><b>all done</b> — All 11 done. Next lot due 15 Sep.</div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">14 · confirmation, with undo</p><div class="card" style="padding:11px"><div class="nm" style="font-size:17px">Got it — 2 more nappies.</div><div class="mt">6 of 12 now.</div><div style="display:flex;gap:8px;margin-top:7px"><div class="btn sm" style="flex:0 0 96px">Undo</div><div class="btn sm gh">Add another</div></div></div></div>
+<div class="stk" style="gap:6px"><p class="cap">15 · readiness banner</p><div class="card" style="padding:12px;align-items:center;text-align:center;border-width:2.5px"><div class="nm" style="font-size:18px">Not ready yet</div><div class="mt">2 of 8 missing</div></div></div>
+</div>
+</div>
+<ul class="notes" style="max-width:1030px"><li>All 14 asked for in §11, plus a <b>readiness banner</b> — it appears on the paper pack, the packing list and (post-birth) the steriliser, and it is the only component allowed to be loud.</li></ul>
+</div>
+</div>
+
+<div class="dv-opt" id="1y">
+<div class="dv-olabel"><a class="dv-oid" href="#1y">1y</a>Rationale, and where I’d push back</div>
+<div class="dv-card" style="padding:0">
+<div class="prose" style="max-width:720px;border:0;box-shadow:none">
+<h4>Decision #1 — B, with depth as a layer rather than a tab</h4>
+<p>You were right, but for a stronger reason than instinct. Principle §4.3 — <em>every screen is a landing page</em> — quietly settles the question: if a chat link can drop her on any URL, then every URL must work for her. Two surfaces (C) means some URLs only exist on his side, and the first link that dead-ends her is the moment the app stops being trustworthy. A “More” drawer (A) keeps one URL space but concedes that his features have nowhere to live, so they accumulate in the one place nobody designs.</p>
+<p>So: <b>one screen set, four tabs, and the landing tab follows the account.</b> Her tab 1 is Today; his is Money. The only thing that differs is where you arrive — see <a class="dv-oid" href="#1a">1a</a>.</p>
+<p>The addition I would make: <b>his detail is a layer on her screen, not a separate destination.</b> On the item screen this is literally one link — “the detail” — which opens the comparison table with rough prices (<a class="dv-oid" href="#1n">1n</a>, right). That satisfies §4.7 without duplicating a screen, and it means the two of them can talk about “the bottles screen” and mean the same thing.</p>
+
+<h5>Where each of the four problems in §3 is addressed</h5>
+<ul>
+<li><b>Three nested levels</b> → <a class="dv-oid" href="#1n">1n</a>. The two lists are titled in her words and she is never asked to classify. One Add button, one question, two words each.</li>
+<li><b>Filters before answers</b> → <a class="dv-oid" href="#1l">1l</a> and <a class="dv-oid" href="#1b">1b</a>. The list opens on the band she is in — 11 rows, not 117 — and Today has already chosen. Filtering exists behind “Narrow it”, one entry point, never a bar.</li>
+<li><b>No sense of today</b> → <a class="dv-oid" href="#1b">1b</a>, <a class="dv-oid" href="#1d">1d</a>, <a class="dv-oid" href="#1e">1e</a>. Including the empty and post-birth versions, because a screen that only works when there is work to do isn’t a home screen.</li>
+<li><b>Database words</b> → everywhere; the word chip in <a class="dv-oid" href="#1x">1x</a> is the whole vocabulary in one component. No banned word appears in any interface string in this file.</li>
+</ul>
+
+<h5>Three places I’d push back</h5>
+<ul>
+<li><b>“At most three cards” needs a fourth slot for facts.</b> An appointment tomorrow is not a task and can’t be dismissed, but it must be on Today. I’ve drawn it as a card without a “Later”, which technically makes four things on screen in the worst case. I think that’s correct and the rule should read “at most three things to <em>do</em>”.</li>
+<li><b>The Today progress bar is his metric, not hers.</b> It is the one widget on <a class="dv-oid" href="#1b">1b</a> that doesn’t change what she does in the next 24 hours. I’ve kept it because you asked for it and it is reassuring, but if anything gets cut in testing, cut this first — not a card.</li>
+<li><b>“Hospital bag” as a phase name will age badly.</b> Once bands are age-relative, one band is a bag and the rest are ages. That inconsistency will show up in every heading, every progress bar and every empty state. Worth naming the bands now, before three screens hardcode the mixture.</li>
+</ul>
+
+<h5>What I have not designed, deliberately</h5>
+<p>No notifications, no chat, no onboarding, no colour, no icon set, no limited caregiver access — though <a class="dv-oid" href="#1u">1u</a> leaves the seam where it goes. Wave 3 is sketch level only (<a class="dv-oid" href="#1w">1w</a>), and its counter answer is a recommendation to test, not a design to build.</p>
+
+<h5>Journey 3, as drawn</h5>
+<p>Open with nothing urgent (<a class="dv-oid" href="#1d">1d</a>) → “Find a thing”, bottom right → type “botol” (<a class="dv-oid" href="#1m">1m</a>, right) → item (<a class="dv-oid" href="#1n">1n</a>) → “+ Add” → “Already got it” → count and save (<a class="dv-oid" href="#1p">1p</a>) → confirmation with undo. Six taps, no filter, no decision she doesn’t have an answer to. Say the word and I’ll wire it clickable, plus journey 1 from the cold chat link.</p>
+</div>
+</div>
+</div>
+</div>
+
+<p class="dv-next">Try next: “commit to <a class="dv-oid" href="#1b">1b</a> and drop <a class="dv-oid" href="#1c">1c</a>” · “push <a class="dv-oid" href="#1h">1h</a> further, I’m not sold on the compare” · “wire journey 1, the chat deep link”</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { s1: 'land', n1: 2, t1: 0, s3: 'today', q: '', sel: null, n3: 1, t3: 0 };
+
+  items = [
+    { name: 'Botol susu', meta: '6 of 6 · Nursing & Feeding', chip: 'Got it', k: true, have: 6, need: 6 },
+    { name: 'Sikat botol', meta: '0 of 1 · Nursing & Feeding', chip: 'Still need this', k: false, have: 0, need: 1 },
+    { name: 'Sterilizer botol', meta: '1 of 1 · Nursing & Feeding', chip: 'Got it', k: true, have: 1, need: 1 },
+    { name: 'Botol air minum ibu', meta: '1 of 1 · For Mom', chip: 'Got it', k: true, have: 1, need: 1 },
+    { name: 'Penjepit botol', meta: '0 of 1 · could be a gift', chip: 'Still need this', k: false, have: 0, need: 1 },
+    { name: 'Popok newborn', meta: '4 of 12 · could be a gift', chip: 'Still need this', k: false, have: 4, need: 12 },
+    { name: 'Bedong instan', meta: '0 of 4 · Clothing', chip: 'Still need this', k: false, have: 0, need: 4 },
+    { name: 'Waslap', meta: '10 of 6 · Bath & Potty', chip: 'More than enough', k: false, have: 10, need: 6 },
+    { name: 'Pembalut bersalin', meta: '0 of 2 packs · For Mom', chip: 'Still need this', k: false, have: 0, need: 2 }
+  ];
+
+  syn = { bottle: 'botol', bottles: 'botol', nappy: 'popok', nappies: 'popok', diaper: 'popok',
+    diapers: 'popok', wipe: 'waslap', wipes: 'waslap', washcloth: 'waslap', pad: 'pembalut',
+    pads: 'pembalut', swaddle: 'bedong', brush: 'sikat', corset: 'korset' };
+
+  go1 = (s) => this.setState(st => ({ s1: s, t1: st.t1 + 1 }));
+  step1 = (d) => this.setState(st => ({ n1: Math.max(1, st.n1 + d), t1: st.t1 + 1 }));
+  reset1 = () => this.setState({ s1: 'land', n1: 2, t1: 0 });
+
+  go3 = (s) => this.setState(st => ({ s3: s, t3: st.t3 + 1 }));
+  step3 = (d) => this.setState(st => ({ n3: Math.max(1, st.n3 + d), t3: st.t3 + 1 }));
+  reset3 = () => this.setState({ s3: 'today', q: '', sel: null, n3: 1, t3: 0 });
+  type = (e) => this.setState({ q: e.target.value });
+
+  renderVals() {
+    const s = this.state;
+    const raw = s.q.trim().toLowerCase();
+    const needle = this.syn[raw] || raw;
+    const hits = raw ? this.items.filter(i => i.name.toLowerCase().includes(needle)) : [];
+    const sel = s.sel || this.items[0];
+    return {
+      j1_land: s.s1 === 'land',
+      j1_saved: s.s1 === 'saved',
+      n1: s.n1,
+      n1_total: 4 + s.n1,
+      t1: s.t1,
+      t1_label: s.t1 === 0 ? 'no taps yet' : s.t1 === 1 ? '1 tap' : s.t1 + ' taps',
+      dec1: () => this.step1(-1),
+      inc1: () => this.step1(1),
+      save1: () => this.go1('saved'),
+      again1: () => this.setState(st => ({ s1: 'land', n1: 1, t1: st.t1 + 1 })),
+      reset1: this.reset1,
+
+      j3_today: s.s3 === 'today',
+      j3_find: s.s3 === 'find',
+      j3_item: s.s3 === 'item',
+      j3_ask: s.s3 === 'ask',
+      j3_count: s.s3 === 'count',
+      j3_looking: s.s3 === 'looking',
+      j3_saved: s.s3 === 'saved',
+      q: s.q,
+      type: this.type,
+      typed: raw.length > 0,
+      untyped: raw.length === 0,
+      noHits: raw.length > 0 && hits.length === 0,
+      hitLabel: hits.length === 1 ? '1 thing matches “' + s.q + '”' : hits.length + ' things match “' + s.q + '”',
+      hits: hits.map(i => Object.assign({}, i, {
+        open: () => this.setState(st => ({ sel: i, s3: 'item', t3: st.t3 + 1 }))
+      })),
+      selName: sel.name,
+      selCount: sel.have + ' of ' + sel.need,
+      selChip: sel.chip,
+      selMeta: sel.meta,
+      n3: s.n3,
+      n3_total: (sel.have + s.n3) + ' of ' + sel.need,
+      n3_line: s.n3 === 1 ? '1 more ' + sel.name.toLowerCase() : s.n3 + ' more ' + sel.name.toLowerCase(),
+      t3_label: s.t3 === 0 ? 'no taps yet' : s.t3 === 1 ? '1 tap' : s.t3 + ' taps',
+      find3: () => this.go3('find'),
+      item3: () => this.go3('item'),
+      ask3: () => this.go3('ask'),
+      count3: () => this.go3('count'),
+      looking3: () => this.go3('looking'),
+      save3: () => this.go3('saved'),
+      back3: () => this.go3('item'),
+      dec3: () => this.step3(-1),
+      inc3: () => this.step3(1),
+      reset3: this.reset3
+    };
+  }
+}
+</script>
+</body>
+</html>

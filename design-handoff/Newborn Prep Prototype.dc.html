@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7f9;--sf:#ffffff;--sf2:#f0f2f5;--ink:#12161c;--ink2:#5a6472;--ink3:#8b95a3;--ln:#e2e6ec;--ln2:#cdd4dd;--ac:#1f5fa8;--acs:#e9f0f8;--acl:#1f5fa8}
+[data-t="d"]{--bg:#0d1117;--sf:#161c24;--sf2:#1e2630;--ink:#eef1f5;--ink2:#9aa5b3;--ink3:#6d7887;--ln:#252e39;--ln2:#33404e;--ac:#3d6491;--acs:#16253a;--acl:#7fa6d4}
+body{margin:0;background:#e7e9ec;font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1f5fa8;text-decoration:none}a:hover{color:#16497f}
+.wrap{display:flex;gap:34px;align-items:flex-start;padding:38px 42px;min-height:100vh;box-sizing:border-box}
+.ph{width:390px;height:844px;box-sizing:border-box;background:var(--bg);color:var(--ink);border:1px solid var(--ln2);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;flex:none;font-size:15px;letter-spacing:-.005em;box-shadow:0 18px 50px rgba(18,22,28,.16)}
+.st{height:40px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 4px;font:500 12px 'IBM Plex Mono',monospace;color:var(--ink2)}
+.hd{padding:6px 18px 12px;display:flex;align-items:flex-end;gap:12px;flex:none;background:var(--bg)}
+.hd h3{margin:0;font:600 19px/1.2 'Instrument Sans',sans-serif;letter-spacing:-.02em}
+.bd{padding:4px 18px 20px;display:flex;flex-direction:column;gap:13px;flex:1;overflow-y:auto;overflow-x:hidden}
+.bb{flex:none;padding:12px 16px 24px;display:flex;gap:10px;background:var(--bg);border-top:1px solid var(--ln)}
+.btn{min-height:52px;box-sizing:border-box;border:1px solid var(--ln2);border-radius:11px;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;padding:0 12px;font:600 15.5px 'Instrument Sans',sans-serif;flex:1;text-align:center;background:var(--sf);color:var(--ink);cursor:pointer;user-select:none}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn.s{min-height:42px;font-size:14px;border-radius:9px}
+.btn.g{background:transparent;border-style:dashed;border-color:var(--ln2)}
+.cd{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:15px 16px;display:flex;flex-direction:column;gap:10px}
+.sec{font:600 10.5px/1 'Instrument Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ln);cursor:pointer}
+.row:last-child{border-bottom:none}
+.gw{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.nm{font:500 15.5px/1.25 'Instrument Sans',sans-serif;overflow-wrap:anywhere}
+.mt{font:400 13px/1.35 'Instrument Sans',sans-serif;color:var(--ink2)}
+.mo{font:400 13px 'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ch{display:inline-flex;align-items:center;gap:5px;background:var(--sf2);border-radius:7px;padding:4px 9px;font:600 12px 'Instrument Sans',sans-serif;color:var(--ink2);white-space:nowrap}
+.ch.k{background:var(--ink);color:var(--bg)}
+.ch.a{background:var(--acs);color:var(--acl)}
+.ch.o{background:transparent;box-shadow:inset 0 0 0 1px var(--ln2)}
+.bar{height:6px;border-radius:3px;background:var(--sf2);overflow:hidden;display:flex}
+.bar i{background:var(--ac);display:block}
+.tb{flex:none;display:flex;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:20px}
+.tb div{flex:1;padding:13px 0 11px;text-align:center;font:500 12.5px 'Instrument Sans',sans-serif;color:var(--ink3);position:relative;cursor:pointer}
+.tb div.on{color:var(--ink);font-weight:600}
+.tb div.on:before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:2px;background:var(--ac)}
+.ph2{background:var(--sf2);border:1px dashed var(--ln2);border-radius:8px;display:grid;place-items:center;font:400 9.5px/1.3 'IBM Plex Mono',monospace;color:var(--ink3);text-align:center;padding:4px}
+.big{font:600 40px/1 'Instrument Sans',sans-serif;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.h1{font:600 22px/1.2 'Instrument Sans',sans-serif;letter-spacing:-.02em}
+.h2{font:600 17.5px/1.25 'Instrument Sans',sans-serif;letter-spacing:-.015em}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:14.5px}
+.kv b{font-weight:400;color:var(--ink2)}
+.fld{background:var(--sf);border:1px solid var(--ln2);border-radius:11px;min-height:52px;display:flex;align-items:center;padding:0 14px;font:400 16px 'Instrument Sans';color:var(--ink)}
+.side{width:330px;flex:none;display:flex;flex-direction:column;gap:16px;font-family:'Instrument Sans',sans-serif}
+.pnl{background:#fff;border:1px solid rgba(0,0,0,.09);border-radius:12px;padding:18px 19px;display:flex;flex-direction:column;gap:11px}
+.pnl h4{margin:0;font:600 12px/1.3 'Instrument Sans';letter-spacing:.02em}
+.pnl p{margin:0;font:400 12.5px/1.55 'Instrument Sans';color:#4a5461}
+.seg{display:flex;gap:0;border:1px solid rgba(0,0,0,.14);border-radius:9px;overflow:hidden}
+.seg div{flex:1;padding:9px 6px;text-align:center;font:600 12px 'Instrument Sans';color:#4a5461;cursor:pointer;background:#fff}
+.lnk{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border:1px solid rgba(0,0,0,.1);border-radius:9px;font:500 12.5px 'Instrument Sans';color:#12161c;cursor:pointer;background:#fff}
+.tag{font:500 10px 'IBM Plex Mono',monospace;color:#7b8593;text-transform:uppercase;letter-spacing:.06em}
+.tbl div{box-sizing:border-box}
+</style></helmet>
+<div class="wrap">
+<div class="ph" data-t="{{ theme }}">
+<div class="st"><span>{{ clock }}</span><span>{{ signal }}</span></div>
+
+<sc-if value="{{ v.today }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">{{ dateLine }} · <span class="mo" style="font-size:12.5px">{{ ageLine }}</span></div><h3>Today</h3></div>
+<sc-if value="{{ isOffline }}" hint-placeholder-val="{{ true }}"><span class="ch o">{{ offChip }}</span></sc-if>
+</div>
+<div class="bd">
+<sc-if value="{{ toast.on }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="border-color:var(--ac);background:var(--acs);gap:9px">
+<div class="h2" style="color:var(--acl)">{{ toast.title }}</div>
+<div class="mt" style="color:var(--acl)">{{ toast.sub }}</div>
+<div style="display:flex;gap:9px"><div class="btn s" style="flex:0 0 104px;background:var(--sf)" onClick="{{ undo }}">Undo</div><div class="btn s g" onClick="{{ goAdd }}">Add another</div></div>
+</div>
+</sc-if>
+<sc-if value="{{ hasWork }}" hint-placeholder-val="{{ true }}"><div class="sec">Needs doing</div></sc-if>
+<sc-for list="{{ cards }}" as="c" hint-placeholder-count="3">
+<div class="cd">
+<div class="h2">{{ c.title }}</div>
+<div class="mt">{{ c.why }}</div>
+<div style="display:flex;gap:9px"><div class="btn p" onClick="{{ c.act }}">{{ c.cta }}</div><div class="btn" style="flex:0 0 84px" onClick="{{ c.later }}">Later</div></div>
+</div>
+</sc-for>
+<sc-if value="{{ noWork }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:7px;padding:20px 16px">
+<div class="h1">Nothing needs doing today.</div>
+<div class="mt" style="font-size:14px">{{ calmLine }}</div>
+</div>
+<div class="sec">Coming up</div>
+</sc-if>
+<sc-if value="{{ nextEvent.on }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:8px" onClick="{{ nextEvent.open }}">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:44px;flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;background:var(--sf2);border-radius:9px;padding:7px 0"><div class="mo" style="font-size:17px;font-weight:500">{{ nextEvent.d }}</div><div style="font:500 10px 'Instrument Sans';color:var(--ink3)">{{ nextEvent.m }}</div></div>
+<div class="gw"><div class="h2">{{ nextEvent.title }}</div><div class="mt">{{ nextEvent.when }}</div><div class="mt">{{ nextEvent.bring }}</div></div>
+</div>
+</div>
+</sc-if>
+<div class="cd" style="gap:9px" onClick="{{ goList }}">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">{{ band.name }}</span><span class="mo" style="color:var(--ink2)">{{ band.count }}</span></div>
+<div class="bar"><i style="width:{{ band.pct }}"></i></div>
+</div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ goAdd }}">Add what we got</div><div class="btn" style="flex:0 0 134px" onClick="{{ goFind }}">Find a thing</div></div>
+<div class="tb"><div class="{{ tabToday }}" onClick="{{ goToday }}">Today</div><div class="{{ tabList }}" onClick="{{ goList }}">List</div><div class="{{ tabDates }}" onClick="{{ goDates }}">Dates</div><div class="{{ tabMoney }}" onClick="{{ goMoney }}">Money</div></div>
+</sc-if>
+
+<sc-if value="{{ v.add }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">{{ addFrom }}</div><h3>Add what we got</h3></div><span class="ch o" style="min-height:36px;padding:0 12px" onClick="{{ back }}">Close</span></div>
+<div class="bd" style="gap:18px">
+<sc-if value="{{ addKnown }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="flex-direction:row;align-items:center;gap:14px;padding:13px 15px">
+<div style="width:46px;flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;background:var(--sf2);border-radius:10px;padding:9px 0"><div class="mo" style="font-size:16px;font-weight:500">{{ sel.have }}</div><div style="font:500 9.5px 'Instrument Sans';color:var(--ink3)">OF {{ sel.need }}</div></div>
+<div class="gw"><div class="h2">{{ sel.n }}</div><div class="mt">{{ sel.band }} · <span style="color:var(--acl);font-weight:500" onClick="{{ goFind }}">not this?</span></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<div class="nm">How many did you get?</div>
+<div style="display:flex;gap:10px;align-items:stretch">
+<div class="btn" style="flex:0 0 68px;min-height:68px;font-size:26px;font-weight:400" onClick="{{ dec }}">−</div>
+<div class="cd" style="flex:1;min-height:68px;align-items:center;justify-content:center;padding:0"><div class="mo" style="font-size:30px;font-weight:500">{{ qty }}</div></div>
+<div class="btn" style="flex:0 0 68px;min-height:68px;font-size:26px;font-weight:400" onClick="{{ inc }}">+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">What did it cost?</span><span class="mt">you can skip this</span></div>
+<div class="fld"><span class="mo" style="font-size:17px;color:var(--ink3)">Rp</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:13px 15px"><div class="mt">Where from, brand, a photo — add later if you want</div></div>
+</sc-if>
+<sc-if value="{{ addUnknown }}" hint-placeholder-val="{{ true }}">
+<div class="nm">What did you get?</div>
+<sc-for list="{{ needList }}" as="i" hint-placeholder-count="4">
+<div class="row" onClick="{{ i.pickForAdd }}"><div class="gw"><div class="nm">{{ i.n }}</div><div class="mt"><span class="mo">{{ i.count }}</span> · {{ i.band }}</div></div><span class="mt">›</span></div>
+</sc-for>
+</sc-if>
+</div>
+<sc-if value="{{ addKnown }}" hint-placeholder-val="{{ true }}">
+<div class="bb"><div class="btn p" style="min-height:56px;font-size:17px" onClick="{{ save }}">Save it</div></div>
+</sc-if>
+</sc-if>
+<sc-if value="{{ v.list }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">Hospital bag · wanted by 15 Sep</div><h3>The list</h3></div></div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">{{ bandLine }}</span><span class="ch o">What age ›</span></div>
+<div class="bar"><i style="width:{{ bandPct }}"></i></div>
+</div>
+<div class="cd" style="padding:2px 16px">
+<sc-for list="{{ bandItems }}" as="i" hint-placeholder-count="7">
+<div class="row" onClick="{{ i.open }}"><div class="gw"><div class="nm">{{ i.n }}</div><div class="mt"><span class="mo">{{ i.count }}</span>{{ i.giftLine }}</div></div><span class="ch">{{ i.stat }}</span></div>
+</sc-for>
+</div>
+<div class="btn g" style="min-height:46px;font-size:14px" onClick="{{ goFind }}">{{ restCount }}</div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ goFind }}">Find a thing</div><div class="btn" style="flex:0 0 118px">Narrow it</div></div>
+<div class="tb"><div class="{{ tabToday }}" onClick="{{ goToday }}">Today</div><div class="{{ tabList }}" onClick="{{ goList }}">List</div><div class="{{ tabDates }}" onClick="{{ goDates }}">Dates</div><div class="{{ tabMoney }}" onClick="{{ goMoney }}">Money</div></div>
+</sc-if>
+
+<sc-if value="{{ v.find }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="gap:10px;align-items:center;padding-top:10px">
+<span style="font-size:20px;color:var(--ink2);cursor:pointer" onClick="{{ backList }}">‹</span>
+<div class="fld" style="flex:1"><input value="{{ q }}" onChange="{{ type }}" placeholder="botol, popok, bottle…" style="width:100%;border:0;outline:0;background:transparent;font:400 16px 'Instrument Sans';color:var(--ink)"></div>
+</div>
+<div class="bd" style="gap:4px">
+<sc-if value="{{ untyped }}" hint-placeholder-val="{{ true }}">
+<div class="mt" style="margin-bottom:8px">Type any part of a name, in English or Indonesian.</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" onClick="{{ backList }}"><div class="gw"><div class="nm">Hospital bag</div><div class="mt">wanted by 15 Sep</div></div><span class="mt">›</span></div>
+<div class="row" onClick="{{ goRegistry }}"><div class="gw"><div class="nm">Things family could give</div><div class="mt">{{ giftCount }}</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Everything, all ages</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Don’t need any more</div><div class="mt">4 things, kept for later</div></div><span class="mt">›</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ typed }}" hint-placeholder-val="{{ true }}">
+<div class="mt" style="margin-bottom:4px">{{ hitLabel }}</div>
+<sc-for list="{{ hits }}" as="i" hint-placeholder-count="3">
+<div class="row" onClick="{{ i.open }}"><div class="ph2" style="width:46px;height:46px;flex:none">her photo</div><div class="gw"><div class="nm">{{ i.n }}</div><div class="mt"><span class="mo">{{ i.count }}</span> · {{ i.cat }}</div></div><span class="ch">{{ i.stat }}</span></div>
+</sc-for>
+<sc-if value="{{ noHits }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="margin-top:10px;gap:5px"><div class="nm">Nothing matches that.</div><div class="mt">Try part of the word, or add it as a new thing.</div></div>
+</sc-if>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.item }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ back }}">‹</span><div><div class="mt" style="margin-bottom:2px">{{ sel.cat }} · {{ sel.gift }}</div><h3>{{ sel.n }}</h3></div></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative;cursor:pointer" onClick="{{ toggleMoney }}"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:13px">
+<sc-if value="{{ toast.on }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="border-color:var(--ac);background:var(--acs);gap:9px">
+<div class="h2" style="color:var(--acl)">{{ toast.title }}</div>
+<div class="mt" style="color:var(--acl)">{{ toast.sub }}</div>
+<div style="display:flex;gap:9px"><div class="btn s" style="flex:0 0 104px;background:var(--sf)" onClick="{{ undo }}">Undo</div><div class="btn s g" onClick="{{ ask }}">Add another</div></div>
+</div>
+</sc-if>
+<div class="cd" style="gap:11px">
+<div style="display:flex;align-items:baseline;gap:10px"><span class="big" style="font-size:34px">{{ sel.have }}</span><span class="h2" style="font-weight:500;color:var(--ink2)">of {{ sel.need }}</span><span class="ch" style="margin-left:auto">{{ sel.stat }}</span></div>
+<div class="bar"><i style="width:{{ sel.pct }}"></i></div>
+<div class="mt">{{ sel.band }} · {{ sel.cat }}</div>
+</div>
+<div class="sec">What we have</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">Pigeon · Wide Neck PPSU 240ml</div><div class="mt"><span class="mo">{{ sel.have }} of them</span> · Tokopedia · 2 Aug</div></div><span class="mo" style="color:var(--ink2)">{{ sel.spent }}</span></div>
+</div>
+<div class="sec">Ones we’re looking at</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">Dr. Brown’s · Natural Flow</div><div class="mt">Mothercare · <span class="mo">{{ sel.one }}</span></div></div><span class="ch a">Looking at it</span></div>
+<div class="row" style="cursor:default;opacity:.55"><div class="gw"><div class="nm">Philips Avent · Natural Response</div><div class="mt">Shopee</div></div><span class="ch o">Ruled out</span></div>
+</div>
+<div class="sec">Videos and reviews</div>
+<div style="display:flex;gap:10px">
+<div style="display:flex;flex-direction:column;gap:6px;width:100px"><div class="ph2" style="height:126px;border-radius:10px">tiktok</div><div class="mt" style="font-size:12px;line-height:1.3">Botol PPSU vs kaca</div></div>
+<div style="display:flex;flex-direction:column;gap:6px;width:100px"><div class="ph2" style="height:126px;border-radius:10px">youtube</div><div class="mt" style="font-size:12px;line-height:1.3">How to sterilise</div></div>
+<div style="display:flex;flex-direction:column;gap:6px;width:100px"><div class="ph2" style="height:126px;border-radius:10px;border-style:solid">no preview</div><div class="mt" style="font-size:12px;line-height:1.3">Blog round-up</div></div>
+</div>
+<div class="sec">What it’s made of</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap"><span class="ch">PPSU</span><span class="ch">Silicone teat</span><span class="ch o">+ add</span></div>
+<div class="cd" style="background:transparent;border-color:var(--ln)"><div class="mt">Spent so far <span class="mo">{{ sel.spent }}</span> · the rest, roughly <span class="mo">{{ sel.est }}</span> · <span style="color:var(--acl);font-weight:500">see the detail</span></div></div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ ask }}">Add</div><div class="btn" style="flex:0 0 140px">Change this</div></div>
+</sc-if>
+
+<sc-if value="{{ v.ask }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">{{ sel.n }}</div><h3>Add</h3></div><span class="ch o" style="min-height:36px;padding:0 12px" onClick="{{ goItem }}">Close</span></div>
+<div class="bd" style="justify-content:center;gap:16px">
+<div class="h1" style="text-align:center;font-size:24px">Already got it, or still looking?</div>
+<div class="btn p" style="min-height:60px;font-size:18px" onClick="{{ addKnownGo }}">Already got it</div>
+<div class="btn" style="min-height:60px;font-size:18px" onClick="{{ looking }}">Still looking</div>
+<div class="mt" style="text-align:center">One question. Everything else follows from the answer.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.looking }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">For {{ sel.n }}</div><h3>One we’re looking at</h3></div><span class="ch o" style="min-height:36px;padding:0 12px" onClick="{{ goItem }}">Close</span></div>
+<div class="bd" style="gap:14px">
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">What’s it called?</div><div class="fld"><span style="color:var(--ink3)">Wide Neck PPSU 240ml</span></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">Who makes it?</div><div class="fld"><span style="color:var(--ink3)">Pigeon</span></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">Where did you see it?</div><div class="fld"><span style="color:var(--ink3)">Tokopedia</span></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;justify-content:space-between"><span class="mt">Roughly how much?</span><span class="mt">you can skip this</span></div><div class="fld"><span class="mo" style="color:var(--ink3)">Rp</span></div></div>
+<div class="cd" style="background:transparent;border-style:dashed"><div class="mt">Paste a TikTok or a shop link and it lands here as a card.</div></div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ goItem }}">Save it</div></div>
+</sc-if>
+
+<sc-if value="{{ v.dates }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">{{ eventsLeft }}</span></div><h3>Dates</h3></div><span class="ch o" style="min-height:36px;padding:0 12px">+ Add</span></div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="padding:2px 16px">
+<sc-for list="{{ events }}" as="e" hint-placeholder-count="6">
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0;opacity:{{ e.dim }}" onClick="{{ e.open }}">
+<sc-if value="{{ e.isFixed }}" hint-placeholder-val="{{ true }}">
+<div style="flex:0 0 46px;text-align:center"><div class="mo" style="font-size:19px;font-weight:500;line-height:1.1">{{ e.d }}</div><div style="font:500 10px 'Instrument Sans';color:var(--ink3)">{{ e.m }}</div></div>
+</sc-if>
+<sc-if value="{{ e.isWin }}" hint-placeholder-val="{{ true }}">
+<div style="flex:0 0 46px;display:flex;flex-direction:column;align-items:center;gap:3px"><div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">{{ e.wa }}</div><div style="width:1.5px;height:12px;background:var(--ln2)"></div><div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">{{ e.wb }}</div><div style="font:500 10px 'Instrument Sans';color:var(--ink3)">{{ e.wm }}</div></div>
+</sc-if>
+<div class="gw"><div class="nm">{{ e.title }}</div><div class="mt">{{ e.line }}</div><div class="mt" style="font-size:12px">{{ e.srcLine }}</div></div>
+<span class="ch o">{{ e.doneChip }}</span>
+</div>
+</sc-for>
+</div>
+<div class="cd" style="padding:4px 16px"><div class="row" style="border-bottom:0"><div class="gw"><div class="nm">Been and done</div><div class="mt">6 dates · two have scan photos</div></div><span class="mt">›</span></div></div>
+</div>
+<div class="tb"><div class="{{ tabToday }}" onClick="{{ goToday }}">Today</div><div class="{{ tabList }}" onClick="{{ goList }}">List</div><div class="{{ tabDates }}" onClick="{{ goDates }}">Dates</div><div class="{{ tabMoney }}" onClick="{{ goMoney }}">Money</div></div>
+</sc-if>
+
+<sc-if value="{{ v.event }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ back }}">‹</span><div><div class="mt" style="margin-bottom:2px">{{ ev.who }}</div><h3>{{ ev.title }}</h3></div></div>
+</div>
+<div class="bd" style="gap:13px">
+<sc-if value="{{ ev.isWin }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:8px;border-color:var(--ink)">
+<div class="h1" style="font-size:23px">{{ ev.winLabel }}</div>
+<div class="mt" style="font-size:14px">{{ ev.winNote }} There is no single right day — anywhere in this period is fine.</div>
+<div style="display:flex;align-items:center;gap:9px;margin-top:2px"><span class="mo" style="font-size:13px">{{ ev.wa }}</span><div class="bar" style="flex:1"><i style="width:0"></i></div><span class="mo" style="font-size:13px">{{ ev.wb }}</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ ev.isFixedShow }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:6px;border-color:var(--ink)"><div class="big" style="font-size:32px">{{ ev.timeBig }}</div><div class="mt" style="font-size:14px">{{ ev.when }}</div></div>
+</sc-if>
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div class="sec" style="padding-bottom:5px">Bring</div>
+<div class="row" style="border-bottom:0;padding:9px 0;cursor:default"><div class="gw"><div class="nm">{{ ev.bring }}</div></div><span class="ch o">tick</span></div>
+</div>
+<div class="cd" style="gap:5px"><div class="sec">Before you go</div><div class="nm" style="font-weight:400;font-size:14.5px;line-height:1.45">{{ ev.prep }}</div></div>
+<sc-if value="{{ ev.hasCost }}" hint-placeholder-val="{{ true }}">
+<div class="kv" style="border-bottom:0"><b>Likely to cost</b><span class="mo">{{ ev.cost }}</span></div>
+</sc-if>
+<div class="mt" style="font-size:12px">{{ ev.src }}</div>
+</div>
+<sc-if value="{{ ev.notDone }}" hint-placeholder-val="{{ true }}">
+<div class="bb"><div class="btn p" onClick="{{ markDone }}">It’s done</div><div class="btn" style="flex:0 0 126px">Change it</div></div>
+</sc-if>
+<sc-if value="{{ ev.done }}" hint-placeholder-val="{{ true }}">
+<div class="bb"><div class="btn p">Add a photo</div><div class="btn" style="flex:0 0 126px">Add a note</div></div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.hospitals }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ goMoney }}">‹</span><div><div class="mt" style="margin-bottom:2px">One to pick by 7 Sep</div><h3>Where to give birth</h3></div></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative;cursor:pointer" onClick="{{ toggleMoney }}"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:12px">
+<sc-for list="{{ hospitals }}" as="h" hint-placeholder-count="4">
+<div class="cd" style="gap:10px" onClick="{{ h.open }}">
+<div style="display:flex;align-items:center;gap:10px"><span class="ch">{{ h.tag }}</span><span class="mo" style="margin-left:auto;color:var(--ink2)">{{ h.filled }}</span></div>
+<div class="h1">{{ h.name }}</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="ch">{{ h.traffic }}</span><span class="ch">{{ h.nicu }}</span></div>
+<div class="nm" style="font-size:14.5px;line-height:1.4;font-weight:400;color:{{ h.insC }}">{{ h.ins }}</div>
+<div class="kv" style="border-bottom:0;padding:2px 0 0"><b>Normal birth, kelas 1</b><span class="mo">{{ h.price }}</span></div>
+<div class="mt">{{ h.out }}</div>
+</div>
+</sc-for>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ goCompare }}">Compare them</div><div class="btn" style="flex:0 0 126px" onClick="{{ goNewHosp }}">+ Add one</div></div>
+<div class="tb"><div class="{{ tabToday }}" onClick="{{ goToday }}">Today</div><div class="{{ tabList }}" onClick="{{ goList }}">List</div><div class="{{ tabDates }}" onClick="{{ goDates }}">Dates</div><div class="{{ tabMoney }}" onClick="{{ goMoney }}">Money</div></div>
+</sc-if>
+
+<sc-if value="{{ v.newhosp }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between"><div><div class="mt" style="margin-bottom:2px">Name and address is enough to start</div><h3>Add a place</h3></div><span class="ch o" style="min-height:36px;padding:0 12px" onClick="{{ goHospitals }}">Close</span></div>
+<div class="bd" style="gap:14px">
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">What’s it called?</div><div class="fld"><span style="color:var(--ink3)">RS …</span></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">Where is it?</div><div class="fld"><span style="color:var(--ink3)">Address or a maps link</span></div></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div class="mt">Roughly how far?</div><div class="fld"><span style="color:var(--ink3)">Minutes in traffic</span></div></div>
+<div class="cd" style="background:transparent;border-style:dashed"><div class="mt">The other 27 things can wait. It saves as <b style="font-weight:600">Shortlisted</b> with everything else marked not filled in.</div></div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ goHospitals }}">Save it</div></div>
+</sc-if>
+
+<sc-if value="{{ v.hospital }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ backHosp }}">‹</span><div><div class="mt" style="margin-bottom:2px">{{ h.kind }}</div><h3>{{ h.name }}</h3></div></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative;cursor:pointer" onClick="{{ toggleMoney }}"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="border-color:var(--ink);gap:7px"><div class="sec">Does insurance cover the birth?</div><div class="nm" style="font-size:16px;line-height:1.35">{{ h.ins }}</div></div>
+<div style="display:flex;gap:9px;align-items:center"><span class="ch">{{ h.filled }} filled in</span><span class="ch o">{{ h.blanks }}</span></div>
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div class="sec" style="padding-bottom:4px">Getting there</div>
+<div class="kv"><b>In traffic</b><span class="mo">{{ h.traffic }}</span></div>
+<div class="kv"><b>Normally</b><span class="mo">{{ h.normal }}</span></div>
+<div class="kv" style="border-bottom:0"><b>Open at 2am</b><span>{{ h.open }}</span></div>
+</div>
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div class="sec" style="padding-bottom:4px">Medical</div>
+<div class="kv"><b>Baby intensive care</b><span>{{ h.nicu }}</span></div>
+<div class="kv"><b>Husband in the room</b><span>{{ h.husband }}</span></div>
+<div class="kv"><b>Baby stays with you</b><span>{{ h.rooming }}</span></div>
+<div class="kv" style="border-bottom:0"><b>Breastfeeding help</b><span>{{ h.lact }}</span></div>
+</div>
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div style="display:flex;align-items:center;gap:8px;padding-bottom:4px"><div class="sec">Money</div><span class="mt" style="margin-left:auto;font-size:12px">{{ h.quoted }}</span></div>
+<div class="kv"><b>Normal, kelas 1</b><span class="mo">{{ h.birth }}</span></div>
+<div class="kv"><b>Caesar, kelas 1</b><span class="mo">{{ h.caesar }}</span></div>
+<div class="kv" style="border-bottom:0"><b>Deposit on arrival</b><span class="mo">{{ h.dep }}</span></div>
+</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="gw"><div class="nm">Insurance, policies, our visit</div><div class="mt">3 more groups</div></div><span class="mt">›</span></div>
+<div class="row" style="border-bottom:0" onClick="{{ goPapers }}"><div class="gw"><div class="nm">Papers they want</div><div class="mt">8 things</div></div><span class="mt">›</span></div>
+</div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ pickThis }}">Pick this one</div><div class="btn" style="flex:0 0 116px" onClick="{{ goCompare }}">Compare</div></div>
+</sc-if>
+<sc-if value="{{ v.compare }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2);cursor:pointer" onClick="{{ backHosp }}">‹</span><h3>Compare</h3></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative;cursor:pointer" onClick="{{ toggleMoney }}"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="padding:4px 0 0;gap:0">
+<div class="cd" style="margin:0 18px 12px;border-color:var(--ink);gap:6px">
+<div class="sec">Does insurance cover the birth?</div>
+<sc-for list="{{ insRows }}" as="r" hint-placeholder-count="4">
+<div class="row" style="padding:8px 0;cursor:default"><div class="gw"><div class="nm">{{ r.name }}</div><div class="mt">{{ r.why }}</div></div><span class="ch">{{ r.short }}</span></div>
+</sc-for>
+</div>
+<div style="overflow-x:auto">
+<div class="tbl" style="min-width:{{ tblW }}">
+<div style="display:flex;border-bottom:1px solid var(--ln2);background:var(--bg)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2)"></div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4">
+<div style="flex:0 0 112px;padding:8px 9px 9px;border-left:1px solid var(--ln);cursor:pointer" onClick="{{ c.openCol }}"><div class="nm" style="font-size:14px;line-height:1.15">{{ c.name }}</div><span class="ch" style="font-size:10.5px;padding:2px 6px;margin-top:4px">{{ c.tag }}</span></div>
+</sc-for>
+</div>
+<div style="display:flex;background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">In traffic</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ c.traffic }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Normally</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ c.normal }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Baby intensive care</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px;font-weight:500">{{ c.nicu }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Open at 2am</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">{{ c.open }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Husband in the room</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">{{ c.husband }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Baby stays with you</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">{{ c.rooming }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Normal birth</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:10px 9px;border-left:1px solid var(--ln)"><div class="mo">{{ c.birth }}</div><div class="mt" style="font-size:11px;line-height:1.2">{{ c.stale }}</div></div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Caesar</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ c.caesar }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Deposit on arrival</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ c.dep }}</div></sc-for>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln2)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Filled in</div>
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="4"><div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ c.filled }}</div></sc-for>
+</div>
+</div>
+</div>
+<div style="padding:14px 18px;display:flex;gap:8px;flex-wrap:wrap"><span class="ch o">slide the table sideways ›</span><span class="ch o">6 more rows</span></div>
+</div>
+<div class="bb"><div class="btn p" onClick="{{ pickLead }}">Pick {{ leadName }}</div><div class="btn" style="flex:0 0 116px" onClick="{{ goHospitals }}">Back to the list</div></div>
+</sc-if>
+
+<sc-if value="{{ v.papers }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ back }}">‹</span><div><div class="mt" style="margin-bottom:2px">{{ pickedName }}</div><h3>Papers for the hospital</h3></div></div>
+<div class="bd" style="gap:13px">
+<sc-if value="{{ notReady }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:8px;padding:18px 16px;border-color:var(--ink)">
+<div class="h1" style="font-size:26px">{{ readyLine }}</div>
+<div class="mt" style="font-size:14.5px">{{ readySub }}</div>
+<div class="bar" style="margin-top:4px"><i style="width:{{ docPct }}"></i></div>
+</div>
+</sc-if>
+<sc-if value="{{ allReady }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:8px;padding:18px 16px;background:var(--ac);border-color:var(--ac)">
+<div class="h1" style="font-size:26px;color:#fff">{{ readyLine }}</div>
+<div class="mt" style="font-size:14.5px;color:rgba(255,255,255,.85)">{{ readySub }}</div>
+</div>
+</sc-if>
+<div class="cd" style="padding:2px 16px">
+<sc-for list="{{ docs }}" as="d" hint-placeholder-count="8">
+<div class="row" style="align-items:flex-start" onClick="{{ d.fix }}">
+<div class="ph2" style="width:50px;height:50px;flex:none">her photo</div>
+<div class="gw"><div class="nm">{{ d.n }}</div><div class="mt">{{ d.copyLine }}</div><div class="mt">{{ d.photoLine }}</div><div class="mt">{{ d.expLine }}</div></div>
+<span class="ch o">tick</span>
+</div>
+</sc-for>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed"><div class="mt">{{ papersOffline }}</div></div>
+</div>
+<div class="bb"><div class="btn p">Photograph a paper</div><div class="btn" style="flex:0 0 116px" onClick="{{ goToday }}">Done</div></div>
+</sc-if>
+
+<sc-if value="{{ v.money }}" hint-placeholder-val="{{ true }}">
+<div class="hd" style="justify-content:space-between">
+<div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">about 61 days to go</span></div><h3>Money</h3></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative;cursor:pointer" onClick="{{ toggleMoney }}"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">{{ band.name }}</span><span class="ch o">What age ›</span></div>
+<div class="bar"><i style="width:{{ band.pct }}"></i></div>
+<div class="mt">{{ band.count }} things</div>
+<div class="kv" style="padding:8px 0 0;border-bottom:0"><b>Spent</b><span class="mo">{{ spent }}</span></div>
+<div class="kv" style="padding:6px 0 0;border-bottom:0"><b>Still to come, roughly</b><span class="mo">{{ left }}</span></div>
+</div>
+<div class="sec">By sort of thing</div>
+<div class="cd" style="padding:2px 16px">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">{{ c.cat }}</div><div class="bar" style="height:5px;margin-top:5px"><i style="width:{{ c.pct }}"></i></div><div class="mt" style="font-size:12px;margin-top:3px">{{ c.line }}</div></div><span class="mo" style="flex:0 0 80px;text-align:right;color:var(--ink2)">{{ c.spent }}</span></div>
+</sc-for>
+</div>
+<div class="sec">How important</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">Essential</div><div class="mt">{{ essLine }}</div></div><span class="mt">›</span></div>
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">Recommended</div><div class="mt">{{ recLine }}</div></div><span class="mt">›</span></div>
+</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row" onClick="{{ goHospitals }}"><div class="gw"><div class="nm">Where to give birth</div><div class="mt">4 places · one picked</div></div><span class="mt">›</span></div>
+<div class="row" onClick="{{ goRegistry }}"><div class="gw"><div class="nm">Things family could give</div><div class="mt">{{ giftCount }}</div></div><span class="mt">›</span></div>
+<div class="row" style="border-bottom:0" onClick="{{ goAdmin }}"><div class="gw"><div class="nm">Who can get in</div><div class="mt">2 in the household · 1 waiting</div></div><span class="mt">›</span></div>
+</div>
+</div>
+<div class="tb"><div class="{{ tabToday }}" onClick="{{ goToday }}">Today</div><div class="{{ tabList }}" onClick="{{ goList }}">List</div><div class="{{ tabDates }}" onClick="{{ goDates }}">Dates</div><div class="{{ tabMoney }}" onClick="{{ goMoney }}">Money</div></div>
+</sc-if>
+
+<sc-if value="{{ v.registry }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ goToday }}">‹</span><div><div class="mt" style="margin-bottom:2px">{{ giftCount }} · read only</div><h3>Things family could give</h3></div></div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="background:transparent;border-style:dashed"><div class="mt">Only people you’ve let in can see this. No prices, for anyone.</div></div>
+<div class="cd" style="padding:2px 16px">
+<sc-for list="{{ giftItems }}" as="i" hint-placeholder-count="6">
+<div class="row" style="cursor:default"><div class="ph2" style="width:46px;height:46px;flex:none">her photo</div><div class="gw"><div class="nm">{{ i.n }}</div><div class="mt"><span class="mo">{{ i.count }}</span> · {{ i.cat }}</div></div><span class="ch">{{ i.stat }}</span></div>
+</sc-for>
+</div>
+</div>
+<div class="bb"><div class="btn">Share with family</div></div>
+</sc-if>
+
+<sc-if value="{{ v.admin }}" hint-placeholder-val="{{ true }}">
+<div class="hd"><span style="font-size:20px;color:var(--ink2);cursor:pointer;padding-bottom:2px" onClick="{{ goMoney }}">‹</span><div><div class="mt" style="margin-bottom:2px">2 in the household</div><h3>Who can get in</h3></div></div>
+<div class="bd" style="gap:12px">
+<sc-if value="{{ pending }}" hint-placeholder-val="{{ true }}">
+<div class="sec">Waiting · 1</div>
+<div class="cd" style="gap:10px">
+<div class="gw"><div class="nm">ibu.sri@gmail.com</div><div class="mt">Asked 2 days ago</div></div>
+<div style="display:flex;gap:9px"><div class="btn p s" onClick="{{ approve }}">Let them in</div><div class="btn s" style="flex:0 0 92px">Say no</div></div>
+</div>
+</sc-if>
+<div class="sec">In the household</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">adinda@…</div><div class="mt">Since 12 Jun · sees everything</div></div><span class="ch o">manage</span></div>
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">you@…</div><div class="mt">Since 12 Jun · runs the household</div></div></div>
+<sc-if value="{{ approved }}" hint-placeholder-val="{{ true }}">
+<div class="row" style="cursor:default"><div class="gw"><div class="nm">ibu.sri@gmail.com</div><div class="mt">Just now · sees everything</div></div><span class="ch o">manage</span></div>
+</sc-if>
+</div>
+<div class="sec">Turned off</div>
+<div class="cd" style="padding:2px 16px"><div class="row" style="cursor:default;opacity:.65"><div class="gw"><div class="nm">old.phone@…</div><div class="mt">Turned off 2 Aug</div></div><span class="ch o">let back in</span></div></div>
+</div>
+<div class="bb"><div class="btn">Invite someone</div></div>
+</sc-if>
+
+<sc-if value="{{ v.access }}" hint-placeholder-val="{{ true }}">
+<div class="bd" style="justify-content:center;gap:14px;text-align:center;padding:0 26px">
+<div class="h1">You’re signed in as adinda@…</div>
+<div class="mt" style="font-size:15px">Someone in the household has to let you in. We’ve told them you’re waiting.</div>
+<div class="cd" style="background:transparent;border-style:dashed;align-items:center"><div class="mt">Asked 2 minutes ago</div></div>
+</div>
+<div class="bb" style="flex-direction:column;gap:9px"><div class="btn p" onClick="{{ goToday }}">Ask again</div><div class="btn g s">Sign in as someone else</div></div>
+</sc-if>
+
+</div>
+
+<div class="side">
+<div class="pnl">
+<h4>End-to-end prototype · Wave 1 + Wave 2</h4>
+<p>Everything here is live: navigation, search, counts, the hospital decision, paper ticking and the money toggle. State is real — record a purchase and the list, Today and Money all change.</p>
+<div class="seg"><div style="background:{{ whoHerBg }};color:{{ whoHerFg }}" onClick="{{ setHer }}">Adinda</div><div style="background:{{ whoHimBg }};color:{{ whoHimFg }}" onClick="{{ setHim }}">Him</div></div>
+<p style="font-size:11.5px">Same screens, different landing — decision #1, shape B. Switching goes to that account’s home.</p>
+</div>
+<div class="pnl">
+<h4>Cold landings — arrive with no history</h4>
+<p style="font-size:11.5px">What a chat link does. No back button, straight into the task.</p>
+<div class="lnk" onClick="{{ deepAdd }}"><span>Add 2 nappies</span><span class="tag">S11</span></div>
+<div class="lnk" onClick="{{ deepPapers }}"><span>Papers for the hospital</span><span class="tag">S5</span></div>
+<div class="lnk" onClick="{{ deepCompare }}"><span>Compare hospitals</span><span class="tag">S4</span></div>
+<div class="lnk" onClick="{{ deepItem }}"><span>Botol susu</span><span class="tag">S9</span></div>
+</div>
+<div class="pnl">
+<h4>Other screens</h4>
+<div class="lnk" onClick="{{ goRegistry }}"><span>Things family could give</span><span class="tag">S13</span></div>
+<div class="lnk" onClick="{{ goAdmin }}"><span>Who can get in</span><span class="tag">S15</span></div>
+<div class="lnk" onClick="{{ goAccess }}"><span>Signed in, waiting</span><span class="tag">S14</span></div>
+</div>
+<div class="pnl">
+<h4>States</h4>
+<div class="seg"><div style="background:{{ lightBg }};color:{{ lightFg }}" onClick="{{ setLight }}">Light</div><div style="background:{{ darkBg }};color:{{ darkFg }}" onClick="{{ setDark }}">Dark</div></div>
+<div class="seg"><div style="background:{{ onlineBg }};color:{{ onlineFg }}" onClick="{{ setOnline }}">Online</div><div style="background:{{ offBg }};color:{{ offFg }}" onClick="{{ setOffline }}">Offline</div></div>
+<div class="seg"><div style="background:{{ hideBg }};color:{{ hideFg }}" onClick="{{ hideMoney }}">Money hidden</div><div style="background:{{ showBg }};color:{{ showFg }}" onClick="{{ showMoneyOn }}">Shown</div></div>
+<div class="lnk" onClick="{{ clearWork }}"><span>Nothing urgent (empty Today)</span><span class="tag">S1</span></div>
+<div class="lnk" onClick="{{ reset }}"><span>Reset everything</span><span class="tag">↺</span></div>
+</div>
+<div class="pnl">
+<h4>Where you are</h4>
+<p class="mo" style="font-size:12px;color:#12161c">{{ crumb }}</p>
+<p style="font-size:11.5px">{{ note }}</p>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:820,&quot;height&quot;:960}}">
+class Component extends DCLogic {
+  seed = [
+    { n: 'Popok newborn', need: 12, have: 4, cat: 'Health & Safety', band: 'Hospital bag', gift: true, pri: 'Essential', price: 95000 },
+    { n: 'Pembalut bersalin', need: 2, have: 0, cat: 'For Mom', band: 'Hospital bag', gift: false, pri: 'Essential', price: 38000 },
+    { n: 'Baju bayi lengan panjang newborn size', need: 8, have: 2, cat: 'Clothing', band: 'Hospital bag', gift: true, pri: 'Essential', price: 65000 },
+    { n: 'Bedong instan', need: 4, have: 0, cat: 'Clothing', band: 'Hospital bag', gift: true, pri: 'Recommended', price: 79000 },
+    { n: 'Korset', need: 1, have: 1, cat: 'For Mom', band: 'Hospital bag', gift: false, pri: 'Recommended', price: 185000 },
+    { n: 'Waslap', need: 6, have: 10, cat: 'Bath & Potty', band: 'Hospital bag', gift: true, pri: 'Recommended', price: 12000 },
+    { n: 'Pembalut nifas', need: 1, have: 0, cat: 'For Mom', band: 'Hospital bag', gift: false, pri: 'Essential', price: 42000 },
+    { n: 'Botol susu', need: 6, have: 4, cat: 'Nursing & Feeding', band: '0–3 months', gift: true, pri: 'Essential', price: 180000 },
+    { n: 'Sterilizer botol', need: 1, have: 1, cat: 'Nursing & Feeding', band: '0–3 months', gift: true, pri: 'Essential', price: 850000 },
+    { n: 'Sikat botol', need: 1, have: 0, cat: 'Nursing & Feeding', band: '0–3 months', gift: false, pri: 'Recommended', price: 25000 },
+    { n: 'Botol air minum ibu', need: 1, have: 1, cat: 'For Mom', band: 'Hospital bag', gift: false, pri: 'Recommended', price: 120000 },
+    { n: 'Penjepit botol', need: 1, have: 0, cat: 'Nursing & Feeding', band: '0–3 months', gift: true, pri: 'Optional', price: 35000 }
+  ];
+
+  syn = { bottle: 'botol', bottles: 'botol', nappy: 'popok', nappies: 'popok', diaper: 'popok',
+    diapers: 'popok', wipe: 'waslap', washcloth: 'waslap', pad: 'pembalut', swaddle: 'bedong',
+    brush: 'sikat', corset: 'korset', clothes: 'baju', shirt: 'baju' };
+
+  hosp = [
+    { k: 'bunda', name: 'RS Bunda Menteng', kind: 'RSIA · Menteng', traffic: 55, normal: 25, km: 8.4,
+      nicu: 'Yes · 2B', open: 'Yes, emergency room', husband: 'Yes', rooming: 'Yes', lact: null,
+      birth: 32000000, caesar: 48000000, dep: 10000000, filled: 28, quoted: 12,
+      ins: 'Covered. The 12-month wait ended 3 June 2026, before you conceived.',
+      insShort: 'Covered', insWhy: '12-month wait ended 3 June', out: null },
+    { k: 'hermina', name: 'RS Hermina Kemayoran', kind: 'RS umum · Kemayoran', traffic: 35, normal: 22, km: 6.2,
+      nicu: 'Yes · 2A', open: 'Yes, emergency room', husband: 'Yes', rooming: 'No', lact: 'Yes',
+      birth: 38000000, caesar: 55000000, dep: 15000000, filled: 22, quoted: 20,
+      ins: 'Covered, but the caesar limit is lower than at RS Bunda.',
+      insShort: 'Covered', insWhy: 'Caesar limit is lower', out: null },
+    { k: 'tambak', name: 'RSIA Tambak', kind: 'RSIA · Tambak', traffic: 40, normal: 18, km: 5.1,
+      nicu: null, open: 'Yes, emergency room', husband: 'Yes', rooming: 'Yes', lact: null,
+      birth: null, caesar: null, dep: null, filled: 7, quoted: null,
+      ins: null, insShort: 'not checked', insWhy: '', out: null },
+    { k: 'pondok', name: 'RS Pondok Indah', kind: 'RS umum · Pondok Indah', traffic: 80, normal: 32, km: 14.1,
+      nicu: 'No', open: 'Yes, emergency room', husband: null, rooming: 'Yes', lact: 'Yes',
+      birth: 24500000, caesar: 39000000, dep: 8000000, filled: 19, quoted: 124,
+      ins: 'You pay first and claim it back — they do not bill the insurer direct.',
+      insShort: 'Claim it back', insWhy: 'No direct billing', out: 'No baby intensive care, and too far when it matters.' }
+  ];
+
+  docSeed = [
+    { k: 'ktp1', n: 'KTP suami', copies: 3, made: 3, photo: true, exp: null },
+    { k: 'ktp2', n: 'KTP istri', copies: 3, made: 3, photo: true, exp: null },
+    { k: 'kk', n: 'Kartu Keluarga', copies: 3, made: 0, photo: false, exp: null },
+    { k: 'nikah', n: 'Buku nikah', copies: 2, made: 2, photo: true, exp: null },
+    { k: 'ins', n: 'Insurance card', copies: 2, made: 2, photo: false, exp: 'Runs out 30 Sep — before the due date' },
+    { k: 'kia', n: 'Buku KIA', copies: 1, made: 1, photo: true, exp: null },
+    { k: 'usg', n: 'Hasil USG', copies: 1, made: 1, photo: true, exp: null },
+    { k: 'lab', n: 'Hasil lab', copies: 1, made: 1, photo: true, exp: null }
+  ];
+
+  evSeed = [
+    { k: 'e1', title: 'Kontrol kandungan', d: '15', m: 'AUG', when: 'Tomorrow 10:00 · dr. Sari · RS Bunda',
+      who: 'Both of you going', bring: 'Buku KIA · insurance card', prep: 'Nothing to eat for 8 hours. Water is fine.',
+      cost: 350000, win: null, done: false, src: null },
+    { k: 'e2', title: 'Prenatal yoga', d: '21', m: 'AUG', when: '17:00 · Studio Senayan · Adinda',
+      who: 'Adinda', bring: 'Mat, water', prep: 'Light meal an hour before.', cost: 150000, win: null, done: false, src: 'every Thursday' },
+    { k: 'e3', title: 'Cek darah lengkap', d: '02', m: 'SEP', when: '07:00 · Lab Prodia Menteng',
+      who: 'Adinda', bring: 'Insurance card', prep: 'Nothing to eat for 10 hours before.', cost: 480000, win: null, done: false, src: null },
+    { k: 'e4', title: 'Hospital tour and sign-up', d: '10', m: 'SEP', when: 'RS Bunda · ring them to book',
+      who: 'Both of you going', bring: 'KTP suami · KTP istri', prep: 'Ask about the deposit and the deadline for signing up.',
+      cost: null, win: { a: '10', b: '24', m: 'SEP', label: 'Any day between 10 and 24 Sep', note: 'Nothing is booked yet.' }, done: false, src: null },
+    { k: 'e5', title: 'Kontrol kandungan', d: '21', m: 'SEP', when: '09:00 · dr. Sari · RS Bunda',
+      who: 'Both of you going', bring: 'Buku KIA', prep: 'Nothing to eat for 8 hours.', cost: 350000, win: null, done: false, src: 'weekly from here to the birth' },
+    { k: 'e6', title: 'Hep B and BCG', d: '14', m: 'OCT', when: 'For the baby · where not decided yet',
+      who: 'The baby · one of you goes', bring: 'Buku KIA', prep: 'Your paediatrician decides the actual day.',
+      cost: null, win: { a: '14', b: '30', m: 'OCT', label: 'Any day in the first month after the birth', note: 'From the IDAI schedule.' }, done: false, src: 'From the IDAI schedule' }
+  ];
+
+  fresh() {
+    return {
+      view: 'today', tab: 'today', who: 'her', money: false, theme: 'l', offline: false,
+      items: this.seed.map(i => Object.assign({}, i)),
+      docs: this.docSeed.map(d => Object.assign({}, d)),
+      events: this.evSeed.map(e => Object.assign({}, e)),
+      picked: 'bunda', hospIdx: 0, evIdx: 0, sel: 0, qty: 1, q: '', dismissed: [],
+      toast: null, addFrom: 'From the list', addKnown: true, ask: false, pending: true, back: 'today'
+    };
+  }
+
+  state = this.fresh();
+
+  go = (view, extra) => this.setState(Object.assign({ view: view, toast: null }, extra || {}));
+  fmt(n) { return 'Rp' + Number(n).toLocaleString('de-DE'); }
+  money(n) {
+    if (n === null || n === undefined) return 'not filled in';
+    return this.state.money ? this.fmt(n) : 'Rp••••••';
+  }
+  status(i) { return i.have === 0 || i.have < i.need ? 'Still need this' : i.have === i.need ? 'Got it' : 'More than enough'; }
+
+  renderVals() {
+    const s = this.state;
+    const st = i => this.status(i);
+    const bandName = s.who === 'her' ? 'Hospital bag' : 'Hospital bag';
+    const inBand = s.items.filter(i => i.band === bandName);
+    const got = inBand.filter(i => i.have >= i.need).length;
+    const need = s.items.filter(i => i.have < i.need);
+    const work = inBand.filter(i => i.have < i.need && i.pri === 'Essential' && s.dismissed.indexOf(i.n) < 0).slice(0, 3);
+    const docsMissing = s.docs.filter(d => !d.photo || d.made < d.copies);
+    const hosp = this.hosp[s.hospIdx];
+    const picked = this.hosp.filter(h => h.k === s.picked)[0];
+    const raw = s.q.trim().toLowerCase();
+    const needle = this.syn[raw] || raw;
+    const hits = raw ? s.items.filter(i => i.n.toLowerCase().indexOf(needle) > -1) : [];
+    const sel = s.items[s.sel];
+    const ev = s.events[s.evIdx];
+    const spent = s.items.reduce((a, i) => a + i.have * i.price, 0);
+    const left = s.items.reduce((a, i) => a + Math.max(0, i.need - i.have) * i.price, 0);
+    const cats = {};
+    s.items.forEach(i => {
+      if (!cats[i.cat]) cats[i.cat] = { cat: i.cat, have: 0, need: 0, spent: 0 };
+      cats[i.cat].have += Math.min(i.have, i.need); cats[i.cat].need += i.need; cats[i.cat].spent += i.have * i.price;
+    });
+    const on = k => s.view === k;
+    const segBg = t => t ? '#12161c' : '#fff';
+    const segFg = t => t ? '#fff' : '#4a5461';
+    const item = (i, idx) => Object.assign({}, i, {
+      count: i.have + ' of ' + i.need, stat: st(i), giftLine: i.gift ? ' · could be a gift' : '',
+      open: () => this.go('item', { sel: idx, back: s.view }),
+      pickForAdd: () => this.go('add', { sel: idx, qty: 1, addKnown: true, addFrom: 'From the list' })
+    });
+
+    return {
+      theme: s.theme, clock: s.offline ? '3:04' : '9:41', signal: s.offline ? 'no signal' : '▮▮▮',
+      dateLine: 'Tue 14 Aug', ageLine: 'about 61 days to go',
+      crumb: s.view.toUpperCase() + ' · ' + (s.who === 'her' ? 'Adinda' : 'him') + (s.offline ? ' · offline' : ''),
+      note: s.view === 'add' ? 'Two taps and a save. Price can be skipped; nothing blocks it.'
+        : s.view === 'compare' ? 'Slide the table sideways. Blanks read as “not filled in”, never as no.'
+        : s.view === 'papers' ? 'Tick a paper to watch the readiness sentence change.'
+        : s.view === 'today' ? 'At most three things to do. Tap Later to see the next candidate arrive.'
+        : s.view === 'find' ? 'Type “bottle” — it finds Botol susu. English or Indonesian.'
+        : 'Every screen works arrived at cold, and offers a way onward.',
+
+      v: { today: on('today'), add: on('add'), list: on('list'), find: on('find'), item: on('item'),
+        ask: on('ask'), looking: on('looking'), dates: on('dates'), event: on('event'),
+        hospitals: on('hospitals'), hospital: on('hospital'), compare: on('compare'), papers: on('papers'),
+        money: on('money'), registry: on('registry'), admin: on('admin'), access: on('access'),
+        newhosp: on('newhosp') },
+
+      hasWork: work.length > 0, noWork: work.length === 0,
+      calmLine: got === inBand.length
+        ? 'The hospital bag is done. Next thing due 15 Sep.'
+        : (inBand.length - got) + ' things still to get, none of them urgent yet. Next date 15 Aug.',
+      offChip: s.offline ? 'Offline · showing what we had at 1am' : '',
+      isOffline: s.offline,
+      cards: work.map(i => ({
+        title: 'Get ' + (i.need - i.have) + ' more ' + i.n.toLowerCase(),
+        why: i.band + ' · wanted by 15 Sep', cta: 'Add what we got',
+        act: () => this.go('add', { sel: s.items.indexOf(i), qty: 1, addKnown: true, addFrom: 'From Today' }),
+        later: () => this.setState({ dismissed: s.dismissed.concat([i.n]), toast: null })
+      })),
+      nextEvent: (() => {
+        const idx = s.events.findIndex(e => !e.done);
+        if (idx < 0) return { on: false, d: '', m: '', title: '', when: '', bring: '', open: () => {} };
+        const e = s.events[idx];
+        return { on: true, d: e.win ? e.win.a : e.d, m: e.win ? e.win.m : e.m, title: e.title,
+          when: e.win ? e.win.label : e.when, bring: 'Bring ' + e.bring,
+          open: () => this.go('event', { evIdx: idx, back: 'today' }) };
+      })(),
+      band: { name: bandName, count: got + ' of ' + inBand.length, pct: Math.round(got / inBand.length * 100) + '%' },
+      toast: s.toast ? { on: true, title: s.toast.title, sub: s.toast.sub } : { on: false, title: '', sub: '' },
+
+      sel: { n: sel.n, have: sel.have, need: sel.need, band: sel.band, cat: sel.cat,
+        count: sel.have + ' of ' + sel.need, stat: st(sel), pct: Math.min(100, Math.round(sel.have / sel.need * 100)) + '%',
+        gift: sel.gift ? 'could be a gift' : 'not for the registry',
+        spent: this.money(sel.have * sel.price), est: this.money(Math.max(0, sel.need - sel.have) * sel.price),
+        one: this.money(sel.price) },
+      qty: s.qty, addKnown: s.addKnown, addUnknown: !s.addKnown, addFrom: s.addFrom,
+      needList: need.map(i => item(i, s.items.indexOf(i))),
+
+      q: s.q, typed: raw.length > 0, untyped: raw.length === 0, noHits: raw.length > 0 && hits.length === 0,
+      hitLabel: hits.length === 1 ? '1 thing matches “' + s.q + '”' : hits.length + ' things match “' + s.q + '”',
+      hits: hits.map(i => item(i, s.items.indexOf(i))),
+      bandItems: inBand.map(i => item(i, s.items.indexOf(i))),
+      bandLine: got + ' of ' + inBand.length + ' got', bandPct: Math.round(got / inBand.length * 100) + '%',
+      restCount: 'Show the other ' + (s.items.length - inBand.length) + ' things',
+      giftItems: s.items.filter(i => i.gift).map(i => item(i, s.items.indexOf(i))),
+      giftCount: s.items.filter(i => i.gift).length + ' things',
+
+      eventsLeft: s.events.filter(e => !e.done).length + ' coming up',
+      events: s.events.map((e, idx) => Object.assign({}, e, {
+        winLabel: e.win ? e.win.label : '', isWin: !!e.win, isFixed: !e.win,
+        wa: e.win ? e.win.a : '', wb: e.win ? e.win.b : '', wm: e.win ? e.win.m : '',
+        srcLine: e.src || '', doneChip: e.done ? 'Done' : '', dim: e.done ? '.5' : '1',
+        line: e.win ? e.win.label + ' · ' + e.when : e.when,
+        open: () => this.go('event', { evIdx: idx, back: 'dates' })
+      })),
+      ev: { title: ev.title, when: ev.when, who: ev.who, bring: ev.bring, prep: ev.prep,
+        cost: this.money(ev.cost), hasCost: ev.cost !== null, isWin: !!ev.win,
+        winLabel: ev.win ? ev.win.label : '', winNote: ev.win ? ev.win.note : '',
+        wa: ev.win ? ev.win.a + ' ' + ev.win.m : '', wb: ev.win ? ev.win.b + ' ' + ev.win.m : '',
+        done: ev.done, notDone: !ev.done, src: ev.src || '',
+        isFixedShow: !ev.win, timeBig: (ev.when.match(/\d\d:\d\d/) || ['10:00'])[0] },
+      markDone: () => { const es = s.events.slice(); es[s.evIdx] = Object.assign({}, es[s.evIdx], { done: true }); this.setState({ events: es, view: 'dates' }); },
+
+      hospitals: this.hosp.map((h, idx) => ({
+        name: h.name, kind: h.kind, filled: h.filled + ' of 30 filled in',
+        tag: h.k === s.picked ? 'Picked this one' : h.out ? 'Ruled out' : 'Shortlisted',
+        isPicked: h.k === s.picked, isOut: !!h.out, isLive: !h.out && h.k !== s.picked,
+        traffic: h.traffic + ' min in traffic', nicu: h.nicu === null ? 'Baby intensive care — not filled in' : h.nicu === 'No' ? 'No baby intensive care' : 'Baby intensive care',
+        ins: h.ins === null ? 'Nobody has checked the insurance for this one.' : h.ins,
+        insC: h.ins === null ? 'var(--ink3)' : 'var(--ink)',
+        price: this.money(h.birth), hasPrice: h.birth !== null, out: h.out || '',
+        pct: Math.round(h.filled / 30 * 100) + '%',
+        open: () => this.go('hospital', { hospIdx: idx })
+      })),
+      h: { name: hosp.name, kind: hosp.kind, ins: hosp.ins === null ? 'Nobody has checked the insurance for this one yet.' : hosp.ins,
+        traffic: hosp.traffic + ' min', normal: hosp.normal + ' min · ' + hosp.km + ' km', open: hosp.open,
+        nicu: hosp.nicu === null ? 'not filled in' : hosp.nicu, husband: hosp.husband === null ? 'not filled in' : hosp.husband,
+        rooming: hosp.rooming, lact: hosp.lact === null ? 'not filled in' : hosp.lact,
+        birth: this.money(hosp.birth) || 'not filled in', caesar: this.money(hosp.caesar) || 'not filled in',
+        dep: this.money(hosp.dep) || 'not filled in',
+        quoted: hosp.quoted === null ? 'never asked' : hosp.quoted > 60 ? 'asked ' + hosp.quoted + ' days ago — probably stale' : 'asked ' + hosp.quoted + ' days ago',
+        filled: hosp.filled + ' of 30', blanks: (30 - hosp.filled) + ' blanks',
+        isPicked: hosp.k === s.picked, notPicked: hosp.k !== s.picked },
+      pickThis: () => this.setState({ picked: this.hosp[s.hospIdx].k, view: 'papers', toast: null }),
+      goNewHosp: () => this.go('newhosp'),
+      leadName: this.hosp.filter(h => h.k === s.picked)[0].name.split(' ').slice(0, 2).join(' '),
+      pickLead: () => this.setState({ view: 'papers', toast: null, back: 'hospitals' }),
+      tblW: (96 + 112 * this.hosp.length) + 'px',
+      cols: this.hosp.slice().sort((x, y) => {
+        const rank = h => h.k === s.picked ? 0 : h.out ? 2 : 1;
+        return rank(x) - rank(y);
+      }).map(h => ({
+        name: h.name.split(' ').slice(0, 2).join(' '),
+        tag: h.k === s.picked ? 'Picked' : h.out ? 'Ruled out' : 'Shortlisted',
+        isPicked: h.k === s.picked,
+        traffic: h.traffic + ' min', normal: h.normal + ' min',
+        nicu: h.nicu === null ? 'not filled in' : h.nicu, nicuBlank: h.nicu === null,
+        open: h.open === null ? 'not filled in' : 'Yes',
+        husband: h.husband === null ? 'not filled in' : h.husband, husbandBlank: h.husband === null,
+        rooming: h.rooming, birth: this.money(h.birth) || 'not filled in', birthBlank: h.birth === null,
+        caesar: this.money(h.caesar) || 'not filled in', caesarBlank: h.caesar === null,
+        dep: this.money(h.dep) || 'not filled in', depBlank: h.dep === null,
+        stale: h.quoted !== null && h.quoted > 60 ? 'asked ' + Math.round(h.quoted / 30) + ' months ago' : '',
+        filled: h.filled + ' of 30',
+        openCol: () => this.go('hospital', { hospIdx: this.hosp.indexOf(h) })
+      })),
+      insRows: this.hosp.map(h => ({ name: h.name.split(' ').slice(0, 2).join(' '), short: h.insShort, why: h.insWhy,
+        covered: h.insShort === 'Covered', unknown: h.insShort === 'not checked' })),
+
+      pickedName: picked.name,
+      docs: s.docs.map((d, idx) => Object.assign({}, d, {
+        ready: d.photo && d.made >= d.copies,
+        copyLine: d.made >= d.copies ? d.made + ' of ' + d.copies + ' copies' : 'Need ' + d.copies + ' copies · ' + (d.made === 0 ? 'none made' : d.made + ' made'),
+        photoLine: d.photo ? '' : 'No photo of it yet', expLine: d.exp || '',
+        fix: () => { const ds = s.docs.slice(); ds[idx] = Object.assign({}, ds[idx], { photo: true, made: ds[idx].copies }); this.setState({ docs: ds }); }
+      })),
+      docsMissing: docsMissing.length, docsReady: s.docs.length - docsMissing.length, docsTotal: s.docs.length,
+      allReady: docsMissing.length === 0, notReady: docsMissing.length > 0,
+      readyLine: docsMissing.length === 0 ? 'All ' + s.docs.length + ' ready' : 'Not ready yet',
+      readySub: docsMissing.length === 0 ? 'Everything ' + picked.name + ' asks for. Copies made, photos taken.'
+        : docsMissing.length + ' of ' + s.docs.length + ' things missing. ' + picked.name + ' needs all of them.',
+      docPct: Math.round((s.docs.length - docsMissing.length) / s.docs.length * 100) + '%',
+      papersOffline: s.offline
+        ? 'No signal — and this screen still works. Everything here is on your phone.'
+        : 'Saved on this phone. Readable with no signal.',
+
+      spent: this.money(spent), left: this.money(left),
+      cats: Object.keys(cats).map(k => ({ cat: k, line: cats[k].have + ' of ' + cats[k].need,
+        pct: Math.round(cats[k].have / cats[k].need * 100) + '%', spent: this.money(cats[k].spent) })),
+      essLine: s.items.filter(i => i.pri === 'Essential' && i.have >= i.need).length + ' of ' + s.items.filter(i => i.pri === 'Essential').length + ' got',
+      recLine: s.items.filter(i => i.pri === 'Recommended' && i.have >= i.need).length + ' of ' + s.items.filter(i => i.pri === 'Recommended').length + ' got',
+
+      tabToday: s.tab === 'today' ? 'on' : '', tabList: s.tab === 'list' ? 'on' : '',
+      tabDates: s.tab === 'dates' ? 'on' : '', tabMoney: s.tab === 'money' ? 'on' : '',
+      isHer: s.who === 'her', isHim: s.who === 'him',
+      moneyShown: s.money, strike: s.money ? '0' : '1',
+      tgBg: s.money ? 'var(--acs)' : 'var(--sf2)', tgLn: s.money ? 'var(--ac)' : 'var(--ln)',
+      tgFg: s.money ? 'var(--acl)' : 'var(--ink2)',
+      offline: s.offline,
+
+      whoHerBg: segBg(s.who === 'her'), whoHerFg: segFg(s.who === 'her'),
+      whoHimBg: segBg(s.who === 'him'), whoHimFg: segFg(s.who === 'him'),
+      lightBg: segBg(s.theme === 'l'), lightFg: segFg(s.theme === 'l'),
+      darkBg: segBg(s.theme === 'd'), darkFg: segFg(s.theme === 'd'),
+      onlineBg: segBg(!s.offline), onlineFg: segFg(!s.offline),
+      offBg: segBg(s.offline), offFg: segFg(s.offline),
+      hideBg: segBg(!s.money), hideFg: segFg(!s.money),
+      showBg: segBg(s.money), showFg: segFg(s.money),
+
+      goToday: () => this.setState({ view: 'today', tab: 'today', toast: null }),
+      goList: () => this.setState({ view: 'list', tab: 'list', toast: null }),
+      goDates: () => this.setState({ view: 'dates', tab: 'dates', toast: null }),
+      goMoney: () => this.setState({ view: 'money', tab: 'money', toast: null }),
+      goFind: () => this.go('find', { q: '' }),
+      goAdd: () => this.go('add', { addKnown: false, addFrom: 'From Today' }),
+      goHospitals: () => this.go('hospitals'),
+      goCompare: () => this.go('compare'),
+      goPapers: () => this.go('papers'),
+      goRegistry: () => this.go('registry'),
+      goAdmin: () => this.go('admin'),
+      goAccess: () => this.go('access'),
+      goItem: () => this.setState({ view: 'item' }),
+      ask: () => this.go('ask'),
+      looking: () => this.go('looking'),
+      addKnownGo: () => this.go('add', { addKnown: true, qty: 1, addFrom: 'From ' + sel.n }),
+      back: () => this.go(s.back || 'today'),
+      backList: () => this.setState({ view: 'list', tab: 'list', toast: null }),
+      backHosp: () => this.go('hospitals'),
+      type: e => this.setState({ q: e.target.value }),
+      inc: () => this.setState({ qty: s.qty + 1 }),
+      dec: () => this.setState({ qty: Math.max(1, s.qty - 1) }),
+      save: () => {
+        const items = s.items.slice();
+        const i = Object.assign({}, items[s.sel]);
+        i.have = i.have + s.qty; items[s.sel] = i;
+        this.setState({ items: items, view: s.addFrom === 'From a message' ? 'today' : 'item', tab: 'today',
+          toast: { title: 'Got it — ' + s.qty + ' more ' + i.n.toLowerCase() + '.',
+            sub: s.offline ? 'Saved on your phone. It’ll go up when you have signal.' : i.have + ' of ' + i.need + ' now.' } });
+      },
+      undo: () => {
+        const items = s.items.slice();
+        const i = Object.assign({}, items[s.sel]);
+        i.have = Math.max(0, i.have - s.qty); items[s.sel] = i;
+        this.setState({ items: items, toast: null });
+      },
+      approve: () => this.setState({ pending: false }),
+      pending: s.pending, approved: !s.pending,
+      deepAdd: () => this.setState({ view: 'add', sel: 0, qty: 2, addKnown: true, addFrom: 'From a message', tab: 'today', toast: null }),
+      deepPapers: () => this.setState({ view: 'papers', toast: null, back: 'today' }),
+      deepCompare: () => this.setState({ view: 'compare', toast: null }),
+      deepItem: () => this.setState({ view: 'item', sel: 7, back: 'today', toast: null }),
+      clearWork: () => this.setState({ dismissed: s.items.map(i => i.n), view: 'today', tab: 'today', toast: null }),
+      setHer: () => this.setState({ who: 'her', view: 'today', tab: 'today', toast: null }),
+      setHim: () => this.setState({ who: 'him', view: 'money', tab: 'money', toast: null }),
+      setLight: () => this.setState({ theme: 'l' }), setDark: () => this.setState({ theme: 'd' }),
+      setOnline: () => this.setState({ offline: false }), setOffline: () => this.setState({ offline: true }),
+      hideMoney: () => this.setState({ money: false }), showMoneyOn: () => this.setState({ money: true }),
+      toggleMoney: () => this.setState({ money: !s.money }),
+      reset: () => this.setState(this.fresh())
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7f9;--sf:#ffffff;--sf2:#f0f2f5;--ink:#12161c;--ink2:#5a6472;--ink3:#8b95a3;--ln:#e2e6ec;--ln2:#cdd4dd;--ac:#1f5fa8;--acs:#e9f0f8;--acl:#1f5fa8;--inv:#ffffff}
+[data-t="d"]{--bg:#0d1117;--sf:#161c24;--sf2:#1e2630;--ink:#eef1f5;--ink2:#9aa5b3;--ink3:#6d7887;--ln:#252e39;--ln2:#33404e;--ac:#3d6491;--acs:#16253a;--acl:#7fa6d4;--inv:#0d1117}
+body{margin:0;background:#eceef1;font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1f5fa8;text-decoration:none}a:hover{color:#16497f}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.dv-tid{font:600 10px 'IBM Plex Mono',monospace;padding:3px 7px;background:#12161c;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 'Instrument Sans',sans-serif;color:#12161c}
+.dv-sub{font:400 12.5px/1.55 'Instrument Sans',sans-serif;color:rgba(0,0,0,.5);margin:0 0 26px;max-width:780px}
+.dv-grp{font:600 11px/1 'Instrument Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:rgba(0,0,0,.42);margin:34px 0 16px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.1)}
+.dv-opts{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px;max-width:1280px}
+.dv-oid{font:600 10.5px 'IBM Plex Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#12161c;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11.5px/1.3 'Instrument Sans',sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;overflow:hidden}
+.dv-opt:target .dv-oid{background:#1f5fa8;color:#fff}
+.dv-next{margin:30px 0 0;font:12.5px/1.6 'Instrument Sans',sans-serif;color:rgba(0,0,0,.5)}
+.pr{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.stk{display:flex;flex-direction:column;gap:10px}
+.cap{font:500 11.5px/1.4 'Instrument Sans',sans-serif;color:rgba(0,0,0,.5);margin:0;letter-spacing:.01em}
+.notes{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;max-width:390px;font:400 12px/1.5 'Instrument Sans',sans-serif;color:#3f4956}
+.notes li{padding-left:13px;position:relative}
+.notes li:before{content:"";position:absolute;left:0;top:6px;width:5px;height:5px;border-radius:50%;background:#1f5fa8}
+.notes li b{font-weight:600;color:#12161c}
+.ph{width:390px;box-sizing:border-box;background:var(--bg);color:var(--ink);border:1px solid var(--ln2);border-radius:34px;overflow:hidden;display:flex;flex-direction:column;flex:none;font-size:15px;letter-spacing:-.005em}
+.st{height:40px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 4px;font:500 12px 'IBM Plex Mono',monospace;color:var(--ink2)}
+.hd{padding:6px 18px 12px;display:flex;align-items:center;gap:12px;flex:none;background:var(--bg)}
+.hd h3{margin:0;font:600 19px/1.2 'Instrument Sans',sans-serif;letter-spacing:-.02em}
+.bd{padding:4px 18px 18px;display:flex;flex-direction:column;gap:14px;flex:1;overflow:hidden}
+.bb{margin-top:auto;padding:12px 16px 26px;display:flex;gap:10px;flex:none;background:var(--bg);border-top:1px solid var(--ln);position:relative}
+.bb:after{content:"";position:absolute;left:50%;bottom:9px;transform:translateX(-50%);width:104px;height:4px;border-radius:2px;background:var(--ln2)}
+.btn{min-height:52px;box-sizing:border-box;border:1px solid var(--ln2);border-radius:11px;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;padding:0 12px;font:600 15.5px 'Instrument Sans',sans-serif;flex:1;text-align:center;background:var(--sf);color:var(--ink)}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn.s{min-height:42px;font-size:14px;border-radius:9px}
+.btn.g{background:transparent;border-color:var(--ln)}
+.cd{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:15px 16px;display:flex;flex-direction:column;gap:10px}
+.sec{font:600 10.5px/1 'Instrument Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ln)}
+.row:last-child{border-bottom:none}
+.gw{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.nm{font:500 15.5px/1.25 'Instrument Sans',sans-serif;overflow-wrap:anywhere}
+.mt{font:400 13px/1.35 'Instrument Sans',sans-serif;color:var(--ink2)}
+.mo{font:400 13px 'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ch{display:inline-flex;align-items:center;gap:5px;background:var(--sf2);border-radius:7px;padding:4px 9px;font:600 12px 'Instrument Sans',sans-serif;color:var(--ink2);white-space:nowrap}
+.ch.k{background:var(--ink);color:var(--bg)}
+.ch.a{background:var(--acs);color:var(--acl)}
+.ch.o{background:transparent;box-shadow:inset 0 0 0 1px var(--ln2)}
+.bar{height:6px;border-radius:3px;background:var(--sf2);overflow:hidden;display:flex}
+.bar i{background:var(--ac);display:block}
+.tb{margin-top:auto;display:flex;flex:none;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:20px;position:relative}
+.tb:after{content:"";position:absolute;left:50%;bottom:7px;transform:translateX(-50%);width:104px;height:4px;border-radius:2px;background:var(--ln2)}
+.tb div{flex:1;padding:13px 0 11px;text-align:center;font:500 12.5px 'Instrument Sans',sans-serif;color:var(--ink3);position:relative}
+.tb div.on{color:var(--ink);font-weight:600}
+.tb div.on:before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:2px;background:var(--ac)}
+.ph2{background:var(--sf2);border:1px dashed var(--ln2);border-radius:8px;display:grid;place-items:center;font:400 9.5px/1.3 'IBM Plex Mono',monospace;color:var(--ink3);text-align:center;padding:4px}
+.big{font:600 42px/1 'Instrument Sans',sans-serif;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.h1{font:600 22px/1.2 'Instrument Sans',sans-serif;letter-spacing:-.02em}
+.h2{font:600 17.5px/1.25 'Instrument Sans',sans-serif;letter-spacing:-.015em}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:14.5px}
+.kv b{font-weight:400;color:var(--ink2)}
+.kv span:last-child{font-weight:500;text-align:right}
+.sw{width:100%;height:44px;border-radius:8px;border:1px solid rgba(0,0,0,.08)}
+.tk{display:flex;flex-direction:column;gap:5px;width:104px}
+.tkl{font:400 10.5px/1.3 'IBM Plex Mono',monospace;color:rgba(0,0,0,.5)}
+.prose{max-width:660px;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:24px 26px;font:400 14px/1.7 'Instrument Sans',sans-serif;color:#2b3138}
+.prose h4{margin:0 0 6px;font:600 15px/1.35 'Instrument Sans',sans-serif}
+.prose h5{margin:22px 0 6px;font:600 13px/1.3 'Instrument Sans',sans-serif}
+.prose p{margin:0 0 11px}
+.prose ul{margin:0 0 11px;padding-left:19px}
+.prose li{margin-bottom:6px}
+.tbl div{box-sizing:border-box}
+</style></helmet>
+<section class="dv-turn" id="t4" style="--ac: {{ accent }}">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">S6 + S7 · Dates — and the one real problem in them, windows</span></div>
+<p class="dv-sub">Last two Wave 1 screens. The design problem is not the list, it is that some entries are a date and some are a period of several weeks — and an immunisation window that looks like a 10:00 appointment is a wrong appointment. No notifications here: reminders belong to the chat assistant.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>S6 · Dates — upcoming first, past folded away</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1160px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">6 coming up</span></div><h3>Dates</h3></div>
+<span class="ch o" style="font-weight:500;min-height:36px;padding:0 12px">+ Add</span>
+</div>
+<div class="bd" style="gap:13px">
+<div class="cd" style="gap:9px;border-color:var(--ink)">
+<div style="display:flex;align-items:center;gap:9px"><span class="ch k">Tomorrow</span><span class="mo" style="margin-left:auto;color:var(--ink2)">Wed 15 Aug · 10:00</span></div>
+<div class="h1">Kontrol kandungan</div>
+<div class="mt" style="font-size:14px">dr. Sari · RS Bunda Menteng · both of you going</div>
+<div class="row" style="border-bottom:0;padding:6px 0 0"><div class="gw"><div class="mt">Bring</div><div class="nm" style="font-size:14.5px">Buku KIA · insurance card</div></div></div>
+</div>
+
+<div class="sec">Coming up</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0">
+<div style="flex:0 0 46px;text-align:center"><div class="mo" style="font-size:19px;font-weight:500;line-height:1.1">21</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">AUG</div></div>
+<div class="gw"><div class="nm">Prenatal yoga</div><div class="mt">17:00 · Studio Senayan · Adinda</div><div class="mt" style="font-size:12px">every Thursday</div></div>
+<span class="mt">›</span>
+</div>
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0">
+<div style="flex:0 0 46px;text-align:center"><div class="mo" style="font-size:19px;font-weight:500;line-height:1.1">02</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">SEP</div></div>
+<div class="gw"><div class="nm">Cek darah lengkap</div><div class="mt">07:00 · Lab Prodia Menteng · Adinda</div><div class="mt" style="font-size:12px">Nothing to eat for 10 hours before</div></div>
+<span class="mt">›</span>
+</div>
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0">
+<div style="flex:0 0 46px;display:flex;flex-direction:column;align-items:center;gap:3px">
+<div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">10</div>
+<div style="width:1.5px;height:12px;background:var(--ln2)"></div>
+<div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">24</div>
+<div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">SEP</div>
+</div>
+<div class="gw"><div class="nm">Hospital tour and sign-up</div><div class="mt"><b style="font-weight:500;color:var(--ink)">Any day between 10 and 24 Sep</b> · RS Bunda</div><div class="mt" style="font-size:12px">Ring them to book a slot · nothing booked yet</div></div>
+<span class="mt">›</span>
+</div>
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0">
+<div style="flex:0 0 46px;text-align:center"><div class="mo" style="font-size:19px;font-weight:500;line-height:1.1">21</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">SEP</div></div>
+<div class="gw"><div class="nm">Kontrol kandungan</div><div class="mt">09:00 · dr. Sari · RS Bunda</div><div class="mt" style="font-size:12px">weekly from here to the birth</div></div>
+<span class="mt">›</span>
+</div>
+<div class="row" style="gap:14px;align-items:flex-start;padding:13px 0">
+<div style="flex:0 0 46px;display:flex;flex-direction:column;align-items:center;gap:3px">
+<div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">14</div>
+<div style="width:1.5px;height:12px;background:var(--ln2)"></div>
+<div class="mo" style="font-size:14.5px;font-weight:500;line-height:1">30</div>
+<div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">OCT</div>
+</div>
+<div class="gw"><div class="nm">Hep B and BCG</div><div class="mt"><b style="font-weight:500;color:var(--ink)">Any day in the first month</b> · for the baby</div><div class="mt" style="font-size:12px">From the IDAI schedule · your paediatrician decides</div></div>
+<span class="mt">›</span>
+</div>
+</div>
+
+<div class="cd" style="padding:4px 16px">
+<div class="row" style="border-bottom:0"><div class="gw"><div class="nm">Been and done</div><div class="mt">6 dates · two have scan photos</div></div><span class="mt">›</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:12px 15px"><div class="mt">The whole first-year immunisation list appears once the baby is born.</div></div>
+</div>
+<div class="tb"><div>Today</div><div>List</div><div class="on">Dates</div><div>Money</div></div>
+</div>
+<ul class="notes">
+<li><b>A window gets a different shape, not a different colour:</b> two numbers with a rule between them where a fixed date has one number, and the words “any day between” in the row. At a glance the rail tells you which entries are appointments and which are periods.</li>
+<li>Tomorrow’s entry is promoted out of the list into a card with what to bring — the list is scanned for “what’s next”, so the answer shouldn’t need scanning.</li>
+<li>Both immunisation and hospital-tour rows say <b>what is still needed of you</b> — “nothing booked yet”, “your paediatrician decides”. A window with no action reads as done when it isn’t.</li>
+<li>Seeded entries name their source in the row. They are a scaffold, never an instruction — and they are editable like anything else.</li>
+<li>Past is one row that says what is in it, so it reads as an archive rather than a truncation. It is also where the scan photos live, which is the real reason she goes back.</li>
+<li><b>No money toggle:</b> there are no amounts on this screen. Costs live on the entry itself, <a class="dv-oid" href="#4b">4b</a>.</li>
+<li>Titles stay in the language they were typed in — <em>Kontrol kandungan</em>, <em>Cek darah lengkap</em> — with English chrome around them (§16).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4b">
+<div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>S7 · One date — before, after, and a window</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<p class="cap">Before · what to bring</p>
+<div class="ph" style="height:800px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);padding-bottom:2px">‹</span><div><div class="mt" style="margin-bottom:2px">Tomorrow · <span class="mo" style="font-size:12.5px">Wed 15 Aug</span></div><h3>Kontrol kandungan</h3></div></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:13px">
+<div class="cd" style="gap:6px;border-color:var(--ink)">
+<div class="big" style="font-size:34px">10:00</div>
+<div class="nm" style="font-weight:400;font-size:15px">dr. Sari · RS Bunda Menteng</div>
+<div class="mt">Both of you going · 25 min to get there, 55 in traffic</div>
+</div>
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div class="sec" style="padding-bottom:5px">Bring</div>
+<div class="row" style="padding:11px 0"><div class="gw"><div class="nm">Buku KIA</div></div><span class="ch o">tick</span></div>
+<div class="row" style="padding:11px 0"><div class="gw"><div class="nm">Insurance card</div><div class="mt">In the papers pack</div></div><span class="ch o">tick</span></div>
+<div class="row" style="padding:11px 0;border-bottom:0"><div class="gw"><div class="nm">Last scan photos</div></div><span class="ch o">tick</span></div>
+</div>
+<div class="cd" style="gap:5px">
+<div class="sec">Before you go</div>
+<div class="nm" style="font-weight:400;font-size:14.5px;line-height:1.45">Nothing to eat for 8 hours. Water is fine. Wear something loose.</div>
+</div>
+<div class="kv"><b>Likely to cost</b><span class="mo">{{ m.visit }}</span></div>
+<div class="kv" style="border-bottom:0"><b>Getting there</b><span style="color:var(--acl);font-weight:500">Open in maps</span></div>
+</div>
+<div class="bb"><div class="btn p">It’s done</div><div class="btn" style="flex:0 0 126px">Change it</div></div>
+</div>
+<ul class="notes">
+<li>The time is the largest thing on the screen, because that is what she opened it for.</li>
+<li><b>“Bring” is a checklist, not prose</b>, and it reaches into the papers pack rather than repeating it — one row, one thing, tickable one-handed.</li>
+<li>Prep instructions are their own card in plain sentences. “Nothing to eat for 8 hours”, never “fasting required (8h)”.</li>
+<li>The primary action is <em>It’s done</em>, in the thumb zone, because that is the only thing she will ever do here. Not “mark complete”, and never a word from §6.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">After · the scan photos are the point</p>
+<div class="ph" style="height:800px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);padding-bottom:2px">‹</span><div><div class="mt" style="margin-bottom:2px"><span class="mo" style="font-size:12.5px">Tue 12 Aug · 10:00</span></div><h3>Kontrol kandungan</h3></div></div>
+<span class="ch k">Done</span>
+</div>
+<div class="bd" style="gap:13px">
+<div class="sec">Scan photos</div>
+<div style="display:flex;gap:9px">
+<div class="ph2" style="width:104px;height:132px;border-style:solid;border-radius:10px">her photo<br>scan</div>
+<div class="ph2" style="width:104px;height:132px;border-style:solid;border-radius:10px">her photo<br>scan</div>
+<div class="ph2" style="width:104px;height:132px;border-radius:10px">+ add</div>
+</div>
+<div class="cd" style="gap:5px">
+<div class="sec">What the doctor said</div>
+<div class="nm" style="font-weight:400;font-size:14.5px;line-height:1.45">Growing well, 2.1 kg. Head down already. Iron tablets, one a day. Come back in two weeks.</div>
+</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="gw"><div class="nm">dr. Sari</div><div class="mt">RS Bunda Menteng</div></div></div>
+<div class="row"><div class="gw"><div class="nm">Cost</div></div><span class="mo">{{ m.visit }}</span></div>
+<div class="row" style="border-bottom:0"><div class="gw"><div class="nm">Next one</div><div class="mt">Wed 15 Aug · 10:00</div></div><span class="mt">›</span></div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Add a photo</div><div class="btn" style="flex:0 0 112px">Add a note</div></div>
+</div>
+<ul class="notes">
+<li>Same screen, halves swapped by the date — <b>never a tab she has to choose.</b> Before: what to bring. After: what happened.</li>
+<li>Photos come first once it’s past, at 104pt so a scan is actually readable, and they are the only images in the app she made herself.</li>
+<li>The note is in her words in one paragraph. No fields, no structure — structure here would just be blank most of the time.</li>
+<li>“Next one” closes the loop so a past date is still a way onward, which is the cold-landing rule.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">A window · not an appointment</p>
+<div class="ph" style="height:800px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="align-items:flex-end">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);padding-bottom:2px">‹</span><div><div class="mt" style="margin-bottom:2px">For the baby</div><h3>Hep B and BCG</h3></div></div>
+</div>
+<div class="bd" style="gap:13px">
+<div class="cd" style="gap:8px;border-color:var(--ink)">
+<div class="h1" style="font-size:24px">Any day between 14 and 30 October</div>
+<div class="mt" style="font-size:14px">Nothing is booked. There is no single right day — anywhere in this period is fine.</div>
+<div style="display:flex;align-items:center;gap:9px;margin-top:2px">
+<span class="mo" style="font-size:13px">14 OCT</span>
+<div class="bar" style="flex:1"><i style="width:0"></i></div>
+<span class="mo" style="font-size:13px">30 OCT</span>
+</div>
+</div>
+<div class="cd" style="gap:5px">
+<div class="sec">Where this came from</div>
+<div class="nm" style="font-weight:400;font-size:14.5px;line-height:1.45">The IDAI childhood immunisation schedule, keyed to the birth date. Your paediatrician decides the actual day — change it here once you know.</div>
+</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="gw"><div class="nm">Who</div><div class="mt">The baby · one of you goes</div></div></div>
+<div class="row"><div class="gw"><div class="nm">Bring</div><div class="mt">Buku KIA</div></div></div>
+<div class="row" style="border-bottom:0"><div class="gw"><div class="nm">Where</div><div class="mt">Not decided yet</div></div><span class="mt">›</span></div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Set a day</div><div class="btn" style="flex:0 0 104px">It’s done</div></div>
+</div>
+<ul class="notes">
+<li><b>The whole screen states the period in words first</b> — 24px, plain sentence — then draws it as an empty bar between two dates. The bar fills as the period passes, so “still fine” and “running out” are the same picture at two moments.</li>
+<li>“There is no single right day” is doing real work: a window that looks like a missing appointment makes a tired person feel late for something that isn’t late.</li>
+<li>Two actions, because a window has two honest endings: pin it to a day, or record that it happened.</li>
+<li>The seeded source and the deference to the paediatrician sit in the body, not in fine print. This is a reminder scaffold, never medical instruction.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “now the handoff package” · “desktop S3/S4/S8/S12” · “Wave 1 is done — walk me through it as a review”</p>
+</section>
+
+<section class="dv-turn" id="t3" style="--ac: {{ accent }}">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Hospitals · the list, the 30-field form, and <a class="dv-oid" href="#2b">2b</a> built properly</span></div>
+<p class="dv-sub">Compare is settled on <a class="dv-oid" href="#2b">2b</a>, four columns scrolled sideways — <a class="dv-oid" href="#3c">3c</a> is that decision built out, with the two costs I flagged mitigated rather than accepted. <a class="dv-oid" href="#1f">1f</a> is superseded.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>S2 · Where to give birth</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1090px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div><div class="mt" style="margin-bottom:2px">4 places · one to pick by 7 Sep</div><h3>Where to give birth</h3></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="gap:11px;border-color:var(--ink)">
+<div style="display:flex;align-items:center;gap:10px"><span class="ch k">Picked this one</span><span class="mo" style="margin-left:auto;color:var(--ink2)">28 of 30 filled in</span></div>
+<div class="h1">RS Bunda Menteng</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="ch">55 min in traffic</span><span class="ch">Baby intensive care</span><span class="ch">Open at 2am</span></div>
+<div class="nm" style="font-size:14.5px;line-height:1.4;font-weight:400">Insurance covers this birth — the 12-month wait ended 3 June.</div>
+<div class="kv" style="border-bottom:0;padding:2px 0 0"><b>Normal birth, kelas 1</b><span class="mo">{{ m.pkg }}</span></div>
+</div>
+<div class="cd" style="gap:11px">
+<div style="display:flex;align-items:center;gap:10px"><span class="ch">Shortlisted</span><span class="mo" style="margin-left:auto;color:var(--ink2)">22 of 30 filled in</span></div>
+<div class="h1">RS Hermina Kemayoran</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="ch">35 min in traffic</span><span class="ch">Baby intensive care</span><span class="ch">Open at 2am</span></div>
+<div class="nm" style="font-size:14.5px;line-height:1.4;font-weight:400">Insurance covers this birth, but the caesar limit is lower.</div>
+<div class="kv" style="border-bottom:0;padding:2px 0 0"><b>Normal birth, kelas 1</b><span class="mo">{{ m.pkgH }}</span></div>
+</div>
+<div class="cd" style="gap:11px">
+<div style="display:flex;align-items:center;gap:10px"><span class="ch">Shortlisted</span><span class="mo" style="margin-left:auto;color:var(--ink2)">7 of 30 filled in</span></div>
+<div class="h1">RSIA Tambak</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="ch">40 min in traffic</span><span class="ch o">Baby intensive care — not filled in</span></div>
+<div class="nm" style="font-size:14.5px;line-height:1.4;font-weight:400;color:var(--ink3)">Nobody has checked the insurance for this one.</div>
+<div class="bar" style="margin-top:2px"><i style="width:23%"></i></div>
+<div class="btn s" style="min-height:44px">Fill in the rest</div>
+</div>
+<div class="cd" style="gap:9px;background:transparent">
+<div style="display:flex;align-items:center;gap:10px"><span class="ch">Ruled out</span><span class="mt" style="margin-left:auto">80 min in traffic</span></div>
+<div class="h2" style="color:var(--ink2)">RS Pondok Indah</div>
+<div class="mt">No baby intensive care. Too far when it matters.</div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Compare all 4</div><div class="btn" style="flex:0 0 126px">+ Add one</div></div>
+</div>
+<ul class="notes">
+<li><b>Decision word first, name second.</b> This list is read to answer “where are we up to”, not “what are these places”.</li>
+<li>Every card carries the computed insurance sentence — <b>the fact most likely to cause financial harm is on the list, not two taps down.</b> Unchecked reads as an explicit sentence in grey, never as an absence.</li>
+<li>Completeness is a count in mono, and only becomes a bar plus a button on the entries that are badly incomplete. A half-filled entry gets an action, not a scold.</li>
+<li>Price is the last line of every card and nothing above it depends on it (C4). Hidden, the card still ranks itself on drive time, care and insurance.</li>
+<li>Ruled out keeps its reason, loses its border and its price, and sits at the bottom. Twelve places: ruled-out ones collapse to “3 ruled out ›”.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="3b">
+<div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>S3 · One place — 30 fields, seven groups, long on purpose</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1500px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div style="display:flex;gap:12px;align-items:flex-end"><span style="font-size:20px;color:var(--ink2);padding-bottom:2px">‹</span><div><div class="mt" style="margin-bottom:2px">RSIA · Menteng, Jakarta Pusat</div><h3>RS Bunda Menteng</h3></div></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div>
+</div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="border-color:var(--ink);gap:7px">
+<div class="sec">Does insurance cover the birth?</div>
+<div class="nm" style="font-size:16.5px;line-height:1.35">Yes. The 12-month wait ended 3 June 2026, before you conceived.</div>
+<div class="mt">A caesar is covered too, up to a lower amount. You are entitled to kelas 1.</div>
+</div>
+<div style="display:flex;gap:9px;align-items:center"><span class="ch k">Picked this one</span><span class="ch o">Change</span><span class="mo" style="margin-left:auto;color:var(--ink2)">28 of 30</span></div>
+
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div style="display:flex;align-items:center;gap:10px;padding-bottom:6px"><div class="sec">Getting there</div><span class="mt" style="margin-left:auto;font-size:12px">all filled in</span><span style="color:var(--ink3)">⌃</span></div>
+<div class="kv"><b>In traffic</b><span class="mo">55 min</span></div>
+<div class="kv"><b>Normally</b><span class="mo">25 min · 8.4 km</span></div>
+<div class="kv"><b>Open at 2am</b><span>Yes, emergency room</span></div>
+<div class="kv" style="border-bottom:0"><b>Getting there</b><span style="color:var(--acl)">Open in maps</span></div>
+</div>
+
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div style="display:flex;align-items:center;gap:10px;padding-bottom:6px"><div class="sec">Medical</div><span class="mt" style="margin-left:auto;font-size:12px">1 blank</span><span style="color:var(--ink3)">⌃</span></div>
+<div class="kv"><b>Baby intensive care</b><span>Yes · level 2B</span></div>
+<div class="kv"><b>Husband in the room</b><span>Yes</span></div>
+<div class="kv"><b>Baby stays with you</b><span>Yes</span></div>
+<div class="kv"><b>Skin-to-skin at birth</b><span>Yes</span></div>
+<div class="kv" style="border-bottom:0"><b>Breastfeeding help</b><span class="ch o">not filled in</span></div>
+</div>
+
+<div class="cd" style="gap:2px;padding:13px 16px">
+<div style="display:flex;align-items:center;gap:10px;padding-bottom:6px"><div class="sec">Money</div><span class="mt" style="margin-left:auto;font-size:12px">asked 12 days ago</span><span style="color:var(--ink3)">⌃</span></div>
+<div class="kv"><b>Normal, kelas 1</b><span class="mo">{{ m.pkg }}</span></div>
+<div class="kv"><b>Caesar, kelas 1</b><span class="mo">{{ m.cae }}</span></div>
+<div class="kv"><b>Deposit on arrival</b><span class="mo">{{ m.dep }}</span></div>
+<div class="kv" style="border-bottom:0"><b>Nights included</b><span class="mo">2 nights</span></div>
+</div>
+
+<div class="cd" style="gap:0;padding:4px 16px">
+<div class="row"><div class="gw"><div class="nm">Insurance</div><div class="mt">Accepted · pays them direct · needs approval 3 days ahead</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Policies</div><div class="mt">Photographer allowed · no visitors after 20:00</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Our visit</div><div class="mt">Went 2 Aug · notes and 3 photos</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Papers they want</div><div class="mt">8 things · 6 ready</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Why we picked it</div><div class="mt">Baby intensive care, and insurance pays direct</div></div><span class="mt">›</span></div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Fill in the 2 blanks</div><div class="btn" style="flex:0 0 104px">Compare</div></div>
+</div>
+<ul class="notes">
+<li><b>The computed insurance answer is the first thing on the screen</b>, above even the decision chip — three sentences of plain English where the data is two dates and a waiting period. Never “policy started 3 Jun 2025 · wait 12 months”.</li>
+<li>Groups are questions, not schema: <em>Open at 2am</em>, <em>Baby stays with you</em>, <em>Deposit on arrival</em>, <em>Why we picked it</em>.</li>
+<li>Three groups open, four collapsed to a row with a summary of what’s inside — so <b>arriving cold shows the whole shape of the decision</b> without 30 fields of scroll.</li>
+<li>Each group header says how complete it is. The primary action counts the blanks: <em>Fill in the 2 blanks</em> — the form is long, so the screen has to tell you how much is left.</li>
+<li>“asked 12 days ago” sits on the Money group, not on each price. Past 60 days it says so in words on the group and on every value in compare.</li>
+<li>No wizard, no steps, no progress gate. §S2 says this form can be long and careful — so it saves per field and can be abandoned mid-way.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="3c">
+<div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>S4 · Compare, four columns — <a class="dv-oid" href="#2b">2b</a> with its costs paid down</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1080px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Compare</h3></div><div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div></div>
+<div class="bd" style="padding:4px 0 0;gap:0">
+<div class="cd" style="margin:0 18px 12px;border-color:var(--ink);gap:8px">
+<div class="sec">Does insurance cover the birth?</div>
+<div class="row" style="padding:8px 0"><div class="gw"><div class="nm">RS Bunda</div><div class="mt">12-month wait ended 3 June</div></div><span class="ch k">Covered</span></div>
+<div class="row" style="padding:8px 0"><div class="gw"><div class="nm">RS Hermina</div><div class="mt">Caesar limit is lower</div></div><span class="ch k">Covered</span></div>
+<div class="row" style="padding:8px 0"><div class="gw"><div class="nm">RS Pondok</div><div class="mt">No direct billing</div></div><span class="ch">Claim it back</span></div>
+<div class="row" style="padding:8px 0"><div class="gw"><div class="nm">RSIA Tambak</div></div><span class="ch o">not checked</span></div>
+</div>
+<div style="overflow-x:auto">
+<div class="tbl" style="min-width:544px">
+<div style="display:flex;border-bottom:1px solid var(--ln2);background:var(--bg)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2)"></div>
+<div style="flex:0 0 112px;padding:8px 9px 9px"><div class="nm" style="font-size:14px;line-height:1.15">RS Bunda</div><span class="ch k" style="font-size:10.5px;padding:2px 6px;margin-top:4px">Picked</span></div>
+<div style="flex:0 0 112px;padding:8px 9px 9px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:14px;line-height:1.15">RS Hermina</div><span class="ch" style="font-size:10.5px;padding:2px 6px;margin-top:4px">Shortlisted</span></div>
+<div style="flex:0 0 112px;padding:8px 9px 9px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:14px;line-height:1.15">RSIA Tambak</div><span class="ch" style="font-size:10.5px;padding:2px 6px;margin-top:4px">Shortlisted</span></div>
+<div style="flex:0 0 112px;padding:8px 9px 9px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:14px;line-height:1.15">RS Pondok</div><span class="ch" style="font-size:10.5px;padding:2px 6px;margin-top:4px">Shortlisted</span></div>
+</div>
+<div style="display:flex;background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">In traffic</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">55 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">35 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">40 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">80 min</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Normally</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">25 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">22 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">18 min</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">32 min</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Baby intensive care</div>
+<div style="flex:0 0 112px;padding:13px 9px;font-size:14px;font-weight:500">Yes · 2B</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px;font-weight:500">Yes · 2A</div>
+<div style="flex:0 0 112px;padding:11px 9px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:11px">not filled in</span></div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px;font-weight:500">No</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Open at 2am</div>
+<div style="flex:0 0 112px;padding:13px 9px;font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Husband in the room</div>
+<div style="flex:0 0 112px;padding:13px 9px;font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:11px 9px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:11px">not filled in</span></div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Baby stays with you</div>
+<div style="flex:0 0 112px;padding:13px 9px;font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">No</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln);font-size:14px">Yes</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Normal birth</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">{{ m.pkg }}</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ m.pkgH }}</div>
+<div style="flex:0 0 112px;padding:11px 9px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:11px">not filled in</span></div>
+<div style="flex:0 0 112px;padding:9px 9px;border-left:1px solid var(--ln)"><div class="mo">{{ m.pkg3 }}</div><div class="mt" style="font-size:11px;line-height:1.2;margin-top:2px">asked 4 months ago</div></div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Caesar</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">{{ m.cae }}</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ m.caeH }}</div>
+<div style="flex:0 0 112px;padding:11px 9px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:11px">not filled in</span></div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ m.cae3 }}</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln);background:var(--sf)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--sf);z-index:2;border-right:1px solid var(--ln2);padding:11px 0 11px 18px;font-size:13px;line-height:1.25;color:var(--ink2);box-sizing:border-box">Deposit on arrival</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">{{ m.dep }}</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ m.depH }}</div>
+<div style="flex:0 0 112px;padding:11px 9px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:11px">not filled in</span></div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">{{ m.dep3 }}</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--ln2)">
+<div style="flex:0 0 96px;position:sticky;left:0;background:var(--bg);z-index:2;border-right:1px solid var(--ln2);padding:13px 0 13px 18px;font-size:13px;color:var(--ink2);box-sizing:border-box">Filled in</div>
+<div style="flex:0 0 112px;padding:13px 9px" class="mo">28 of 30</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">22 of 30</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">7 of 30</div>
+<div style="flex:0 0 112px;padding:13px 9px;border-left:1px solid var(--ln)" class="mo">19 of 30</div>
+</div>
+</div>
+</div>
+<div style="padding:14px 18px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="ch o">slide the table sideways ›</span><span class="ch o">6 more rows</span></div>
+</div>
+<div class="bb"><div class="btn p">Pick a place</div><div class="btn" style="flex:0 0 104px">Rule out</div></div>
+</div>
+<ul class="notes">
+<li><b>Cost paid down, 1:</b> the insurance answer is no longer a compressed line naming four places — it is the ranked card from <a class="dv-oid" href="#2c">2c</a>, one row per place with its reason, sitting above the table. That is where <a class="dv-oid" href="#2b">2b</a> was weakest and it costs 130pt of height to fix.</li>
+<li><b>Cost paid down, 2:</b> nothing is 9.5px any more. Columns went 116 → 112 and values to 14px, chips to 11px, and the table simply got wider — it was already scrolling, so width was the cheap thing to spend.</li>
+<li>The label column is pinned by the row itself, so labels and values <b>cannot drift out of alignment</b> however far you slide.</li>
+<li>Column order is the shortlist order, so <b>the picked place is always the first thing you see</b> and the ruled-out one is off to the right where you have to go looking.</li>
+<li>“slide the table sideways” is written out. It is the one gesture in the app, so it gets words rather than a shadow you have to notice.</li>
+<li>Hairline row borders and alternating surfaces do the grid work — no vertical rules except the pinned column’s, which is the only boundary that means something.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “hi-fi S6 + S7, the schedule” · “now the handoff package” · “the 3b groups are wrong, reorder them”</p>
+</section>
+
+<section class="dv-turn" id="t2" style="--ac: {{ accent }}">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Four hospitals on a phone — three ways, so we can stop guessing</span></div>
+<p class="dv-sub">The three-column table in <a class="dv-oid" href="#1f">1f</a> works at three and breaks at four. These are the three honest options. <a class="dv-oid" href="#2a">2a</a> is live — tap the names to change which two you’re looking at.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Two at a time, you choose which two</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1000px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Compare</h3></div><div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div></div>
+<div class="bd" style="padding:4px 0 0;gap:0">
+<div style="padding:0 18px 12px">
+<div class="sec" style="margin-bottom:8px">Which two?</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<sc-for list="{{ chips }}" as="h" hint-placeholder-count="4">
+<div style="min-height:40px;display:flex;align-items:center;padding:0 13px;border-radius:9px;background:{{ h.bg }};color:{{ h.fg }};box-shadow:inset 0 0 0 1px {{ h.ln }};font:600 13.5px 'Instrument Sans';cursor:pointer" onClick="{{ h.pick }}">{{ h.short }}</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;padding:0 18px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--ln2);z-index:2">
+<div style="flex:0 0 88px"></div>
+<div style="flex:1;padding:6px 8px 8px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:15px;line-height:1.2">{{ a.short }}</div><span class="ch" style="font-size:10px;padding:2px 6px;margin-top:3px">{{ a.tag }}</span></div>
+<div style="flex:1;padding:6px 8px 8px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:15px;line-height:1.2">{{ b.short }}</div><span class="ch" style="font-size:10px;padding:2px 6px;margin-top:3px">{{ b.tag }}</span></div>
+</div>
+<div style="padding:12px 18px;background:var(--sf);border-bottom:1px solid var(--ln)">
+<div class="sec" style="margin-bottom:7px">Does insurance cover the birth?</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;font:500 13.5px/1.35 'Instrument Sans';color:{{ a.ins.c }}">{{ a.ins.t }}</div>
+<div style="flex:1;font:500 13.5px/1.35 'Instrument Sans';color:{{ b.ins.c }};border-left:1px solid var(--ln);padding-left:10px">{{ b.ins.t }}</div>
+</div>
+</div>
+<div style="display:flex;padding:0 18px"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">In traffic</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo"><span style="color:{{ a.traffic.c }};font-weight:{{ a.traffic.w }}">{{ a.traffic.t }}</span></div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo"><span style="color:{{ b.traffic.c }};font-weight:{{ b.traffic.w }}">{{ b.traffic.t }}</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Normally</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo"><span style="color:{{ a.normal.c }};font-weight:{{ a.normal.w }}">{{ a.normal.t }}</span></div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo"><span style="color:{{ b.normal.c }};font-weight:{{ b.normal.w }}">{{ b.normal.t }}</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Baby intensive care</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ a.nicu.c }};font-weight:{{ a.nicu.w }}">{{ a.nicu.t }}</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ b.nicu.c }};font-weight:{{ b.nicu.w }}">{{ b.nicu.t }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Open at 2am</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ a.open.c }};font-weight:{{ a.open.w }}">{{ a.open.t }}</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ b.open.c }};font-weight:{{ b.open.w }}">{{ b.open.t }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Husband in the room</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ a.husband.c }};font-weight:{{ a.husband.w }}">{{ a.husband.t }}</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ b.husband.c }};font-weight:{{ b.husband.w }}">{{ b.husband.t }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Baby stays with you</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ a.rooming.c }};font-weight:{{ a.rooming.w }}">{{ a.rooming.t }}</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln);font-size:14px;color:{{ b.rooming.c }};font-weight:{{ b.rooming.w }}">{{ b.rooming.t }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Normal birth</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ a.birth.c }};font-weight:{{ a.birth.w }}">{{ a.birth.t }}</span><div class="mt" style="font-size:11px">{{ a.birth.n }}</div></div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ b.birth.c }};font-weight:{{ b.birth.w }}">{{ b.birth.t }}</span><div class="mt" style="font-size:11px">{{ b.birth.n }}</div></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Caesar</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ a.caesar.c }};font-weight:{{ a.caesar.w }}">{{ a.caesar.t }}</span></div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ b.caesar.c }};font-weight:{{ b.caesar.w }}">{{ b.caesar.t }}</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Deposit on arrival</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ a.dep.c }};font-weight:{{ a.dep.w }}">{{ a.dep.t }}</span></div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)"><span class="mo" style="color:{{ b.dep.c }};font-weight:{{ b.dep.w }}">{{ b.dep.t }}</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:12px 0;font-size:13px;color:var(--ink2)">Filled in</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo">{{ a.filled }}</div><div style="flex:1;padding:12px 8px;border-left:1px solid var(--ln)" class="mo">{{ b.filled }}</div></div>
+<div style="padding:14px 18px;display:flex;gap:10px;align-items:center"><span class="ch o">6 more rows</span><span class="mt" style="font-size:12.5px">rows nobody has filled in are hidden</span></div>
+</div>
+<div class="bb"><div class="btn p">Pick {{ a.short }}</div><div class="btn" style="flex:0 0 104px">Rule out</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>Two columns, twelve names.</b> It doesn’t care how many hospitals exist — the screen shape is fixed at four or at forty, which is the only one of the three that stays true past this pregnancy.</li>
+<li>Wider columns buy real sentences: the insurance answer becomes per-column prose instead of a chip, and “We haven’t checked this one” reads as a fact rather than a gap.</li>
+<li><b>The cost:</b> comparing four means three passes, and you have to remember what you saw. Two of these decisions — drive time and price — are the ones you actually want side by side across everything.</li>
+<li>Tap a name to swap it in; the older of the two drops out. The primary action always names the left column, so “Pick” is never ambiguous.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Four narrow columns, scrolled sideways, labels pinned</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:856px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Compare</h3></div><span class="ch o" style="font-weight:500">4 places</span></div>
+<div class="bd" style="padding:4px 0 0;gap:0">
+<div class="cd" style="margin:0 18px 12px;border-color:var(--ink);gap:7px">
+<div class="sec">Does insurance cover the birth?</div>
+<div class="nm" style="font-size:15px;line-height:1.4">Covered at <b style="font-weight:600">Bunda</b> and <b style="font-weight:600">Hermina</b> (lower caesar limit). <b style="font-weight:600">Pondok</b> you claim back. <b style="font-weight:600">Tambak</b> not checked.</div>
+</div>
+<div style="display:flex">
+<div style="flex:0 0 92px;background:var(--bg);border-right:1px solid var(--ln2);z-index:2">
+<div style="height:56px;border-bottom:1px solid var(--ln2)"></div>
+<div style="padding:12px 0 12px 18px;font-size:12.5px;color:var(--ink2);height:44px;box-sizing:border-box">In traffic</div>
+<div style="padding:12px 0 12px 18px;font-size:12.5px;color:var(--ink2);height:44px;box-sizing:border-box;background:var(--sf)">Normally</div>
+<div style="padding:8px 0 8px 18px;font-size:12.5px;color:var(--ink2);height:52px;box-sizing:border-box;line-height:1.25">Baby intensive care</div>
+<div style="padding:12px 0 12px 18px;font-size:12.5px;color:var(--ink2);height:44px;box-sizing:border-box;background:var(--sf)">Open at 2am</div>
+<div style="padding:8px 0 8px 18px;font-size:12.5px;color:var(--ink2);height:52px;box-sizing:border-box;line-height:1.25">Husband in the room</div>
+<div style="padding:8px 0 8px 18px;font-size:12.5px;color:var(--ink2);height:52px;box-sizing:border-box;line-height:1.25;background:var(--sf)">Baby stays with you</div>
+<div style="padding:12px 0 12px 18px;font-size:12.5px;color:var(--ink2);height:52px;box-sizing:border-box">Normal birth</div>
+<div style="padding:12px 0 12px 18px;font-size:12.5px;color:var(--ink2);height:44px;box-sizing:border-box;background:var(--sf)">Caesar</div>
+<div style="padding:8px 0 8px 18px;font-size:12.5px;color:var(--ink2);height:52px;box-sizing:border-box;line-height:1.25">Deposit on arrival</div>
+</div>
+<div style="flex:1;overflow:hidden;display:flex">
+<div style="flex:0 0 116px;border-right:1px solid var(--ln)">
+<div style="height:56px;border-bottom:1px solid var(--ln2);padding:6px 8px;box-sizing:border-box"><div class="nm" style="font-size:13.5px;line-height:1.15">RS Bunda</div><span class="ch k" style="font-size:9.5px;padding:2px 5px;margin-top:2px">Picked</span></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box" class="mo">55 min</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">25 min</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;font-weight:500">Yes · 2B</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px">Yes</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box" class="mo">{{ m.pkg }}</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">{{ m.cae }}</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box" class="mo">{{ m.dep }}</div>
+</div>
+<div style="flex:0 0 116px;border-right:1px solid var(--ln)">
+<div style="height:56px;border-bottom:1px solid var(--ln2);padding:6px 8px;box-sizing:border-box"><div class="nm" style="font-size:13.5px;line-height:1.15">RSIA Tambak</div><span class="ch" style="font-size:9.5px;padding:2px 5px;margin-top:2px">Shortlisted</span></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box" class="mo">40 min</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">18 min</div>
+<div style="height:52px;padding:10px 8px;box-sizing:border-box"><span class="ch o" style="font-size:9.5px;padding:3px 5px">not filled in</span></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px">Yes</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:10px 8px;box-sizing:border-box"><span class="ch o" style="font-size:9.5px;padding:3px 5px">not filled in</span></div>
+<div style="height:44px;padding:10px 8px;box-sizing:border-box;background:var(--sf)"><span class="ch o" style="font-size:9.5px;padding:3px 5px">not filled in</span></div>
+<div style="height:52px;padding:10px 8px;box-sizing:border-box"><span class="ch o" style="font-size:9.5px;padding:3px 5px">not filled in</span></div>
+</div>
+<div style="flex:0 0 116px;border-right:1px solid var(--ln)">
+<div style="height:56px;border-bottom:1px solid var(--ln2);padding:6px 8px;box-sizing:border-box"><div class="nm" style="font-size:13.5px;line-height:1.15">RS Pondok</div><span class="ch" style="font-size:9.5px;padding:2px 5px;margin-top:2px">Shortlisted</span></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box" class="mo">80 min</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">32 min</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;font-weight:500">No</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:10px 8px;box-sizing:border-box"><span class="ch o" style="font-size:9.5px;padding:3px 5px">not filled in</span></div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box;font-size:13.5px;background:var(--sf)">Yes</div>
+<div style="height:52px;padding:8px 8px;box-sizing:border-box"><div class="mo" style="font-size:12.5px">{{ m.pkg3 }}</div><div class="mt" style="font-size:10px;line-height:1.2">asked 4 months ago</div></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">{{ m.cae3 }}</div>
+<div style="height:52px;padding:12px 8px;box-sizing:border-box" class="mo">{{ m.dep3 }}</div>
+</div>
+<div style="flex:0 0 116px;opacity:.4">
+<div style="height:56px;border-bottom:1px solid var(--ln2);padding:6px 8px;box-sizing:border-box"><div class="nm" style="font-size:13.5px;line-height:1.15">RS Hermina</div></div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box" class="mo">35 min</div>
+<div style="height:44px;padding:12px 8px;box-sizing:border-box;background:var(--sf)" class="mo">22 min</div>
+</div>
+</div>
+</div>
+<div style="padding:12px 18px 0;display:flex;gap:8px;align-items:center"><span class="ch o">swipe for RS Hermina ›</span><span class="ch o">6 more rows</span></div>
+</div>
+<div class="bb"><div class="btn p">Pick a place</div><div class="btn" style="flex:0 0 104px">Rule out</div></div>
+</div>
+<ul class="notes">
+<li>Everything is on one surface, and drive time and price <b>can be read across all four in one movement</b> — the thing <a class="dv-oid" href="#2a">2a</a> can’t do.</li>
+<li><b>The cost is real:</b> 116pt columns force 13.5px values and 9.5px chips, the fourth column is always half off-screen, and the insurance sentence has to compress into one dense line naming four places.</li>
+<li>Sideways scroll with a pinned label column is also the one interaction in the app you have to discover — which §4.6 says not to build.</li>
+<li>My read: this is the right desktop screen (it already is, in the wireframes) and the wrong phone screen.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2c">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>No columns at all — one question at a time, best first</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1300px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Compare</h3></div><span class="ch o" style="font-weight:500">4 places</span></div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="border-color:var(--ink);gap:9px">
+<div class="sec">Does insurance cover the birth?</div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Bunda</div><div class="mt">The 12-month wait ended 3 June</div></div><span class="ch k">Covered</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Hermina</div><div class="mt">Caesar limit is lower</div></div><span class="ch k">Covered</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Pondok</div></div><span class="ch">Claim it back</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RSIA Tambak</div></div><span class="ch o">not checked</span></div>
+</div>
+<div class="cd" style="gap:9px">
+<div class="sec">How long to get there in traffic</div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Hermina</div></div><span class="mo">35 min</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RSIA Tambak</div></div><span class="mo">40 min</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Bunda</div></div><span class="mo">55 min</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Pondok</div></div><span class="mo">80 min</span></div>
+</div>
+<div class="cd" style="gap:9px">
+<div class="sec">Baby intensive care</div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Bunda</div></div><span class="ch k">Yes · 2B</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Hermina</div></div><span class="ch k">Yes · 2A</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Pondok</div></div><span class="ch">No</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RSIA Tambak</div></div><span class="ch o">not filled in</span></div>
+</div>
+<div class="cd" style="gap:9px">
+<div class="sec">A normal birth costs</div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Pondok</div><div class="mt">asked 4 months ago</div></div><span class="mo">{{ m.pkg3 }}</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Bunda</div></div><span class="mo">{{ m.pkg }}</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RS Hermina</div></div><span class="mo">{{ m.pkgH }}</span></div>
+<div class="row" style="padding:7px 0"><div class="gw"><div class="nm">RSIA Tambak</div></div><span class="ch o">not filled in</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:13px 15px"><div class="mt">6 more questions · husband in the room, baby stays with you, open at 2am, caesar, deposit, how much is filled in</div></div>
+</div>
+<div class="bb"><div class="btn p">Pick a place</div><div class="btn" style="flex:0 0 104px">Rule out</div></div>
+</div>
+<ul class="notes">
+<li>One question per card, places ordered <b>best answer first</b>. Nothing is narrow, nothing scrolls sideways, and it works identically at four places or fourteen.</li>
+<li>Blanks fall to the bottom of their own card and read as “not filled in” without ever sitting in a column where they could pass for a no.</li>
+<li>It is also the only one of the three that <b>answers before asking</b> — the order of the names is itself the answer to each question.</li>
+<li><b>The cost:</b> you cannot read one hospital’s profile. Four questions is already four cards; ten is a long scroll, and nobody sees “Bunda” as a whole.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2d">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Where I land</div>
+<div class="dv-card" style="padding:0">
+<div class="prose" style="border:0;max-width:600px">
+<h4><a class="dv-oid" href="#2a">2a</a> for the phone, <a class="dv-oid" href="#2b">2b</a> for his desktop, and steal one thing from <a class="dv-oid" href="#2c">2c</a></h4>
+<p>Building the three changed my mind about which cost matters. I assumed the problem was <em>fitting</em> four columns. It isn’t — <a class="dv-oid" href="#2b">2b</a> fits them. The problem is that at 116pt a column can only hold a number, and half the fields in this module are not numbers: they’re sentences about insurance, policies and what happens in the first 48 hours. A layout that can only show numbers quietly deletes the fields that decide the outcome.</p>
+<p>So <b><a class="dv-oid" href="#2a">2a</a>: two columns, tap to swap.</b> It survives a twelve-hospital list, it keeps the insurance answer as prose per place, and it has no discoverable gesture. The pairwise cost is real but small — by the time you have four, two are usually already ruled out, and this is a desk task done once, not the three-second path.</p>
+<p><b>Steal from <a class="dv-oid" href="#2c">2c</a>:</b> put the ranked one-question card at the <em>top</em> of <a class="dv-oid" href="#2a">2a</a> for the two questions you genuinely want across everything — drive time in traffic, and does insurance cover it. Then the pairwise table answers everything else. That’s the version I’d build, and it’s a small addition to <a class="dv-oid" href="#2a">2a</a> rather than a fourth design.</p>
+<p>One thing I’d still test on a real phone: whether tapping a name to swap reads as “compare this” or as “select this”. If it reads as select, the chips need to say <em>Compare</em> somewhere, and that is a copy fix, not a layout one.</p>
+<p>Say which and I’ll fold it into <a class="dv-oid" href="#1f">1f</a> as the single compare screen.</p>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “build the <a class="dv-oid" href="#2a">2a</a> + <a class="dv-oid" href="#2c">2c</a> hybrid as the real compare screen” · “<a class="dv-oid" href="#2c">2c</a> is right, do it properly” · “hi-fi the schedule screens next”</p>
+</section>
+
+<section class="dv-turn" id="t1" style="--ac: {{ accent }}">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Hi-fi · quiet clinical, light and dark, one blue</span></div>
+<p class="dv-sub">Built on the wireframes, structure unchanged. Cool near-neutrals, a single blue used only for actions and progress, no texture, no product photography — the only images are the ones she takes herself. Money is hidden in every screenshot here because that is the default state (C4); flip it, and the accent, in Tweaks. Frames taller than 844pt are drawn full-length so nothing is hidden — on the phone those screens scroll, with the bottom bar pinned.</p>
+
+<div class="dv-grp">The system</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Tokens, type scale, components</div>
+<div class="dv-card" style="padding:24px">
+<div class="pr" style="gap:34px">
+<div class="stk" style="width:330px">
+<p class="cap">Colour · light</p>
+<div style="display:flex;gap:8px">
+<div class="tk"><div class="sw" style="background:#f6f7f9"></div><div class="tkl">#f6f7f9 page</div></div>
+<div class="tk"><div class="sw" style="background:#fff"></div><div class="tkl">#ffffff card</div></div>
+<div class="tk"><div class="sw" style="background:#f0f2f5"></div><div class="tkl">#f0f2f5 quiet</div></div>
+</div>
+<div style="display:flex;gap:8px">
+<div class="tk"><div class="sw" style="background:#12161c"></div><div class="tkl">#12161c ink</div></div>
+<div class="tk"><div class="sw" style="background:#5a6472"></div><div class="tkl">#5a6472 second</div></div>
+<div class="tk"><div class="sw" style="background:#e2e6ec"></div><div class="tkl">#e2e6ec line</div></div>
+</div>
+<p class="cap" style="margin-top:6px">Colour · dark</p>
+<div style="display:flex;gap:8px">
+<div class="tk"><div class="sw" style="background:#0d1117"></div><div class="tkl">#0d1117 page</div></div>
+<div class="tk"><div class="sw" style="background:#161c24"></div><div class="tkl">#161c24 card</div></div>
+<div class="tk"><div class="sw" style="background:#252e39"></div><div class="tkl">#252e39 line</div></div>
+</div>
+<p class="cap" style="margin-top:6px">Accent · the only hue in the app</p>
+<div style="display:flex;gap:8px">
+<div class="tk"><div class="sw" style="background:var(--ac)"></div><div class="tkl">actions, progress</div></div>
+<div class="tk"><div class="sw" style="background:#e9f0f8"></div><div class="tkl">its quiet tint</div></div>
+<div class="tk"><div class="sw" style="background:#3d6491"></div><div class="tkl">dimmed for dark</div></div>
+</div>
+<ul class="notes" style="max-width:330px">
+<li><b>Nothing carries meaning by colour alone.</b> Every state has a word; the accent only ever means “you can act here”.</li>
+<li>Cool greys with a faint blue cast, so the one blue looks native rather than applied.</li>
+</ul>
+</div>
+<div class="stk" style="width:330px">
+<p class="cap">Type · Instrument Sans, with mono for anything countable</p>
+<div class="cd" style="gap:12px">
+<div><div class="tkl" style="margin-bottom:3px">42 / 600 / -3.5% — countdown only</div><div class="big">61</div></div>
+<div><div class="tkl" style="margin-bottom:3px">22 / 600 — screen answer</div><div class="h1">Nothing needs doing today.</div></div>
+<div><div class="tkl" style="margin-bottom:3px">17.5 / 600 — card title</div><div class="h2">Get 8 more newborn nappies</div></div>
+<div><div class="tkl" style="margin-bottom:3px">15.5 / 500 — row name</div><div class="nm">Pembalut bersalin</div></div>
+<div><div class="tkl" style="margin-bottom:3px">13 / 400 — supporting</div><div class="mt">Hospital bag · wanted by 15 Sep</div></div>
+<div><div class="tkl" style="margin-bottom:3px">10.5 / 600 / +10% — section</div><div class="sec">Needs doing</div></div>
+<div><div class="tkl" style="margin-bottom:3px">IBM Plex Mono, tabular — money, counts, dates</div><div class="mo" style="font-size:15px">{{ m.pkg }} · 4 of 12 · 15 Sep</div></div>
+</div>
+<ul class="notes" style="max-width:330px">
+<li>Mono for every number that gets compared — <b>tabular figures stop the compare table shifting</b> column to column, and stop the hidden/shown money toggle moving the layout.</li>
+<li>Minimum body size 13px, minimum touch target 52px. Nothing below 13.</li>
+</ul>
+</div>
+<div class="stk" style="width:330px">
+<p class="cap">Components</p>
+<div class="cd">
+<div class="sec">Buttons · 52pt</div>
+<div style="display:flex;gap:9px"><div class="btn p">Save it</div><div class="btn" style="flex:0 0 92px">Later</div></div>
+<div class="sec" style="margin-top:4px">Words, not colours</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="ch">Still need this</span><span class="ch k">Got it</span><span class="ch">More than enough</span><span class="ch a">Looking at it</span><span class="ch o">not filled in</span></div>
+<div class="sec" style="margin-top:4px">Money · hidden by default</div>
+<div style="display:flex;gap:14px;align-items:center"><span class="mo">Rp••••••</span><span class="mo">Rp180.000</span><span class="ch o">same width</span></div>
+<div class="sec" style="margin-top:4px">Its toggle · struck through means hidden</div>
+<div style="display:flex;gap:12px;align-items:center">
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--sf2);box-shadow:inset 0 0 0 1px var(--ln);display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:var(--ink2)">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg)"></span></div>
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--acs);box-shadow:inset 0 0 0 1px var(--ac);display:grid;place-items:center"><span class="mo" style="font-size:14px;font-weight:500;color:var(--acl)">Rp</span></div>
+<div class="mt" style="font-size:12.5px">hidden · shown</div>
+</div>
+<div class="sec" style="margin-top:4px">Progress</div>
+<div class="bar"><i style="width:36%"></i></div><div class="mt">4 of 11 · never a bare percentage</div>
+<div class="sec" style="margin-top:4px">Row</div>
+<div class="row" style="border:0;padding:6px 0"><div class="gw"><div class="nm">Popok newborn</div><div class="mt">4 of 12 · could be a gift</div></div><span class="ch">Still need this</span></div>
+<div class="sec" style="margin-top:4px">Her photo, the only image type</div>
+<div style="display:flex;gap:8px"><div class="ph2" style="width:60px;height:60px">her photo<br>KK</div><div class="ph2" style="width:60px;height:60px">scan<br>21 Aug</div><div class="ph2" style="width:60px;height:60px;border-style:solid">+ add</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">S1 · Today — light, dark, and empty</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Today · light</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" data-t="l" style="height:844px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">about 61 days to go</span></div><h3>Today</h3></div>
+</div>
+<div class="bd">
+<sc-if value="{{ anyWork }}" hint-placeholder-val="{{ true }}">
+<div class="sec">Needs doing</div>
+</sc-if>
+<sc-if value="{{ w1 }}" hint-placeholder-val="{{ true }}">
+<div class="cd">
+<div class="h2">Get 8 more newborn nappies</div>
+<div class="mt">Hospital bag · wanted by 15 Sep</div>
+<div style="display:flex;gap:9px"><div class="btn p">Add what we got</div><div class="btn" style="flex:0 0 84px">Later</div></div>
+</div>
+</sc-if>
+<sc-if value="{{ w2 }}" hint-placeholder-val="{{ true }}">
+<div class="cd">
+<div class="h2">Pick where to give birth</div>
+<div class="mt">3 on the shortlist · 2 half filled in</div>
+<div style="display:flex;gap:9px"><div class="btn p">Compare them</div><div class="btn" style="flex:0 0 84px">Later</div></div>
+</div>
+</sc-if>
+<sc-if value="{{ w3 }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:8px">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div class="stk" style="gap:1px;width:44px;flex:none;align-items:center;background:var(--sf2);border-radius:9px;padding:7px 0">
+<div class="mo" style="font-size:17px;font-weight:500">15</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">AUG</div>
+</div>
+<div class="gw"><div class="h2">Check-up</div><div class="mt">Tomorrow 10:00 · dr. Sari · RS Bunda</div><div class="mt">Bring buku KIA</div></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ noWork }}" hint-placeholder-val="{{ true }}">
+<div class="cd" style="gap:7px;padding:20px 16px">
+<div class="h1">Nothing needs doing today.</div>
+<div class="mt" style="font-size:14px">The hospital bag is packed for now. Next thing due 15 Sep.</div>
+</div>
+<div class="sec">Coming up</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="gw"><div class="nm">Check-up</div><div class="mt">Thu 21 Aug 10:00 · RS Bunda</div></div><span class="mt">›</span></div>
+<div class="row"><div class="gw"><div class="nm">Hospital bag, second pass</div><div class="mt">15 Sep · week 36</div></div><span class="mt">›</span></div>
+</div>
+</sc-if>
+<div class="cd" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">Hospital bag</span><span class="mo" style="color:var(--ink2)">{{ bagLabel }}</span></div>
+<div class="bar"><i style="width:{{ bagPct }}"></i></div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Add what we got</div><div class="btn" style="flex:0 0 134px">Find a thing</div></div>
+</div>
+<div style="display:flex;gap:8px;align-items:center"><span class="ch o">{{ workLabel }}</span><span class="cap">drag the “things needing doing” tweak to 0 to see the empty state in place</span></div>
+</div>
+<ul class="notes">
+<li><b>The countdown is a line above the title, not a card.</b> The due date is an estimate — the birth will come sooner or later than 14 Oct — so a 42px number would be the loudest thing on screen and the least reliable. “about 61 days to go”, at 12.5px, is as much emphasis as an estimate has earned.</li>
+<li>Which means the screen now <b>opens on the work</b>, and the first thing under the title is something to do rather than something to feel.</li>
+<li>Cards are the same card. Only the appointment differs, by carrying a date block instead of buttons — you cannot dismiss a fact.</li>
+<li><b>No money toggle on this screen</b> — there are no amounts on it, so a control that reveals nothing is just a button she can get wrong. It appears only where there is something to reveal: the compare table <a class="dv-oid" href="#1f">1f</a> and item detail <a class="dv-oid" href="#1h">1h</a>.</li>
+<li>Where it does appear it is a struck-through <b>Rp</b>, not an eye. An eye means “look at this”; a struck-out currency mark says exactly which thing is being withheld, in a glyph she reads every day — and it sits top-right, out of the thumb zone, since it is the one control she should never hit by accident on a shared phone.</li>
+<li>Two thumb actions, full width, 52pt, one line each. They never move between screens.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Today · dark, six weeks after the birth</div>
+<div class="dv-card" style="padding:20px;background:#0a0d12">
+<div class="pr">
+<div class="stk">
+<div class="ph" data-t="d" style="height:844px">
+<div class="st"><span>2:14</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end">
+<div><div class="mt" style="margin-bottom:2px">Thu 27 Nov · <span class="mo" style="font-size:12.5px">6 weeks old</span></div><h3>Today</h3></div>
+</div>
+<div class="bd">
+<div class="sec">Needs doing</div>
+<div class="cd">
+<div class="h2">6 bottles need cleaning</div>
+<div class="mt">4 clean · 0 being used · 6 dirty</div>
+<div style="display:flex;gap:9px"><div class="btn p">Clean all 6</div><div class="btn" style="flex:0 0 84px">Later</div></div>
+</div>
+<div class="cd">
+<div class="h2">Detergent is nearly gone</div>
+<div class="mt">Low since Tuesday · lasts about 5 weeks</div>
+<div style="display:flex;gap:9px"><div class="btn p">Add what we got</div><div class="btn" style="flex:0 0 84px">Later</div></div>
+</div>
+<div class="cd" style="gap:8px">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div class="stk" style="gap:1px;width:44px;flex:none;align-items:center;background:var(--sf2);border-radius:9px;padding:7px 0">
+<div class="mo" style="font-size:17px;font-weight:500">02</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">DEC</div>
+</div>
+<div class="gw"><div class="h2">Immunisation</div><div class="mt">Any day between 2 and 16 Dec · BCG and polio</div></div>
+</div>
+</div>
+<div class="cd" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">0–3 months</span><span class="mo" style="color:var(--ink2)">24 of 31</span></div>
+<div class="bar"><i style="width:77%"></i></div>
+</div>
+</div>
+<div class="bb"><div class="btn p">Add what we got</div><div class="btn" style="flex:0 0 134px">Find a thing</div></div>
+</div>
+</div>
+<ul class="notes">
+<li><b>A real dark mode, not an inverted light one:</b> the page is #0d1117, cards lift to #161c24, and the accent is <b>dimmed</b> to #3d6491 — bright blue on a black screen at 2am is the one thing that would wake her up.</li>
+<li>Same three slots, different card types — the screen does not change shape on 14 October, only its contents. Countdown becomes age.</li>
+<li>Notice no white surface anywhere. The brightest thing on screen at a night feed is the primary button, and it is 15% of the area.</li>
+<li>The date block handles a window by naming both ends in words — a range must never look like a fixed appointment.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="dv-grp">S11 · Add what we got — the three-second screen</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Arrived cold from a chat link, then saved</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<p class="cap">Landed · nothing behind this screen</p>
+<div class="ph" style="height:844px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end"><div><div class="mt" style="margin-bottom:2px">From your message</div><h3>Add what we got</h3></div><span class="ch o" style="font-weight:500">Close</span></div>
+<div class="bd" style="gap:18px">
+<div class="cd" style="flex-direction:row;align-items:center;gap:14px;padding:13px 15px">
+<div class="stk" style="gap:1px;width:46px;flex:none;align-items:center;background:var(--sf2);border-radius:10px;padding:9px 0"><div class="mo" style="font-size:16px;font-weight:500">4</div><div class="tkl" style="font-family:'Instrument Sans';font-size:9.5px;color:var(--ink3)">OF 12</div></div>
+<div class="gw"><div class="h2">Popok newborn</div><div class="mt">Hospital bag · <span style="color:var(--acl);font-weight:500">not this?</span></div></div>
+</div>
+<div class="stk" style="gap:9px">
+<div class="nm">How many did you get?</div>
+<div style="display:flex;gap:10px;align-items:stretch">
+<div class="btn" style="flex:0 0 68px;min-height:68px;font-size:26px;font-weight:400">−</div>
+<div class="cd" style="flex:1;min-height:68px;align-items:center;justify-content:center;padding:0"><div class="mo" style="font-size:30px;font-weight:500">2</div></div>
+<div class="btn" style="flex:0 0 68px;min-height:68px;font-size:26px;font-weight:400">+</div>
+</div>
+</div>
+<div class="stk" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">What did it cost?</span><span class="mt">you can skip this</span></div>
+<div class="cd" style="min-height:56px;justify-content:center;padding:0 15px"><span class="mo" style="font-size:17px;color:var(--ink3)">Rp</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:13px 15px"><div class="mt">Where from, brand, a photo — <span style="color:var(--acl);font-weight:500">add later if you want</span></div></div>
+</div>
+<div class="bb"><div class="btn p" style="min-height:56px;font-size:17px">Save it</div></div>
+</div>
+<ul class="notes">
+<li><b>Both fields are pre-answered.</b> Land, tap Save — under three seconds, one hand, and the thumb never leaves the bottom third.</li>
+<li>The count uses mono at 30px so it is legible without looking at the screen properly, and the ± targets are 68pt, well over the 48 minimum.</li>
+<li>Header says <b>Close, not back</b> — there is no history — and “not this?” is the escape hatch if the link resolved wrong.</li>
+<li>She can type a price she will never be shown back. Hidden money doesn’t mean unrecordable money.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">Saved · lands on Today, confirmation on top</p>
+<div class="ph" style="height:844px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end"><div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">about 61 days to go</span></div><h3>Today</h3></div></div>
+<div class="bd">
+<div class="cd" style="border-color:var(--ac);background:var(--acs);gap:9px">
+<div class="h2" style="color:var(--acl)">Got it — 2 more nappies.</div>
+<div class="mt" style="color:var(--acl)">6 of 12 now.</div>
+<div style="display:flex;gap:9px"><div class="btn s" style="flex:0 0 100px;background:var(--sf)">Undo</div><div class="btn s g">Add another</div></div>
+</div>
+<div class="sec">Needs doing</div>
+<div class="cd"><div class="h2">Pick where to give birth</div><div class="mt">3 on the shortlist · 2 half filled in</div><div style="display:flex;gap:9px"><div class="btn p">Compare them</div><div class="btn" style="flex:0 0 84px">Later</div></div></div>
+<div class="cd" style="gap:8px"><div style="display:flex;gap:12px;align-items:flex-start"><div class="stk" style="gap:1px;width:44px;flex:none;align-items:center;background:var(--sf2);border-radius:9px;padding:7px 0"><div class="mo" style="font-size:17px;font-weight:500">15</div><div class="tkl" style="font-family:'Instrument Sans';font-size:10px;color:var(--ink3)">AUG</div></div><div class="gw"><div class="h2">Check-up</div><div class="mt">Tomorrow 10:00 · dr. Sari · RS Bunda</div></div></div></div>
+</div>
+<div class="bb"><div class="btn p">Add what we got</div><div class="btn" style="flex:0 0 134px">Find a thing</div></div>
+</div>
+<ul class="notes">
+<li>The confirmation is a <b>tinted card at the top of Today</b>, not a toast — it survives the screen change, and Undo is still there fifteen minutes later.</li>
+<li>This is the only place the accent tint is used as a surface. It marks “something just happened”, which is exactly the thing worth one exception.</li>
+<li>Offline: same card, reading “Saved on your phone. It’ll go up when you have signal.”</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">S5 · Document pack — the 3am screen, both modes</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1e">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Not ready · light, and ready · dark</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<p class="cap">Two things missing</p>
+<div class="ph" style="height:1036px">
+<div class="st"><span>3:04</span><span>no signal</span></div>
+<div class="hd"><span style="font-size:20px;color:var(--ink2)">‹</span><div><div class="mt" style="margin-bottom:2px">RS Bunda Menteng</div><h3>Papers for the hospital</h3></div></div>
+<div class="bd" style="gap:14px">
+<div class="cd" style="gap:8px;padding:18px 16px;border-width:1px;border-color:var(--ink)">
+<div class="h1" style="font-size:26px">Not ready yet</div>
+<div class="mt" style="font-size:14.5px">2 of 8 things missing. RS Bunda needs all of them.</div>
+<div class="bar" style="margin-top:4px"><i style="width:75%"></i></div>
+</div>
+<div class="sec">Missing</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row" style="align-items:flex-start"><div class="ph2" style="width:50px;height:50px;flex:none">no photo</div><div class="gw"><div class="nm">Kartu Keluarga</div><div class="mt">Need 3 copies · <span style="color:var(--ink);font-weight:500">none made</span></div></div><span class="mt">›</span></div>
+<div class="row" style="align-items:flex-start"><div class="ph2" style="width:50px;height:50px;flex:none">no photo</div><div class="gw"><div class="nm">Insurance card</div><div class="mt">3 copies made · <span style="color:var(--ink);font-weight:500">runs out 30 Sep, before the due date</span></div></div><span class="mt">›</span></div>
+</div>
+<div class="sec">Ready · 6</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">KTP suami</div><div class="mt">Have it · 3 of 3 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">KTP istri</div><div class="mt">Have it · 3 of 3 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">Buku nikah</div><div class="mt">Have it · 2 of 2 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="gw"><div class="mt">Buku KIA · Hasil USG · Hasil lab — all ready</div></div><span class="mt">›</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:12px 15px"><div class="mt">Saved on this phone. Readable with no signal.</div></div>
+</div>
+<div class="bb"><div class="btn p">Photograph a paper</div></div>
+</div>
+<ul class="notes">
+<li><b>The state is a sentence at 26px</b>, then only the missing things. The six that are done are proof, so they sit below and read as a receipt.</li>
+<li>“Not ready” is drawn with an ink border, not red. Nothing here is an error — it is a list of two remaining errands, and panic at 3am is not a design goal.</li>
+<li>Copy counts are the line that gets forgotten; they are in the row, not in a detail screen.</li>
+<li>Expiry is stated against the due date. The screen does her arithmetic.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">All ready · dark, in the car at 3am</p>
+<div class="ph" data-t="d" style="height:1000px">
+<div class="st"><span>3:04</span><span>no signal</span></div>
+<div class="hd"><span style="font-size:20px;color:var(--ink2)">‹</span><div><div class="mt" style="margin-bottom:2px">RS Bunda Menteng</div><h3>Papers for the hospital</h3></div></div>
+<div class="bd" style="gap:14px">
+<div class="cd" style="gap:8px;padding:18px 16px;background:var(--ac);border-color:var(--ac)">
+<div class="h1" style="font-size:26px;color:#fff">All 8 ready</div>
+<div class="mt" style="font-size:14.5px;color:rgba(255,255,255,.85)">Everything RS Bunda asks for. Copies made, photos taken.</div>
+</div>
+<div class="cd" style="padding:4px 16px">
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">KTP suami</div><div class="mt">3 of 3 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">KTP istri</div><div class="mt">3 of 3 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">Kartu Keluarga</div><div class="mt">3 of 3 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">Buku nikah</div><div class="mt">2 of 2 copies</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">Insurance card</div><div class="mt">2 of 2 · good until 30 Sep 2027</div></div><span class="ch k">Ready</span></div>
+<div class="row"><div class="ph2" style="width:50px;height:50px;flex:none;border-style:solid">her photo</div><div class="gw"><div class="nm">Buku KIA</div><div class="mt">Original in the bag</div></div><span class="ch k">Ready</span></div>
+</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:12px 15px"><div class="mt">Hasil USG · Hasil lab — both ready</div></div>
+</div>
+<div class="bb"><div class="btn">Photograph a paper</div><div class="btn" style="flex:0 0 110px">Share</div></div>
+</div>
+<ul class="notes">
+<li><b>The accent panel is the only saturated surface in the whole app.</b> It exists for this one moment, where the answer has to be legible from arm’s length, half awake, in a car.</li>
+<li>In dark mode the ready rows drop their photo brightness — she is reading names and counts here, not inspecting scans.</li>
+<li>Merges with the packing list at week 36: papers and objects, one readiness sentence.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">S4 · Compare — three hospitals, ten attributes, several blank</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1f">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Compare on a phone — <b style="font-weight:600">superseded by <a class="dv-oid" href="#3c">3c</a></b>, kept for the three-column reasoning</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:952px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Compare</h3></div><div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div></div>
+<div class="bd" style="padding:4px 0 0;gap:0">
+<div class="cd" style="margin:0 18px 12px;border-color:var(--ink);gap:7px">
+<div class="sec">Does insurance cover the birth?</div>
+<div class="nm" style="font-size:16px;line-height:1.35">Covered at <b style="font-weight:600">RS Bunda</b> — the 12-month wait ended 3 June. <b style="font-weight:600">RS Pondok</b> you pay first and claim back. <b style="font-weight:600">RSIA Tambak</b> we haven’t checked.</div>
+</div>
+<div style="display:flex;padding:0 18px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--ln2);z-index:2">
+<div style="flex:0 0 88px;padding:8px 0;font:600 10.5px 'Instrument Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);align-self:flex-end">3 places</div>
+<div style="flex:1;padding:6px 6px 8px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:13.5px;line-height:1.2">RS Bunda</div><span class="ch k" style="font-size:10px;padding:2px 6px;margin-top:3px">Picked</span></div>
+<div style="flex:1;padding:6px 6px 8px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:13.5px;line-height:1.2">RSIA Tambak</div><span class="ch" style="font-size:10px;padding:2px 6px;margin-top:3px">Shortlisted</span></div>
+<div style="flex:1;padding:6px 6px 8px;border-left:1px solid var(--ln)"><div class="nm" style="font-size:13.5px;line-height:1.2">RS Pondok</div><span class="ch" style="font-size:10px;padding:2px 6px;margin-top:3px">Shortlisted</span></div>
+</div>
+<div style="display:flex;padding:0 18px;background:var(--sf)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">In traffic</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">55 min</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">40 min</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">80 min</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Normally</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">25 min</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">18 min</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">32 min</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Baby intensive care</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-weight:500;font-size:14px">Yes · 2B</div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:10.5px;padding:3px 6px">not filled in</span></div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-weight:500;font-size:14px">No</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Open at 2am</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Husband in the room</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:10.5px;padding:3px 6px">not filled in</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Baby stays with you</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln);font-size:14px">Yes</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Normal birth</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">{{ m.pkg }}</div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:10.5px;padding:3px 6px">not filled in</span></div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><div class="mo">{{ m.pkg3 }}</div><span class="ch o" style="font-size:10px;padding:2px 5px;margin-top:3px">asked 4 months ago</span></div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Caesar</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">{{ m.cae }}</div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:10.5px;padding:3px 6px">not filled in</span></div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">{{ m.cae3 }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln);background:var(--sf)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Deposit on arrival</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">{{ m.dep }}</div><div style="flex:1;padding:9px 6px;border-left:1px solid var(--ln)"><span class="ch o" style="font-size:10.5px;padding:3px 6px">not filled in</span></div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">{{ m.dep3 }}</div></div>
+<div style="display:flex;padding:0 18px;border-top:1px solid var(--ln)"><div style="flex:0 0 88px;padding:11px 0;font-size:13px;color:var(--ink2)">Filled in</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">28 of 30</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">7 of 30</div><div style="flex:1;padding:11px 6px;border-left:1px solid var(--ln)" class="mo">19 of 30</div></div>
+<div style="padding:14px 18px;display:flex;gap:10px;align-items:center"><span class="ch o">6 more rows</span><span class="mt" style="font-size:12.5px">rows nobody has filled in are hidden</span></div>
+</div>
+<div class="bb"><div class="btn p">Pick RS Bunda</div><div class="btn" style="flex:0 0 104px">Rule out</div></div>
+</div>
+<ul class="notes">
+<li><b>The insurance answer is one sentence naming all three places</b> — lifted out of the table entirely, at the top, in 16px. It is the fact most likely to cause real financial harm, so it never competes with a row of numbers.</li>
+<li>Three columns fit because the label column is 88pt and every value is short. The design work was <b>editing ten attributes down</b>, not building horizontal scroll.</li>
+<li>Blank cells are a chip reading <em>not filled in</em>. A chip can’t be misread as “no” or “zero”, which a dash or an empty cell can — and it is tappable, so filling it in starts here.</li>
+<li>Alternating row surfaces instead of borders on both axes, so ten rows read as ten rows without a grid.</li>
+<li>Stale prices carry <em>asked 4 months ago</em> on the value itself. No legend, no colour.</li>
+<li>A “filled in” row at the bottom is the completeness indicator — it belongs in the comparison, because how much you know about a place is part of comparing it.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="dv-grp">S8 · The list, and S9 · one item</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1g">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>The list — opens on the band you’re in</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1072px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end"><div><div class="mt" style="margin-bottom:2px">Hospital bag · wanted by 15 Sep</div><h3>The list</h3></div></div>
+<div class="bd" style="gap:12px">
+<div class="cd" style="gap:9px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="nm">4 of 11 got</span><span class="ch o" style="font-weight:500">What age ›</span></div>
+<div class="bar"><i style="width:36%"></i></div>
+</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row"><div class="gw"><div class="nm">Popok newborn</div><div class="mt"><span class="mo">4 of 12</span> · could be a gift</div></div><span class="ch">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Pembalut bersalin</div><div class="mt"><span class="mo">0 of 2</span> packs</div></div><span class="ch">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Baju bayi lengan panjang newborn size</div><div class="mt"><span class="mo">2 of 8</span> · could be a gift</div></div><span class="ch">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Bedong instan</div><div class="mt"><span class="mo">0 of 4</span></div></div><span class="ch">Still need this</span></div>
+<div class="row"><div class="gw"><div class="nm">Korset</div><div class="mt"><span class="mo">1 of 1</span></div></div><span class="ch k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Botol susu</div><div class="mt"><span class="mo">6 of 6</span></div></div><span class="ch k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Sterilizer botol</div><div class="mt"><span class="mo">1 of 1</span></div></div><span class="ch k">Got it</span></div>
+<div class="row"><div class="gw"><div class="nm">Waslap</div><div class="mt"><span class="mo">10 of 6</span></div></div><span class="ch">More than enough</span></div>
+<div class="row"><div class="gw"><div class="nm">Pembalut nifas</div><div class="mt"><span class="mo">0 of 1</span> pack</div></div><span class="ch">Still need this</span></div>
+</div>
+<div class="btn g" style="min-height:46px;font-size:14px">Show the other 106 things</div>
+</div>
+<div class="bb" style="border-top:1px solid var(--ln)"><div class="btn p">Find a thing</div><div class="btn" style="flex:0 0 104px">Narrow it</div></div>
+</div>
+<ul class="notes">
+<li><b>Eleven rows, not 117.</b> The band is in the header as context, not as a filter she has to choose — which is the whole answer to “filters before answers”.</li>
+<li>Counts are mono so <em>4 of 12</em>, <em>10 of 6</em> and <em>0 of 2</em> align down the column and can be scanned without reading.</li>
+<li>Search is a full-width primary action in the thumb zone. “Narrow it” is secondary and opens a sheet — one entry point, never a permanent bar.</li>
+<li>A 40-character name wraps to two lines and the row grows; the word chip never shrinks, truncates or wraps.</li>
+<li>Status words carry no colour, only weight and fill. <em>More than enough</em> is deliberately as calm as <em>Still need this</em> — it is not a problem.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1h">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>One item — where the three levels disappear</div>
+<div class="dv-card" style="padding:20px;background:#eceef1">
+<div class="pr">
+<div class="stk">
+<div class="ph" style="height:1120px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px;color:var(--ink2)">‹</span><h3>Botol susu</h3></div><div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ tgBg }};box-shadow:inset 0 0 0 1px {{ tgLn }};display:grid;place-items:center;position:relative"><span class="mo" style="font-size:14px;font-weight:500;color:{{ tgFg }}">Rp</span><span style="position:absolute;width:28px;height:1.5px;border-radius:1px;background:var(--ink2);transform:rotate(-38deg);opacity:{{ strike }}"></span></div></div>
+<div class="bd" style="gap:14px">
+<div class="cd" style="gap:11px">
+<div style="display:flex;align-items:baseline;gap:10px"><span class="big" style="font-size:34px">4</span><span class="h2" style="font-weight:500;color:var(--ink2)">of 6</span><span class="ch" style="margin-left:auto">Still need this</span></div>
+<div class="bar"><i style="width:66%"></i></div>
+<div class="mt">Nursing &amp; Feeding · hospital bag · could be a gift</div>
+</div>
+<div class="sec">What we have</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row"><div class="gw"><div class="nm">Pigeon · Wide Neck PPSU 240ml</div><div class="mt"><span class="mo">4 of them</span> · Tokopedia · 2 Aug</div></div><span class="mo" style="color:var(--ink2)">{{ m.spent }}</span></div>
+</div>
+<div class="sec">Ones we’re looking at</div>
+<div class="cd" style="padding:2px 16px">
+<div class="row"><div class="gw"><div class="nm">Dr. Brown’s · Natural Flow</div><div class="mt">Mothercare · <span class="mo">{{ m.item }}</span></div></div><span class="ch a">Looking at it</span></div>
+<div class="row"><div class="gw" style="opacity:.55"><div class="nm">Philips Avent · Natural Response</div><div class="mt">Shopee</div></div><span class="ch o">Ruled out</span></div>
+</div>
+<div class="sec">Videos and reviews</div>
+<div style="display:flex;gap:10px">
+<div class="stk" style="gap:6px;width:106px"><div class="ph2" style="height:132px;border-radius:10px">tiktok<br>thumbnail</div><div class="mt" style="font-size:12px;line-height:1.3">Botol PPSU vs kaca — @mombabyid</div></div>
+<div class="stk" style="gap:6px;width:106px"><div class="ph2" style="height:132px;border-radius:10px">youtube<br>thumbnail</div><div class="mt" style="font-size:12px;line-height:1.3">How to sterilise properly</div></div>
+<div class="stk" style="gap:6px;width:106px"><div class="ph2" style="height:132px;border-radius:10px;border-style:solid">no preview</div><div class="mt" style="font-size:12px;line-height:1.3">Blog: wide neck round-up</div></div>
+</div>
+<div class="mt" style="font-size:12.5px">Reviews · How to use it · Where to buy</div>
+<div class="sec">What it’s made of</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap"><span class="ch">PPSU</span><span class="ch">Silicone teat</span><span class="ch o">+ add</span></div>
+<div class="sec">Notes</div>
+<div class="cd" style="background:transparent;border-style:dashed;padding:13px 15px"><div class="mt" style="font-size:14px">Wide neck only — the narrow ones don’t fit the steriliser.</div></div>
+<div class="cd" style="background:transparent;border-color:var(--ln);padding:13px 15px"><div class="mt">Spent so far <span class="mo">{{ m.spent }}</span> · the 2 still needed, roughly <span class="mo">{{ m.left }}</span> · <span style="color:var(--acl);font-weight:500">see the detail</span></div></div>
+</div>
+<div class="bb"><div class="btn p">Add</div><div class="btn" style="flex:0 0 140px">Change this</div></div>
+</div>
+<ul class="notes">
+<li><b>Two sections, her words, no classification asked of her.</b> One “Add” button; the branch is a question in a sheet — “Already got it, or still looking?” — not a concept to learn.</li>
+<li>Ruled-out candidates stay, at 55% opacity with an outline chip. His comparison work is quieter, never deleted.</li>
+<li>Link cards are the only place with 3-up horizontal rhythm — they are the one browsing moment in the app, and they look like it.</li>
+<li>“Commonly irritating” materials would read as a plain extra chip. No icon, no colour, no alert — it is information (§S9).</li>
+<li><b>“See the detail” is the whole of decision #1</b> in one link: his density is a layer on her screen, not a second app.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">C5 · Home screen icon and install</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1i">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Icon at four sizes, and the install prompt</div>
+<div class="dv-card" style="padding:24px;background:#eceef1">
+<div class="pr" style="gap:34px;align-items:flex-start">
+<div class="stk" style="gap:16px">
+<p class="cap">The mark · a ring closing</p>
+<div style="display:flex;gap:18px;align-items:flex-end">
+<div class="stk" style="gap:7px;align-items:center"><div style="width:112px;height:112px;border-radius:26px;background:var(--ac);display:grid;place-items:center"><div style="width:60px;height:60px;border-radius:50%;border:7px solid #fff;border-right-color:transparent"></div></div><div class="tkl">180pt</div></div>
+<div class="stk" style="gap:7px;align-items:center"><div style="width:72px;height:72px;border-radius:17px;background:var(--ac);display:grid;place-items:center"><div style="width:38px;height:38px;border-radius:50%;border:5px solid #fff;border-right-color:transparent"></div></div><div class="tkl">120pt</div></div>
+<div class="stk" style="gap:7px;align-items:center"><div style="width:44px;height:44px;border-radius:11px;background:var(--ac);display:grid;place-items:center"><div style="width:24px;height:24px;border-radius:50%;border:3.5px solid #fff;border-right-color:transparent"></div></div><div class="tkl">76pt</div></div>
+<div class="stk" style="gap:7px;align-items:center"><div style="width:28px;height:28px;border-radius:7px;background:var(--ac);display:grid;place-items:center"><div style="width:15px;height:15px;border-radius:50%;border:2.5px solid #fff;border-right-color:transparent"></div></div><div class="tkl">40pt</div></div>
+</div>
+<div style="display:flex;gap:18px;align-items:flex-end;margin-top:6px">
+<div class="stk" style="gap:7px;align-items:center"><div style="width:72px;height:72px;border-radius:17px;background:#12161c;display:grid;place-items:center"><div style="width:38px;height:38px;border-radius:50%;border:5px solid #7fa6d4;border-right-color:transparent"></div></div><div class="tkl">dark variant</div></div>
+<div class="stk" style="gap:7px;align-items:center"><div style="width:72px;height:72px;border-radius:17px;background:#fff;border:1px solid #e2e6ec;display:grid;place-items:center"><div style="width:38px;height:38px;border-radius:50%;border:5px solid #1f5fa8;border-right-color:transparent"></div></div><div class="tkl">tinted / mono</div></div>
+<div class="stk" style="gap:7px;align-items:center;padding:10px 14px;background:#c8ccd2;border-radius:12px"><div style="width:56px;height:56px;border-radius:13px;background:var(--ac);display:grid;place-items:center"><div style="width:30px;height:30px;border-radius:50%;border:4px solid #fff;border-right-color:transparent"></div></div><div class="tkl" style="color:#3f4956">Newborn</div></div>
+</div>
+<ul class="notes" style="max-width:420px">
+<li>A ring with one arc missing: <b>a countdown that hasn’t closed yet</b>. It becomes an age tracker without redrawing anything, and it is not a baby, a pram, or a footprint.</li>
+<li>Legible at 40pt because it is one shape and one gap. No lettering, no gradient, no inner shadow.</li>
+<li>Home-screen label is one word — <b>“Newborn”</b> — because iOS truncates at about 11 characters and she needs to recognise it, not read it.</li>
+</ul>
+</div>
+<div class="stk">
+<p class="cap">Install prompt · shown once, on the second visit</p>
+<div class="ph" style="height:560px">
+<div class="st"><span>9:41</span><span>▮▮▮</span></div>
+<div class="hd" style="justify-content:space-between;align-items:flex-end"><div><div class="mt" style="margin-bottom:2px">Tue 14 Aug · <span class="mo" style="font-size:12.5px">about 61 days to go</span></div><h3>Today</h3></div></div>
+<div class="bd" style="opacity:.35">
+<div class="cd"><div class="h2">Get 8 more newborn nappies</div><div class="mt">Hospital bag · wanted by 15 Sep</div></div>
+<div class="cd"><div class="h2">Pick where to give birth</div><div class="mt">3 on the shortlist</div></div>
+</div>
+<div class="cd" style="margin:0;border-radius:20px 20px 0 0;border-bottom:0;padding:20px 18px 26px;gap:14px">
+<div style="display:flex;gap:14px;align-items:center"><div style="width:56px;height:56px;border-radius:13px;background:var(--ac);display:grid;place-items:center;flex:none"><div style="width:30px;height:30px;border-radius:50%;border:4px solid #fff;border-right-color:transparent"></div></div><div class="gw"><div class="h2">Keep this on your home screen</div><div class="mt">So it’s one tap, and it works with no signal.</div></div></div>
+<div class="stk" style="gap:9px"><div class="btn p">Add to home screen</div><div class="btn g">Not now</div></div>
+</div>
+</div>
+<ul class="notes" style="max-width:390px">
+<li>Two reasons, both hers: <b>one tap, and it works with no signal.</b> No mention of PWAs, installing, or apps.</li>
+<li>Appears on the second visit, never the first, and never again if dismissed — she arrives from chat links and a prompt in front of the thing she came to do is a bounce.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Notes</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1j">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>What the hi-fi pass decided, and what it left open</div>
+<div class="dv-card" style="padding:0">
+<div class="prose" style="border:0">
+<h4>Structure is unchanged from the wireframes</h4>
+<p>Every screen here is the same layout, same order, same words as its greyscale version. If a hi-fi pass changes structure, the wireframe review was wasted — so where I disagreed with something, I left it and wrote it down instead.</p>
+
+<h5>Four decisions the visual pass actually made</h5>
+<ul>
+<li><b>One hue, and it only ever means “act here”.</b> Buttons, progress, links, and the two moments that deserve a surface: the just-saved confirmation and the all-ready pack. Nothing else in the app is blue. That is what makes those two moments readable at a glance.</li>
+<li><b>Mono for everything countable.</b> Money, counts, times, distances. It aligns the compare table, and — the real reason — <span style="font-family:'IBM Plex Mono';font-size:13px">Rp••••••</span> and <span style="font-family:'IBM Plex Mono';font-size:13px">Rp180.000</span> occupy the same width, so nothing reflows when money is revealed (C4).</li>
+<li><b>No red, anywhere.</b> “Not ready yet”, missing papers, an expiring insurance card and a stale price are all stated in ink and words. Nothing in this app is an error; it is all just work remaining, and a red badge at 3am helps nobody.</li>
+<li><b>Dark mode is a first-class surface, not an inversion.</b> Page #0d1117, cards lifted, accent dimmed to #3d6491, photos dimmed. It is drawn for the 2am feed and the hospital car park.</li>
+</ul>
+
+<h5>Three things I’d still change</h5>
+<ul>
+<li><b>The status word and the count say the same thing twice.</b> <em>4 of 12</em> and <em>Still need this</em> are redundant on every row of <a class="dv-oid" href="#1g">1g</a>. I kept the chip because §S8 asks for one status word, but I’d test dropping it — the count is the fact, and losing the chip buys back a third of the row.</li>
+<li><b>“Show money” is a control she will never use.</b> It sits on every screen for consistency, but it is his toggle. Worth considering: keep it in one place only, on the Money tab, and let his account remember it.</li>
+<li><b>The compare table wants a fourth column more than it wants ten rows.</b> If they add a fourth hospital, my instinct is now to drop to two columns plus a switcher rather than scroll — but that is a real decision and I’d rather test it than assume.</li>
+</ul>
+
+<h5>Not built here</h5>
+<p>Motion, empty-list illustrations, an icon set, S2/S3/S6/S7/S12–S15 hi-fi, and desktop. Desktop should follow once these six are signed off — nothing here changes the desktop argument in the wireframes (<a href="Newborn Prep Wireframes.dc.html">the greyscale set</a>, option 1v): four columns, same rows, same words.</p>
+<p>Tweaks on this file: the accent, money shown or hidden, and how many things need doing on Today — drag that to 0 and <a class="dv-oid" href="#1b">1b</a> becomes the empty state in place.</p>
+</div>
+</div>
+</div>
+</div>
+<p class="dv-next">Try next: “hi-fi the schedule and appointment screens” · “try the accent in green” · “drop the status chip on the list rows and show me”</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1100},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#1f5fa8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#1f5fa8&quot;,&quot;#2f6f5e&quot;,&quot;#8a5a3c&quot;,&quot;#5a4a8a&quot;],&quot;section&quot;:&quot;Look&quot;},&quot;showMoney&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;workCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:3,&quot;min&quot;:0,&quot;max&quot;:3,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Today screen&quot;}}">
+class Component extends DCLogic {
+  state = { pair: ['bunda', 'hermina'] };
+
+  hosp = {
+    bunda: { short: 'RS Bunda', tag: 'Picked', traffic: '55 min', normal: '25 min', nicu: 'Yes · 2B',
+      open: 'Yes', husband: 'Yes', rooming: 'Yes', birth: 'Rp32.000.000', caesar: 'Rp48.000.000',
+      dep: 'Rp10.000.000', filled: '28 of 30', quoted: '',
+      ins: 'Covered. The 12-month wait ended 3 June.' },
+    tambak: { short: 'RSIA Tambak', tag: 'Shortlisted', traffic: '40 min', normal: '18 min', nicu: null,
+      open: 'Yes', husband: 'Yes', rooming: 'Yes', birth: null, caesar: null, dep: null,
+      filled: '7 of 30', quoted: '', ins: null },
+    pondok: { short: 'RS Pondok', tag: 'Shortlisted', traffic: '80 min', normal: '32 min', nicu: 'No',
+      open: 'Yes', husband: null, rooming: 'Yes', birth: 'Rp24.500.000', caesar: 'Rp39.000.000',
+      dep: 'Rp8.000.000', filled: '19 of 30', quoted: 'asked 4 months ago',
+      ins: 'You pay first, then claim it back.' },
+    hermina: { short: 'RS Hermina', tag: 'Shortlisted', traffic: '35 min', normal: '22 min', nicu: 'Yes · 2A',
+      open: 'Yes', husband: 'Yes', rooming: 'No', birth: 'Rp38.000.000', caesar: 'Rp55.000.000',
+      dep: 'Rp15.000.000', filled: '22 of 30', quoted: '',
+      ins: 'Covered, but the caesar limit is lower.' }
+  };
+
+  pick = (k) => this.setState(st => {
+    if (st.pair.indexOf(k) > -1) return null;
+    return { pair: [st.pair[1], k] };
+  });
+
+  cell(v, money, note) {
+    if (v === null || v === undefined) return { t: 'not filled in', c: 'var(--ink3)', w: '400', n: '' };
+    if (money) return { t: v, c: 'var(--ink)', w: '500', n: note || '' };
+    return { t: v, c: 'var(--ink)', w: '500', n: note || '' };
+  }
+
+  col(k, show) {
+    const h = this.hosp[k];
+    const hid = 'Rp••••••';
+    return {
+      short: h.short, tag: h.tag, filled: h.filled,
+      ins: h.ins === null ? { t: 'We haven’t checked this one.', c: 'var(--ink3)' } : { t: h.ins, c: 'var(--ink)' },
+      traffic: this.cell(h.traffic), normal: this.cell(h.normal), nicu: this.cell(h.nicu),
+      open: this.cell(h.open), husband: this.cell(h.husband), rooming: this.cell(h.rooming),
+      birth: this.cell(h.birth === null ? null : (show ? h.birth : hid), true, h.quoted),
+      caesar: this.cell(h.caesar === null ? null : (show ? h.caesar : hid), true),
+      dep: this.cell(h.dep === null ? null : (show ? h.dep : hid), true)
+    };
+  }
+
+  renderVals() {
+    const p = this.props;
+    const show = p.showMoney ?? false;
+    const n = Math.max(0, Math.min(3, p.workCount ?? 3));
+    const m = show
+      ? { pkg: 'Rp32.000.000', cae: 'Rp48.000.000', dep: 'Rp10.000.000',
+          pkg3: 'Rp24.500.000', cae3: 'Rp39.000.000', dep3: 'Rp8.000.000',
+          pkgH: 'Rp38.000.000', caeH: 'Rp55.000.000', depH: 'Rp15.000.000',
+          item: 'Rp180.000', spent: 'Rp720.000', left: 'Rp360.000', tot: 'Rp14.280.000', soon: 'Rp6.100.000', visit: 'Rp350.000' }
+      : { pkg: 'Rp••••••', cae: 'Rp••••••', dep: 'Rp••••••',
+          pkg3: 'Rp••••••', cae3: 'Rp••••••', dep3: 'Rp••••••',
+          pkgH: 'Rp••••••', caeH: 'Rp••••••', depH: 'Rp••••••',
+          item: 'Rp••••••', spent: 'Rp••••••', left: 'Rp••••••', tot: 'Rp••••••', soon: 'Rp••••••', visit: 'Rp••••••' };
+    return {
+      accent: p.accent ?? '#1f5fa8',
+      m,
+      moneyShown: show,
+      strike: show ? '0' : '1',
+      tgBg: show ? 'var(--acs)' : 'var(--sf2)',
+      tgLn: show ? 'var(--ac)' : 'var(--ln)',
+      tgFg: show ? 'var(--acl)' : 'var(--ink2)',
+      w1: n >= 1, w2: n >= 2, w3: n >= 3,
+      anyWork: n > 0, noWork: n === 0,
+      workLabel: n === 0 ? 'nothing needs doing' : n === 1 ? '1 thing needs doing' : n + ' things need doing',
+      bagLabel: n === 0 ? '11 of 11' : '4 of 11',
+      bagPct: n === 0 ? '100%' : '36%',
+      a: this.col(this.state.pair[0], show),
+      b: this.col(this.state.pair[1], show),
+      chips: Object.keys(this.hosp).map(k => {
+        const on = this.state.pair.indexOf(k) > -1;
+        return {
+          key: k, short: this.hosp[k].short, pick: () => this.pick(k),
+          bg: on ? 'var(--ink)' : 'var(--sf)', fg: on ? 'var(--bg)' : 'var(--ink2)',
+          ln: on ? 'var(--ink)' : 'var(--ln2)'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
