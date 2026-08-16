@@ -12,6 +12,7 @@ import {
   insurancePolicy,
 } from "../schema";
 import type { HospitalCover, Policy } from "@/domain/insurance";
+import { notePickedHospitalForPapers } from "./papers";
 
 export type Hospital = typeof hospitals.$inferSelect;
 export type HospitalQuote = typeof hospitalQuotes.$inferSelect;
@@ -234,6 +235,14 @@ export async function setDecision(
       })
       .where(eq(hospitals.id, id));
   });
+
+  // The papers pack follows the picked place. Remembering which place it was
+  // last scored against is what lets the screen name what changed rather than
+  // silently re-scoring — and it happens here, on the write path, so a pick
+  // made over MCP is tracked exactly like one made from a screen.
+  if (decision === "picked") {
+    await notePickedHospitalForPapers(id, by);
+  }
 }
 
 /* ---------------------------------------------------------------------------

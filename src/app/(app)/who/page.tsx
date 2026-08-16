@@ -1,28 +1,60 @@
+import Link from "next/link";
+
+import { BarPrimary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { formatFullDate, plainDateInHousehold } from "@/domain/dates";
 import { requireAdmin } from "@/server/auth";
 import { listMembers, type AppUserRow } from "@/server/services/members";
 
-import { approveAction, blockAction } from "./actions";
+import { approveAction, blockAction, unblockAction } from "./actions";
 
 /**
- * Who can get in.
+ * S15 — Who can get in.
  *
- * A reduced S15: waiting requests first, because they are the only rows that
- * ever need action, then the household. The full screen — turned-off accounts
- * with a "let back in" affordance, and the seam where a limited role would go —
- * is deferred.
+ * Waiting requests first, because they are the only rows that ever need
+ * action. Then the household, then turned-off accounts with a way back in —
+ * turning somebody off is a decision, not a deletion, so it has to be
+ * reversible from the same screen that made it.
+ *
+ * "Manage" is the seam where a future limited role would go — a grandparent
+ * or a nanny who can only mark things clean or dirty. Not designed, not
+ * blocked, and deliberately not built.
  */
-export default async function Who() {
+export default async function Who({
+  searchParams,
+}: {
+  searchParams: Promise<{ invite?: string }>;
+}) {
   const admin = await requireAdmin();
+  const { invite } = await searchParams;
   const { waiting, household, turnedOff } = await listMembers();
 
   return (
+    <>
     <main className="px-[18px] py-[20px]">
       <h1 className="text-[19px] font-semibold tracking-[-0.02em]">
         Who can get in
       </h1>
+
+      {invite === "1" && (
+        <Card className="border-ink mt-[16px]">
+          <h2 className="text-[17.5px] font-semibold tracking-[-0.015em]">
+            Adding somebody takes two steps.
+          </h2>
+          <p className="text-ink2 mt-[6px] text-[14.5px] leading-[1.45]">
+            Ask them to open this app and sign in with their Google account.
+            Their name then appears here, under Waiting, and you let them in.
+          </p>
+          <p className="text-ink3 mt-[6px] text-[13px]">
+            Nothing is sent from here — signing in is what puts them on this
+            screen.
+          </p>
+          <Link href="/who" className="text-acl mt-[13px] inline-block text-[14.5px] font-medium">
+            Close
+          </Link>
+        </Card>
+      )}
 
       {waiting.length > 0 && (
         <section className="mt-[20px]">
@@ -101,7 +133,7 @@ export default async function Who() {
                 className="border-ln flex items-start justify-between gap-3 border-b py-[12px] last:border-b-0"
               >
                 <Person member={m} />
-                <form action={approveAction} className="shrink-0">
+                <form action={unblockAction} className="shrink-0">
                   <input type="hidden" name="id" value={m.id} />
                   <button
                     type="submit"
@@ -116,6 +148,11 @@ export default async function Who() {
         </section>
       )}
     </main>
+
+    <BottomBar>
+      <BarPrimary href="/who?invite=1">Invite someone</BarPrimary>
+    </BottomBar>
+    </>
   );
 }
 

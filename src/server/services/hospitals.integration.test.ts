@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { asc, inArray } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { afterAll, beforeAll, describe, it } from "vitest";
 
 import { db } from "../db";
-import { documents, hospitals } from "../schema";
+import { documents, hospitals, packs } from "../schema";
 import {
   coverFor,
   createHospital,
@@ -14,7 +14,11 @@ import {
   upsertInsurer,
   upsertQuote,
 } from "./hospitals";
-import { getPapersPack } from "./papers";
+import {
+  acknowledgePapersChange,
+  describeChange,
+  getPapersPack,
+} from "./papers";
 import { assessCover } from "@/domain/insurance";
 
 /**
@@ -59,6 +63,14 @@ beforeAll(async () => {
 afterAll(async () => {
   if (created.length > 0) {
     await db.delete(hospitals).where(inArray(hospitals.id, created));
+  }
+
+  // Picking creates the pack that remembers which place the papers were scored
+  // against. If the household never picked anything, that row is ours and it
+  // has to go — otherwise the first real pick silently has nothing to compare
+  // itself to, which is exactly the bug the banner exists to prevent.
+  if (!realPick) {
+    await db.delete(packs).where(eq(packs.name, "Papers for the hospital"));
   }
 
   if (realPick) {
@@ -224,5 +236,42 @@ describe("the papers pack", () => {
     const after = await getHospital(id);
     assert.equal(after?.papers.length, 1);
     assert.equal(after?.papers[0].copiesRequired, 2);
+  });
+
+  it("names what changed when the picked place changes", async () => {
+    const [first, second] = documentIds;
+
+    const from = await makeHospital("H-from");
+    await setHospitalDocuments(from, [{ documentId: first, copiesRequired: 1 }]);
+    await setDecision(from, "picked", ACTOR);
+    await acknowledgePapersChange(from, ACTOR);
+
+    // Nothing has changed yet, so there is nothing to say.
+    assert.equal((await getPapersPack("2026-10-14")).changed, null);
+
+    // The new place wants a paper the old one did not.
+    const to = await makeHospital("H-to");
+    await setHospitalDocuments(to, [
+      { documentId: first, copiesRequired: 1 },
+      { documentId: second, copiesRequired: 1 },
+    ]);
+    await setDecision(to, "picked", ACTOR);
+
+    const pack = await getPapersPack("2026-10-14");
+    assert.ok(pack.changed, "a change of place is never a silent re-score");
+    assert.equal(pack.changed.fromName, `${PREFIX}H-from`);
+    assert.equal(pack.changed.toName, `${PREFIX}H-to`);
+    assert.equal(pack.changed.added.length, 1);
+    assert.equal(pack.changed.dropped.length, 0);
+
+    // The sentence names the place and the paper, so somebody who did not make
+    // the decision can read it at a glance.
+    const sentence = describeChange(pack.changed);
+    assert.match(sentence, new RegExp(`${PREFIX}H-to`));
+    assert.match(sentence, /also wants/);
+
+    // Reading it is what dismisses it.
+    await acknowledgePapersChange(to, ACTOR);
+    assert.equal((await getPapersPack("2026-10-14")).changed, null);
   });
 });

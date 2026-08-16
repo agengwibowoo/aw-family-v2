@@ -5,9 +5,13 @@ import { ReadinessBanner } from "@/components/readiness-banner";
 import { todayInHousehold } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
 import { getOrigin } from "@/server/services/household";
-import { getPapersPack, type PaperLine } from "@/server/services/papers";
+import {
+  describeChange,
+  getPapersPack,
+  type PaperLine,
+} from "@/server/services/papers";
 
-import { setCopiesAction, toggleHaveAction } from "./actions";
+import { seenChangeAction, setCopiesAction, toggleHaveAction } from "./actions";
 
 /**
  * S5 — Papers for the hospital.
@@ -38,6 +42,30 @@ export default async function Papers() {
           Papers for the hospital
         </h1>
       </header>
+
+      {/* Never a silent re-score. Papers going from ready to not-ready with no
+          explanation is how you arrive at 3am missing a letter you had no idea
+          you needed. */}
+      {pack.changed && pack.hospitalId && (
+        <Card className="border-ink mb-[13px]">
+          <h2 className="text-[17.5px] font-semibold tracking-[-0.015em]">
+            {describeChange(pack.changed)}
+          </h2>
+          <p className="text-ink2 mt-[6px] text-[13px]">
+            You picked {pack.changed.toName} instead of {pack.changed.fromName},
+            so this list is different now.
+          </p>
+          <form action={seenChangeAction} className="mt-[13px]">
+            <input type="hidden" name="hospitalId" value={pack.hospitalId} />
+            <button
+              type="submit"
+              className="border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
+            >
+              Seen it
+            </button>
+          </form>
+        </Card>
+      )}
 
       <ReadinessBanner
         ready={ready}

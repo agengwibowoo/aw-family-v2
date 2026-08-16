@@ -76,6 +76,22 @@ export async function blockMember(id: string, by: string): Promise<void> {
 }
 
 /**
+ * Letting somebody back in.
+ *
+ * Kept separate from approving a new request even though the row ends up in
+ * the same state: they are different decisions, and only one of them is
+ * reversing your own earlier one. It refuses to touch anybody who is not
+ * actually turned off, so a stale screen cannot silently re-approve someone
+ * who is merely waiting.
+ */
+export async function unblockMember(id: string, by: string): Promise<void> {
+  await db
+    .update(appUsers)
+    .set({ status: "approved", decidedAt: new Date(), decidedBy: by })
+    .where(and(eq(appUsers.id, id), eq(appUsers.status, "blocked")));
+}
+
+/**
  * Bumps the request to the top of the admin's list.
  *
  * There is no notification channel — reminders belong to the chat assistant and
