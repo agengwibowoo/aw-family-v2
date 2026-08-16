@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Colour
+   Cool near-neutral with one hue. The accent means exactly one thing:
+   you can act here. Nothing else in the app is blue.
+
+   There is no red, orange, amber or green anywhere. Missing papers, an
+   expiring insurance card, a stale price, "not ready yet" — all are stated
+   in ink and words. Nothing here is an error; it is all work remaining, and
+   a red badge at 3am helps nobody.
+   --------------------------------------------------------------------------- */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f6f7f9; /* page */
+  --sf: #ffffff; /* card surface */
+  --sf2: #f0f2f5; /* quiet fill — chips, date blocks, progress track */
+  --ink: #12161c; /* primary text */
+  --ink2: #5a6472; /* secondary text */
+  --ink3: #8b95a3; /* tertiary / placeholder */
+  --ln: #e2e6ec; /* hairline */
+  --ln2: #cdd4dd; /* stronger border, control outline */
+  --ac: #1f5fa8; /* accent — buttons, progress fill */
+  --acs: #e9f0f8; /* accent tint surface */
+  --acl: #1f5fa8; /* accent text / link */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Dark is a first-class surface, not an inversion. Designed for a 2am feed
+   and a hospital car park. The accent is dimmed, not brightened: a bright
+   blue on black at 2am is the one thing that would wake her up. */
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --bg: #0d1117;
+    --sf: #161c24;
+    --sf2: #1e2630;
+    --ink: #eef1f5;
+    --ink2: #9aa5b3;
+    --ink3: #6d7887;
+    --ln: #252e39;
+    --ln2: #33404e;
+    --ac: #3d6491;
+    --acs: #16253a;
+    --acl: #7fa6d4;
   }
 }
 
+:root[data-theme="dark"] {
+  --bg: #0d1117;
+  --sf: #161c24;
+  --sf2: #1e2630;
+  --ink: #eef1f5;
+  --ink2: #9aa5b3;
+  --ink3: #6d7887;
+  --ln: #252e39;
+  --ln2: #33404e;
+  --ac: #3d6491;
+  --acs: #16253a;
+  --acl: #7fa6d4;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-sf: var(--sf);
+  --color-sf2: var(--sf2);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink2);
+  --color-ink3: var(--ink3);
+  --color-ln: var(--ln);
+  --color-ln2: var(--ln2);
+  --color-ac: var(--ac);
+  --color-acs: var(--acs);
+  --color-acl: var(--acl);
+
+  /* Two families. Mono is functional, not decorative: hidden money
+     `Rp••••••` and shown money `Rp180.000` must occupy the same width, so
+     revealing money never reflows a layout. */
+  --font-sans: var(--font-instrument-sans);
+  --font-mono: var(--font-plex-mono);
+
+  /* Radius */
+  --radius-card: 14px;
+  --radius-btn: 11px;
+  --radius-btn-sm: 9px;
+  --radius-chip: 7px;
+  --radius-fill: 10px;
+
+  /* Spacing scale, verbatim from the handoff. Screen gutter is 18px, card
+     padding 15px 16px, gap between stacked cards 13px. */
+  --spacing-gutter: 18px;
+  --spacing-card-y: 15px;
+  --spacing-card-x: 16px;
+  --spacing-stack: 13px;
+
+  /* Minimum touch target is 52px; 48px is the absolute floor. */
+  --spacing-tap: 52px;
+  --spacing-tap-min: 48px;
+  --spacing-stepper: 68px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   Shadows: none. The design is flat by decision — elevation is expressed by
+   surface (--sf on --bg) and by hairline borders.
+   --------------------------------------------------------------------------- */
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  /* Minimum body size is 13px. */
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* Every number that gets compared or counted is mono and tabular, so that
+   `4 of 12`, `10 of 6` and `0 of 2` align down a column. */
+.tabular {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
