@@ -88,28 +88,156 @@ export function monthsBetween(from: PlainDate, to: PlainDate): number {
    Formatting
    --------------------------------------------------------------------------- */
 
-function fmt(d: PlainDate, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat("en-GB", { ...options, timeZone: "UTC" })
-    .format(new Date(toUtc(d)))
-    .replace(",", "");
+/**
+ * Three letters, always.
+ *
+ * `Intl` renders September as "Sept" in current ICU, which is four characters
+ * where every other month is three. That breaks the date block's fixed 46px
+ * tile and the 112px compare column, and the handoff writes "Sep" everywhere.
+ * Spelling twelve months out is cheaper than depending on the runtime's idea
+ * of an abbreviation.
+ */
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+function monthOf(d: PlainDate): string {
+  return MONTHS[parse(d).m - 1];
+}
+
+function weekdayOf(d: PlainDate): string {
+  return WEEKDAYS[new Date(toUtc(d)).getUTCDay()];
 }
 
 /** `15 Sep` */
 export function formatDayMonth(d: PlainDate): string {
-  return fmt(d, { day: "numeric", month: "short" });
+  return `${parse(d).day} ${monthOf(d)}`;
 }
 
 /** `Sep 2026` */
 export function formatMonthYear(d: PlainDate): string {
-  return fmt(d, { month: "short", year: "numeric" });
+  return `${monthOf(d)} ${parse(d).y}`;
 }
 
 /** `Tue 14 Aug` — the supporting line on Today. */
 export function formatWeekdayDayMonth(d: PlainDate): string {
-  return fmt(d, { weekday: "short", day: "numeric", month: "short" });
+  return `${weekdayOf(d)} ${parse(d).day} ${monthOf(d)}`;
 }
 
 /** `15 Sep 2026` */
 export function formatFullDate(d: PlainDate): string {
-  return fmt(d, { day: "numeric", month: "short", year: "numeric" });
+  const { day, y } = parse(d);
+  return `${day} ${monthOf(d)} ${y}`;
+}
+
+/**
+ * `10:00`, as the clock reads in the household's kitchen.
+ *
+ * An appointment is at ten in Jakarta whatever zone the server is in, so this
+ * never goes through the runtime's local time.
+ */
+export function formatTimeInHousehold(instant: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: HOUSEHOLD_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(instant);
+}
+
+/**
+ * "10:00 on the 15th" as an instant.
+ *
+ * She types a wall-clock reading, and a wall clock in this household is in
+ * Jakarta. Letting the runtime interpret it in the server's own zone is how an
+ * appointment silently moves seven hours by being deployed — the same class of
+ * bug the rest of this module avoids by never leaving the string.
+ *
+ * The offset is measured rather than assumed, so this stays correct if the app
+ * is ever pointed at a household that does observe daylight saving.
+ */
+export function instantFromHouseholdTime(d: PlainDate, time: string): Date {
+  const [hours, minutes] = time.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+    throw new Error(`Not a time: ${time}`);
+  }
+
+  // Start by reading the wall time as if it were UTC, then measure how far
+  // that instant's Jakarta reading is from its UTC reading and step back.
+  const asIfUtc = new Date(toUtc(d) + (hours * 60 + minutes) * 60_000);
+  const offsetMs = householdOffsetAt(asIfUtc);
+  return new Date(asIfUtc.getTime() - offsetMs);
+}
+
+/** How far ahead of UTC the household is at a given instant. */
+function householdOffsetAt(instant: Date): number {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: HOUSEHOLD_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(instant);
+
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+
+  const localAsUtc = Date.UTC(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour") % 24,
+    get("minute"),
+    get("second"),
+  );
+
+  return localAsUtc - instant.getTime();
+}
+
+/**
+ * How a day reads relative to today: `Today`, `Tomorrow`, or its own name.
+ *
+ * Tomorrow is the word the Dates screen promotes an event out of the list on,
+ * so it has to be the same idea of tomorrow the reader has.
+ */
+export function relativeDayLabel(d: PlainDate, today: PlainDate): string | null {
+  const days = daysBetween(today, d);
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  if (days === -1) return "Yesterday";
+  return null;
+}
+
+/**
+ * A period, said in words: "Any day between 10 and 24 Sep".
+ *
+ * A window gets a different shape from an appointment, never a different
+ * colour — and the shape is backed up by saying it, because turning up on the
+ * wrong day is the failure this prevents.
+ */
+export function windowSentence(from: PlainDate, to: PlainDate): string {
+  const a = parse(from);
+  const b = parse(to);
+
+  if (a.y === b.y && a.m === b.m) {
+    // Same month, so the month is said once: "between 10 and 24 Sep".
+    return `Any day between ${a.day} and ${formatDayMonth(to)}`;
+  }
+  return `Any day between ${formatDayMonth(from)} and ${formatDayMonth(to)}`;
 }
