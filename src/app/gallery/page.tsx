@@ -7,7 +7,7 @@ import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { CompareCell } from "@/components/compare-cell";
-import { ConfirmationCard } from "@/components/confirmation";
+import { ConfirmationCard, UNDO_BUTTON } from "@/components/confirmation";
 import { DateBlock, WindowBlock } from "@/components/date-block";
 import { AllDone, NothingMatches, NothingYet } from "@/components/empty-state";
 import { KeyValue } from "@/components/key-value";
@@ -244,8 +244,13 @@ export default function Gallery() {
 
           <Section label="15 · Confirmation with Undo — not a toast">
             <ConfirmationCard
-              title="Saved. 6 bottles."
+              title="Got it — 6 more bottles."
               sub="Saved on your phone. It'll go up when you have signal."
+              undo={
+                <button type="button" className={UNDO_BUTTON}>
+                  Undo
+                </button>
+              }
               againHref="/gallery"
             />
           </Section>

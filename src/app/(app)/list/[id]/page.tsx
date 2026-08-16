@@ -7,6 +7,7 @@ import { Chip } from "@/components/chip";
 import { LinkCard } from "@/components/link-card";
 import { Money, MoneyToggle } from "@/components/money";
 import { ProgressBar } from "@/components/progress";
+import { SavedConfirmation } from "@/components/saved-confirmation";
 import { Sheet, SheetChoice } from "@/components/sheet";
 import { formatDayMonth } from "@/domain/dates";
 import { CANDIDATE_DECISION_WORDS, ITEM_STATUS_WORDS } from "@/domain/status";
@@ -75,6 +76,8 @@ export default async function OneThing({
 
       <div className="px-[18px] pb-[20px]">
         <Stack>
+          <SavedConfirmation />
+
           {meta.archivedAt && (
             <Card className="border-ink">
               <p className="text-[15.5px] font-medium">

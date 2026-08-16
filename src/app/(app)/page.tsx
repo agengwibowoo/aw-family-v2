@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, Stack } from "@/components/card";
 import { EmptyState } from "@/components/empty-state";
+import { SavedConfirmation } from "@/components/saved-confirmation";
 import { countdownLine, currentBand } from "@/domain/age";
 import { formatWeekdayDayMonth, todayInHousehold } from "@/domain/dates";
 import { getOrigin, listAgeBands } from "@/server/services/household";
@@ -51,6 +52,7 @@ export default async function Today() {
           </Card>
         ) : (
           <Stack>
+            <SavedConfirmation />
             <Card>
               <EmptyState
                 headline="Nothing needs doing today."
@@ -88,8 +90,10 @@ export default async function Today() {
       </div>
 
       <BottomBar>
-        <BarPrimary href="/list">Add what we got</BarPrimary>
-        <BarSecondary href="/list">Find a thing</BarSecondary>
+        <BarPrimary href="/add?from=today">Add what we got</BarPrimary>
+        <BarSecondary href="/find" width={134}>
+          Find a thing
+        </BarSecondary>
       </BottomBar>
     </>
   );

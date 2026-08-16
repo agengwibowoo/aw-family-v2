@@ -10,17 +10,27 @@ import Link from "next/link";
  * sure" dialogs anywhere, which is what makes recording a purchase take three
  * seconds — and what makes this card non-optional on every path that saves.
  */
+/** The Undo control's own styling, so a caller's form button matches. */
+export const UNDO_BUTTON =
+  "bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium whitespace-nowrap";
+
 export function ConfirmationCard({
   title,
   sub,
-  onUndo,
+  undo,
   againHref,
   againLabel = "Add another",
 }: {
   title: string;
   /** Offline this reads "Saved on your phone. It'll go up when you have signal." */
   sub?: string;
-  onUndo?: () => void;
+  /**
+   * The Undo control. A slot rather than a callback because the card is
+   * rendered by a server component: undoing is a form posting to an action,
+   * and the fifteen-minute window is checked on the server where it cannot be
+   * lied to.
+   */
+  undo?: React.ReactNode;
   againHref?: string;
   againLabel?: string;
 }) {
@@ -31,13 +41,7 @@ export function ConfirmationCard({
       </p>
       {sub && <p className="text-acl mt-[4px] text-[13px] opacity-80">{sub}</p>}
       <div className="mt-[14px] flex gap-[12px]">
-        <button
-          type="button"
-          onClick={onUndo}
-          className="bg-sf border-ln2 text-ink min-h-[52px] shrink-0 basis-[104px] rounded-[11px] border text-[14.5px] font-medium whitespace-nowrap"
-        >
-          Undo
-        </button>
+        {undo && <div className="shrink-0 basis-[104px]">{undo}</div>}
         {againHref && (
           <Link
             href={againHref}

@@ -3,7 +3,7 @@ import { asc, eq, inArray } from "drizzle-orm";
 import { afterAll, beforeAll, describe, it } from "vitest";
 
 import { db } from "../db";
-import { ageBands, categories, itemUnits, items } from "../schema";
+import { ageBands, categories, itemUnits, items, purchases } from "../schema";
 import {
   addUnits,
   deletePurchase,
@@ -215,6 +215,27 @@ describe("undo", () => {
     assert.equal(restored.have, 4, "exactly the count before the mis-tap");
     assert.equal(restored.need, 12);
     assert.equal(await have(id), 4);
+  });
+
+  it("refuses once the fifteen minutes are up", async () => {
+    // The cookie pointing at a purchase is a pointer, not the authority. Age
+    // the receipt past the window and the server must refuse regardless of
+    // what the caller believes.
+    const id = await makeThing("undo-expired", 5);
+    const p = await recordPurchase({ itemId: id, qty: 2 }, ACTOR);
+    assert.equal(await have(id), 2);
+
+    await db
+      .update(purchases)
+      .set({ createdAt: new Date(Date.now() - 20 * 60_000) })
+      .where(eq(purchases.id, p.purchaseId));
+
+    assert.equal(
+      await undoPurchase(p.purchaseId, ACTOR),
+      null,
+      "an expired undo is refused",
+    );
+    assert.equal(await have(id), 2, "and it changed nothing");
   });
 
   it("has nothing to undo twice", async () => {
