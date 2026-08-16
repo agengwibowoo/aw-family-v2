@@ -3,20 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { number, text } from "@/lib/form";
 import { requireApproved } from "@/server/auth";
 import { savePolicy } from "@/server/services/hospitals";
-
-const text = (v: FormDataEntryValue | null): string | null => {
-  const s = typeof v === "string" ? v.trim() : "";
-  return s === "" ? null : s;
-};
-
-const number = (v: FormDataEntryValue | null): number | null => {
-  const s = text(v);
-  if (s === null) return null;
-  const n = Number(s);
-  return Number.isFinite(n) ? n : null;
-};
 
 export async function savePolicyAction(formData: FormData) {
   const user = await requireApproved();

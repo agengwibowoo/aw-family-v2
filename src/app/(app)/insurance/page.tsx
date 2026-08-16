@@ -2,10 +2,11 @@ import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Field, TextArea, TextInput } from "@/components/field";
 import { Money, MoneyToggle } from "@/components/money";
+import { VerdictCard } from "@/components/verdict-card";
 import { assessCover, coverStartsOn } from "@/domain/insurance";
 import { formatFullDate } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
-import { db } from "@/server/db";
+import { getPolicyRow } from "@/server/services/hospitals";
 import { getOrigin } from "@/server/services/household";
 
 import { savePolicyAction } from "./actions";
@@ -22,7 +23,7 @@ export default async function Insurance() {
   await requireApproved("/insurance");
 
   const [row, origin] = await Promise.all([
-    db.query.insurancePolicy.findFirst(),
+    getPolicyRow(),
     getOrigin(),
   ]);
 
@@ -53,24 +54,13 @@ export default async function Insurance() {
       <div className="px-[18px]">
         <Stack>
           {verdict && (
-            <Card className="border-ink">
-              <p className="text-[16.5px] font-medium tracking-[-0.01em]">
-                {verdict.headline}
-              </p>
-              {verdict.reason && (
-                <p className="text-ink2 mt-[6px] text-[13px]">{verdict.reason}</p>
-              )}
-              {verdict.consequence && (
-                <p className="text-ink2 mt-[4px] text-[13px]">
-                  {verdict.consequence}
-                </p>
-              )}
+            <VerdictCard verdict={verdict}>
               {starts && (
                 <p className="text-ink3 mt-[6px] text-[13px]">
                   Cover for the birth begins {formatFullDate(starts)}.
                 </p>
               )}
-            </Card>
+            </VerdictCard>
           )}
 
           <Card>

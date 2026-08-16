@@ -8,6 +8,13 @@
       "when": 1786789894188,
       "tag": "0000_lucky_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786847673560,
+      "tag": "0001_shocking_the_executioner",
+      "breakpoints": true
     }
   ]
 }

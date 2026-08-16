@@ -33,6 +33,22 @@ export async function listMembers(): Promise<{
   };
 }
 
+/**
+ * Who can let somebody in, by name.
+ *
+ * The waiting screen has to say who has to act — "an administrator" is not a
+ * person you can go and ask.
+ */
+export async function listAdmins(): Promise<
+  { displayName: string | null; email: string }[]
+> {
+  return db
+    .select({ displayName: appUsers.displayName, email: appUsers.email })
+    .from(appUsers)
+    .where(and(eq(appUsers.isAdmin, true), eq(appUsers.status, "approved")))
+    .orderBy(asc(appUsers.email));
+}
+
 export async function approveMember(id: string, by: string): Promise<void> {
   await db
     .update(appUsers)

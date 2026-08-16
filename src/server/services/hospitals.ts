@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, eq, isNotNull, ne, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import {
@@ -270,7 +270,7 @@ export async function setHospitalDocuments(
    --------------------------------------------------------------------------- */
 
 export async function getPolicy(): Promise<Policy | null> {
-  const row = await db.query.insurancePolicy.findFirst();
+  const row = await getPolicyRow();
   if (!row) return null;
   return {
     insurerName: row.insurerName,
@@ -278,6 +278,15 @@ export async function getPolicy(): Promise<Policy | null> {
     maternityWaitingPeriodMonths: row.maternityWaitingPeriodMonths,
     roomEntitlement: row.roomEntitlement,
   };
+}
+
+/**
+ * Every field, for the screen that edits them. `getPolicy` deliberately
+ * narrows to the four the verdict is computed from, so nothing else can grow a
+ * dependency on the limits or the policy number by accident.
+ */
+export async function getPolicyRow() {
+  return db.query.insurancePolicy.findFirst();
 }
 
 export async function savePolicy(
@@ -314,6 +323,31 @@ export function coverFor(
     requiresPreauth: match.requiresPreauth,
     preauthLeadDays: match.preauthLeadDays,
   };
+}
+
+/**
+ * The cheapest normal-birth price we have been told, per place.
+ *
+ * The list screen shows one price per card, and it has to be the same kind of
+ * price on every card or the cards cannot be read against each other. Normal
+ * birth is the one everybody quotes, so it is the one that ranks.
+ */
+export async function cheapestNormalPrice(): Promise<Map<string, string>> {
+  const rows = await db
+    .select({
+      hospitalId: hospitalQuotes.hospitalId,
+      priceIdr: sql<string>`min(${hospitalQuotes.priceIdr})`,
+    })
+    .from(hospitalQuotes)
+    .where(
+      and(
+        eq(hospitalQuotes.deliveryType, "Normal"),
+        isNotNull(hospitalQuotes.priceIdr),
+      ),
+    )
+    .groupBy(hospitalQuotes.hospitalId);
+
+  return new Map(rows.map((r) => [r.hospitalId, r.priceIdr]));
 }
 
 /** How many places are still in play — used for the "N ruled out" collapse. */

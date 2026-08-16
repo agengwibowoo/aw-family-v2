@@ -75,6 +75,42 @@ export function TextArea({
 }
 
 /**
+ * A choice from a known set.
+ *
+ * `blank` is the first option when one is given, and it is what an unanswered
+ * question looks like — never the first real value silently pre-selected. A
+ * dropdown that defaults to an answer nobody gave is how "not filled in"
+ * becomes a wrong fact.
+ */
+export function Select<T extends string>({
+  name,
+  options,
+  defaultValue,
+  blank,
+}: {
+  name: string;
+  /** `label` is what she reads; `value` is what the database stores. */
+  options: readonly { value: T; label: string }[];
+  defaultValue?: T | null;
+  blank?: string;
+}) {
+  return (
+    <select
+      name={name}
+      defaultValue={defaultValue ?? (blank !== undefined ? "" : undefined)}
+      className={cn(CONTROL, "pr-[8px]")}
+    >
+      {blank !== undefined && <option value="">{blank}</option>}
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+/**
  * Yes, no, or nobody has said. The third option is not a default to be
  * silently treated as no — it is the honest state of most of these fields for
  * most of the time.
@@ -88,10 +124,14 @@ export function TriState({
 }) {
   const current = defaultValue === null ? "" : defaultValue ? "yes" : "no";
   return (
-    <select name={name} defaultValue={current} className={cn(CONTROL, "pr-[8px]")}>
-      <option value="">Nobody has checked</option>
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
+    <Select
+      name={name}
+      defaultValue={current === "" ? null : (current as "yes" | "no")}
+      blank="Nobody has checked"
+      options={[
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
+      ]}
+    />
   );
 }

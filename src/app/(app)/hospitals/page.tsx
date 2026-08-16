@@ -9,10 +9,9 @@ import { ProgressBar } from "@/components/progress";
 import { assessCover } from "@/domain/insurance";
 import { HOSPITAL_DECISION_WORDS, type HospitalDecision } from "@/domain/status";
 import { requireApproved } from "@/server/auth";
-import { db } from "@/server/db";
-import { hospitalQuotes } from "@/server/schema";
 import { getOrigin } from "@/server/services/household";
 import {
+  cheapestNormalPrice,
   completeness,
   COMPLETENESS_TOTAL,
   listHospitals,
@@ -38,15 +37,7 @@ export default async function Hospitals() {
     getOrigin(),
   ]);
 
-  const quotes = await db.select().from(hospitalQuotes);
-  const cheapestBy = new Map<string, string | null>();
-  for (const q of quotes) {
-    if (q.deliveryType !== "Normal" || !q.priceIdr) continue;
-    const current = cheapestBy.get(q.hospitalId);
-    if (!current || Number(q.priceIdr) < Number(current)) {
-      cheapestBy.set(q.hospitalId, q.priceIdr);
-    }
-  }
+  const cheapestBy = await cheapestNormalPrice();
 
   const inPlay = rows.filter((h) => h.decision !== "ruled_out");
   const ruledOut = rows.filter((h) => h.decision === "ruled_out");

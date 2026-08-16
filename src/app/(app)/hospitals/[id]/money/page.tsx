@@ -3,10 +3,16 @@ import { notFound } from "next/navigation";
 import { BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
-import { Field, TextInput } from "@/components/field";
+import { Field, Select, TextInput, TriState } from "@/components/field";
 import { Money, MoneyToggle } from "@/components/money";
 import { todayInHousehold } from "@/domain/dates";
 import { quoteAgeNote } from "@/domain/insurance";
+import {
+  DELIVERY_TYPES,
+  QUOTE_SOURCES,
+  ROOM_CLASSES,
+  SETTLEMENTS,
+} from "@/domain/quotes";
 import { requireApproved } from "@/server/auth";
 import { getHospital, getPolicy } from "@/server/services/hospitals";
 
@@ -100,27 +106,10 @@ export default async function HospitalMoney({
             <form action={addQuoteAction}>
               <input type="hidden" name="hospitalId" value={hospital.id} />
               <Field label="What sort of birth?">
-                <select
-                  name="deliveryType"
-                  className="bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
-                >
-                  <option>Normal</option>
-                  <option>Caesar</option>
-                  <option>ERACS</option>
-                  <option>Water birth</option>
-                </select>
+                <Select name="deliveryType" options={DELIVERY_TYPES} />
               </Field>
               <Field label="Which room?">
-                <select
-                  name="roomClass"
-                  className="bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
-                >
-                  <option>Kelas 3</option>
-                  <option>Kelas 2</option>
-                  <option>Kelas 1</option>
-                  <option>VIP</option>
-                  <option>Suite</option>
-                </select>
+                <Select name="roomClass" options={ROOM_CLASSES} />
               </Field>
               <Field label="How much?" hint="Rupiah">
                 <TextInput name="priceIdr" mono />
@@ -132,14 +121,7 @@ export default async function HospitalMoney({
                 <TextInput name="quotedOn" type="date" defaultValue={today} mono />
               </Field>
               <Field label="How did you find out?">
-                <select
-                  name="source"
-                  className="bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
-                >
-                  <option value="phone">Rang them</option>
-                  <option value="website">Their website</option>
-                  <option value="visit">Went there</option>
-                </select>
+                <Select name="source" options={QUOTE_SOURCES} />
               </Field>
               <button
                 type="submit"
@@ -214,26 +196,14 @@ export default async function HospitalMoney({
                 />
               </Field>
               <Field label="Do they take it?">
-                <select
-                  name="accepted"
-                  className="bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
-                >
-                  <option value="">Nobody has checked</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
+                <TriState name="accepted" defaultValue={null} />
               </Field>
               <Field label="Who pays first?">
-                <select
+                <Select
                   name="settlement"
-                  className="bg-sf border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
-                >
-                  <option value="">Nobody has checked</option>
-                  <option value="cashless">They settle with the insurer</option>
-                  <option value="reimbursement">
-                    We pay first and claim it back
-                  </option>
-                </select>
+                  blank="Nobody has checked"
+                  options={SETTLEMENTS}
+                />
               </Field>
               <label className="flex min-h-[52px] items-center gap-[10px] py-[10px]">
                 <input

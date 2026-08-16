@@ -6,6 +6,7 @@ import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { KeyValue } from "@/components/key-value";
 import { Money, MoneyToggle } from "@/components/money";
+import { VerdictCard } from "@/components/verdict-card";
 import { assessCover, quoteAgeNote } from "@/domain/insurance";
 import { todayInHousehold } from "@/domain/dates";
 import { HOSPITAL_DECISION_WORDS, type HospitalDecision } from "@/domain/status";
@@ -83,21 +84,7 @@ export default async function OneHospital({
         <Stack>
           {/* First on the screen. Three sentences of plain English, never two
               dates and a subtraction. */}
-          {verdict && (
-            <Card className="border-ink">
-              <p className="text-[16.5px] font-medium tracking-[-0.01em]">
-                {verdict.headline}
-              </p>
-              {verdict.reason && (
-                <p className="text-ink2 mt-[6px] text-[13px]">{verdict.reason}</p>
-              )}
-              {verdict.consequence && (
-                <p className="text-ink2 mt-[4px] text-[13px]">
-                  {verdict.consequence}
-                </p>
-              )}
-            </Card>
-          )}
+          {verdict && <VerdictCard verdict={verdict} />}
 
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-wrap gap-[8px]">

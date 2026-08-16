@@ -51,6 +51,12 @@ export const appUsers = pgTable(
     displayName: text("display_name"),
     status: text("status").notNull().default("pending"),
     isAdmin: boolean("is_admin").notNull().default(false),
+    /**
+     * Which of the two people this is. It chooses the landing tab and nothing
+     * else — both accounts see the same four tabs and the same data. Null for
+     * anyone else who is let in.
+     */
+    who: text("who"),
     requestedAt: timestamp("requested_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -62,6 +68,7 @@ export const appUsers = pgTable(
       "app_users_status_check",
       sql`${t.status} in ('pending', 'approved', 'blocked')`,
     ),
+    check("app_users_who_check", sql`${t.who} is null or ${t.who} in ('her', 'him')`),
   ],
 );
 
@@ -187,6 +194,10 @@ export const items = pgTable(
     storeSuggestions: text("store_suggestions"),
     description: text("description"),
     notes: text("notes"),
+    /** Photographs someone here took. They appear in search results, where she
+        is identifying, and on the registry — but not in the list, where she is
+        scanning. There is no product photography in this app. */
+    imagePaths: text("image_paths").array(),
 
     /** Archiving is not deletion. History, prices and links survive; the
         thing leaves the counts and the default lists. */
@@ -437,10 +448,27 @@ export const links = pgTable(
       .defaultNow(),
   },
   (t) => [
+    index("links_item_idx").on(t.itemId),
+    index("links_candidate_idx").on(t.candidateId),
+    index("links_purchase_idx").on(t.purchaseId),
     check(
       "links_one_parent_check",
       sql`num_nonnulls(${t.itemId}, ${t.candidateId}, ${t.purchaseId}) = 1`,
     ),
+    /**
+     * The same URL pasted twice onto the same target is one link, not two.
+     * Held here rather than in the service because a paste arriving over MCP
+     * has to obey the same rule as a paste arriving from a screen.
+     */
+    uniqueIndex("links_item_url_unique")
+      .on(t.itemId, t.url)
+      .where(sql`${t.itemId} is not null`),
+    uniqueIndex("links_candidate_url_unique")
+      .on(t.candidateId, t.url)
+      .where(sql`${t.candidateId} is not null`),
+    uniqueIndex("links_purchase_url_unique")
+      .on(t.purchaseId, t.url)
+      .where(sql`${t.purchaseId} is not null`),
   ],
 );
 
@@ -462,6 +490,9 @@ export const itemMaterials = pgTable(
     percentage: numeric("percentage", { precision: 5, scale: 2 }),
   },
   (t) => [
+    index("item_materials_item_idx").on(t.itemId),
+    index("item_materials_candidate_idx").on(t.candidateId),
+    index("item_materials_purchase_idx").on(t.purchaseId),
     check(
       "item_materials_one_parent_check",
       sql`num_nonnulls(${t.itemId}, ${t.candidateId}, ${t.purchaseId}) = 1`,

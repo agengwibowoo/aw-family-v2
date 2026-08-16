@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { number, text } from "@/lib/form";
 import { requireApproved } from "@/server/auth";
 import {
   deleteInsurer,
@@ -9,18 +10,6 @@ import {
   upsertInsurer,
   upsertQuote,
 } from "@/server/services/hospitals";
-
-const text = (v: FormDataEntryValue | null): string | null => {
-  const s = typeof v === "string" ? v.trim() : "";
-  return s === "" ? null : s;
-};
-
-const number = (v: FormDataEntryValue | null): number | null => {
-  const s = text(v);
-  if (s === null) return null;
-  const n = Number(s);
-  return Number.isFinite(n) ? n : null;
-};
 
 function refresh(hospitalId: string) {
   revalidatePath(`/hospitals/${hospitalId}/money`);

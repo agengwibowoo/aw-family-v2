@@ -1,12 +1,10 @@
-import { asc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card } from "@/components/card";
 import { requireApproved } from "@/server/auth";
-import { db } from "@/server/db";
-import { documents } from "@/server/schema";
 import { getHospital } from "@/server/services/hospitals";
+import { listDocuments } from "@/server/services/papers";
 
 import { saveHospitalPapersAction } from "./actions";
 
@@ -27,7 +25,7 @@ export default async function HospitalPapers({
 
   const [data, allDocuments] = await Promise.all([
     getHospital(id),
-    db.select().from(documents).orderBy(asc(documents.sortOrder)),
+    listDocuments(),
   ]);
   if (!data) notFound();
 

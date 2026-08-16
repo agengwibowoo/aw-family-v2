@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 import { Card } from "@/components/card";
 import {
@@ -7,9 +7,7 @@ import {
   todayInHousehold,
 } from "@/domain/dates";
 import { getCaller } from "@/server/auth";
-import { db } from "@/server/db";
-import { appUsers } from "@/server/schema";
-import { redirect } from "next/navigation";
+import { listAdmins } from "@/server/services/members";
 
 import { askAgainAction } from "./actions";
 import { SignInButton, SignOutButton } from "./sign-in-button";
@@ -69,10 +67,7 @@ async function Waiting({
   user: { id: string; email: string; requestedAt: Date };
 }) {
   // Say who has to act, by name. "An administrator" is not a person.
-  const admins = await db
-    .select({ displayName: appUsers.displayName, email: appUsers.email })
-    .from(appUsers)
-    .where(eq(appUsers.isAdmin, true));
+  const admins = await listAdmins();
 
   const who =
     admins.length > 0

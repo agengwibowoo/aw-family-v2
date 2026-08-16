@@ -20,6 +20,11 @@ import { daysBetween, formatDayMonth, type PlainDate } from "@/domain/dates";
  * the same fact in two places.
  */
 
+/** The master list of papers, in the order they are asked for. */
+export async function listDocuments() {
+  return db.select().from(documents).orderBy(asc(documents.sortOrder));
+}
+
 export type PaperLine = {
   documentId: number;
   name: string;
