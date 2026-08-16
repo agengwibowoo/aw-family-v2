@@ -112,3 +112,16 @@ export async function requireAdmin(): Promise<AppUser> {
   if (!user.isAdmin) redirect("/");
   return user;
 }
+
+/**
+ * Which tab an account lands on, and nothing else.
+ *
+ * She does what needs doing today; he does the research and the money. That is
+ * the whole of the difference between the two accounts — both see the same
+ * four tabs and the same data, so nobody is ever missing a screen.
+ *
+ * Null lands on Today, which is the right default for anybody else let in.
+ */
+export function landingTabFor(who: string | null): string {
+  return who === "him" ? "/money" : "/";
+}

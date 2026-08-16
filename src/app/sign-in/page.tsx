@@ -6,7 +6,7 @@ import {
   plainDateInHousehold,
   todayInHousehold,
 } from "@/domain/dates";
-import { getCaller } from "@/server/auth";
+import { getCaller, landingTabFor } from "@/server/auth";
 import { listAdmins } from "@/server/services/members";
 
 import { askAgainAction } from "./actions";
@@ -28,7 +28,12 @@ export default async function SignIn({
   const caller = await getCaller();
 
   if (caller.kind === "approved") {
-    redirect(next && next.startsWith("/") ? next : "/");
+    // A deep link wins: land on the screen the link pointed at, not on a tab.
+    // Otherwise the account chooses which tab it lands on, and nothing else —
+    // both accounts see the same four tabs and the same data.
+    redirect(
+      next && next.startsWith("/") ? next : landingTabFor(caller.user.who),
+    );
   }
 
   return (

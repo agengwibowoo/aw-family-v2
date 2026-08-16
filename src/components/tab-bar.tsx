@@ -8,15 +8,16 @@ import { cn } from "@/lib/cn";
 /**
  * Component 9 — tab bar.
  *
- * Three tabs at cutover. Money becomes a fourth when S12 is built; adding it is
- * additive, which is why there is no account-level landing preference to
- * migrate. See ADR-0002 and the plan's account decision.
+ * Four tabs, the same four for both accounts. Only which one you land on
+ * differs by account, which is why there is no per-account navigation to keep
+ * in step — everybody can reach everything.
  */
 
 const TABS = [
   { href: "/", label: "Today" },
   { href: "/list", label: "List" },
   { href: "/dates", label: "Dates" },
+  { href: "/money", label: "Money" },
 ] as const;
 
 export function TabBar() {
