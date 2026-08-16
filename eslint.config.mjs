@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design references, not source. Flat inline-heavy HTML/JS by design —
+    // see design-handoff/README.md.
+    "design-handoff/**",
+    "supabase/migrations/**",
   ]),
 ]);
 
