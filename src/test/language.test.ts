@@ -86,9 +86,13 @@ function userVisibleStrings(source: string): string[] {
   const found: string[] = [];
 
   // JSX text nodes: >  some words  <
+  //
+  // A `>` also ends an arrow function, so a naive match happily swallows the
+  // code between one and the next tag. Anything holding a character that
+  // belongs to code and not to English is therefore not text a person reads.
   for (const m of withoutComments.matchAll(/>([^<>{}]+)</g)) {
     const text = m[1].trim();
-    if (text) found.push(text);
+    if (text && !/[;=(){}`"[\]|]/.test(text)) found.push(text);
   }
 
   // Props that become words on screen.

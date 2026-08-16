@@ -51,12 +51,14 @@ export function BarSecondary({
   children,
   href,
   onClick,
+  type = "button",
   /** 126–140px for a two-word label. */
   width = 134,
 }: {
   children: React.ReactNode;
   href?: string;
   onClick?: () => void;
+  type?: "button" | "submit";
   width?: number;
 }) {
   const className = cn(BASE, "border-ln2 text-ink shrink-0 border");
@@ -69,7 +71,7 @@ export function BarSecondary({
     );
   }
   return (
-    <button type="button" onClick={onClick} className={className} style={style}>
+    <button type={type} onClick={onClick} className={className} style={style}>
       {children}
     </button>
   );

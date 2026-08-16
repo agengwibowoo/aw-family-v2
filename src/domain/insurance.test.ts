@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
 
-import { assessCover, coverStartsOn, quoteAgeNote, type Policy } from "./insurance";
+import {
+  assessCover,
+  coverStartsOn,
+  quoteAgeNote,
+  summariseCover,
+  type HospitalCover,
+  type Policy,
+} from "./insurance";
 
 const DUE = "2026-10-14";
 
@@ -96,5 +103,62 @@ describe("quote age", () => {
   it("says so in words once it is stale, with no colour to notice", () => {
     assert.equal(quoteAgeNote("2026-04-01", "2026-08-15"), "asked 5 months ago");
     assert.equal(quoteAgeNote("2025-01-01", "2026-08-15"), "asked over a year ago");
+  });
+});
+
+describe("the short form used on compare", () => {
+  const at = (over: Partial<HospitalCover> = {}): HospitalCover => ({
+    insurerName: "Insurer",
+    accepted: true,
+    settlement: null,
+    requiresPreauth: null,
+    preauthLeadDays: null,
+    ...over,
+  });
+
+  it("ranks a covered place above one you have to claim back from", () => {
+    const covered = summariseCover(policy(), DUE, at({ settlement: "cashless" }));
+    const claim = summariseCover(policy(), DUE, at({ settlement: "reimbursement" }));
+
+    assert.equal(covered.word, "Covered");
+    assert.equal(claim.word, "Claim it back");
+    assert.ok(covered.rank < claim.rank);
+  });
+
+  it("says who pays first, because that is money you find on the day", () => {
+    const claim = summariseCover(policy(), DUE, at({ settlement: "reimbursement" }));
+    assert.equal(claim.reason, "You pay first here");
+  });
+
+  it("puts a place that refuses your insurer below both", () => {
+    const refused = summariseCover(policy(), DUE, at({ accepted: false }));
+    assert.equal(refused.word, "They don't take it");
+    assert.ok(refused.rank > summariseCover(policy(), DUE, at()).rank);
+  });
+
+  it("marks unchecked as unchecked, and sorts it last rather than badly", () => {
+    // Nobody having looked is not the same as the answer being no. It sorts
+    // last because it is unranked, not because it is bad news.
+    const unknown = summariseCover(
+      policy({ maternityWaitingPeriodMonths: null }),
+      DUE,
+      null,
+    );
+    assert.equal(unknown.word, "not checked");
+    assert.equal(unknown.unchecked, true);
+
+    const worst = summariseCover(policy({ policyStartedOn: "2026-03-01" }), DUE, null);
+    assert.ok(unknown.rank > worst.rank);
+  });
+
+  it("never renders a status as a bare absence", () => {
+    for (const s of [
+      summariseCover(policy(), DUE, null),
+      summariseCover(policy({ policyStartedOn: "2026-03-01" }), DUE, null),
+      summariseCover(policy({ maternityWaitingPeriodMonths: null }), DUE, null),
+      summariseCover(policy(), DUE, at({ accepted: false })),
+    ]) {
+      assert.ok(s.word.length > 0, "every place gets a word");
+    }
   });
 });

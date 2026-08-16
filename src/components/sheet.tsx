@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/cn";
@@ -33,7 +33,10 @@ export function Sheet({
 }) {
   const router = useRouter();
   const panel = useRef<HTMLDivElement>(null);
-  const close = onClose ?? (() => router.back());
+  const close = useCallback(
+    () => (onClose ? onClose() : router.back()),
+    [onClose, router],
+  );
 
   // Escape closes it. Nothing here depends on motion, so nothing animates.
   useEffect(() => {

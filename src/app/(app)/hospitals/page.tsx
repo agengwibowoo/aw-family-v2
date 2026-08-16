@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BarPrimary, BottomBar } from "@/components/bottom-bar";
+import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { EmptyState } from "@/components/empty-state";
@@ -104,7 +104,16 @@ export default async function Hospitals() {
       </div>
 
       <BottomBar>
-        <BarPrimary href="/hospitals/new">Add a place</BarPrimary>
+        {inPlay.length > 1 ? (
+          <BarPrimary href="/compare">Compare all {inPlay.length}</BarPrimary>
+        ) : (
+          <BarPrimary href="/hospitals/new">Add a place</BarPrimary>
+        )}
+        {inPlay.length > 1 && (
+          <BarSecondary href="/hospitals/new" width={126}>
+            + Add one
+          </BarSecondary>
+        )}
       </BottomBar>
     </>
   );

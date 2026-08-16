@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { cn } from "@/lib/cn";
 import { NOT_FILLED_IN } from "@/domain/status";
 import { Chip } from "./chip";
@@ -15,27 +17,29 @@ import { Chip } from "./chip";
 export function CompareCell({
   value,
   note,
-  onFill,
+  fillHref,
   mono,
   className,
 }: {
   value?: React.ReactNode;
   note?: string;
-  onFill?: () => void;
+  /** Where filling it in starts. A gap is an invitation, not a scold. */
+  fillHref?: string;
   mono?: boolean;
   className?: string;
 }) {
   const blank = value === null || value === undefined || value === "";
 
   if (blank) {
-    return (
-      <button
-        type="button"
-        onClick={onFill}
-        className={cn("flex items-center px-[10px] py-[10px]", className)}
-      >
-        <Chip tone="outline">{NOT_FILLED_IN}</Chip>
-      </button>
+    const inner = <Chip tone="outline">{NOT_FILLED_IN}</Chip>;
+    const box = cn("flex items-center px-[10px] py-[10px]", className);
+
+    return fillHref ? (
+      <Link href={fillHref} className={box}>
+        {inner}
+      </Link>
+    ) : (
+      <div className={box}>{inner}</div>
     );
   }
 

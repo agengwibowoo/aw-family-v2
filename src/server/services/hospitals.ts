@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, isNotNull, ne, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, ne, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import {
@@ -103,6 +103,65 @@ export async function getHospital(id: string) {
   ]);
 
   return { hospital, quotes, insurers, papers };
+}
+
+/**
+ * Every place, with everything comparing them needs, in one read.
+ *
+ * Compare is one screen holding four places at once, so it cannot afford a
+ * query per place. Column order is the shortlist order — the picked place is
+ * always first and ruled-out is off to the right where you have to go looking
+ * for it.
+ */
+export type ComparedHospital = {
+  hospital: Hospital;
+  quotes: HospitalQuote[];
+  insurers: HospitalInsurer[];
+  /** How many papers this place asks for — part of comparing it. */
+  paperCount: number;
+  filled: number;
+};
+
+export async function listHospitalsForCompare(): Promise<ComparedHospital[]> {
+  const rows = await listHospitals();
+  if (rows.length === 0) return [];
+
+  const ids = rows.map((h) => h.id);
+
+  const [quotes, insurers, paperCounts] = await Promise.all([
+    db
+      .select()
+      .from(hospitalQuotes)
+      .where(inArray(hospitalQuotes.hospitalId, ids))
+      .orderBy(asc(hospitalQuotes.deliveryType), asc(hospitalQuotes.roomClass)),
+    db
+      .select()
+      .from(hospitalInsurers)
+      .where(inArray(hospitalInsurers.hospitalId, ids)),
+    db
+      .select({
+        hospitalId: hospitalDocuments.hospitalId,
+        n: sql<number>`count(*)::int`,
+      })
+      .from(hospitalDocuments)
+      .where(
+        and(
+          inArray(hospitalDocuments.hospitalId, ids),
+          eq(hospitalDocuments.required, true),
+        ),
+      )
+      .groupBy(hospitalDocuments.hospitalId),
+  ]);
+
+  const papersBy = new Map(paperCounts.map((p) => [p.hospitalId, p.n]));
+
+  return rows.map((hospital) => ({
+    hospital,
+    quotes: quotes.filter((q) => q.hospitalId === hospital.id),
+    insurers: insurers.filter((i) => i.hospitalId === hospital.id),
+    paperCount: papersBy.get(hospital.id) ?? 0,
+    filled: completeness(hospital),
+  }));
 }
 
 export async function getPickedHospital(): Promise<Hospital | null> {

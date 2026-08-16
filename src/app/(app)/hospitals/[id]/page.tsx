@@ -303,8 +303,8 @@ export default async function OneHospital({
         <BarPrimary href={`/hospitals/${hospital.id}/edit`}>
           {blanks > 0 ? `Fill in the ${blanks} blanks` : "Change something"}
         </BarPrimary>
-        <BarSecondary href="/hospitals" width={126}>
-          All places
+        <BarSecondary href="/compare" width={104}>
+          Compare
         </BarSecondary>
       </BottomBar>
     </>
