@@ -9,6 +9,7 @@ import { Chip } from "@/components/chip";
 import { CompareCell } from "@/components/compare-cell";
 import { ConfirmationCard, UNDO_BUTTON } from "@/components/confirmation";
 import { DateBlock, WindowBlock } from "@/components/date-block";
+import { Field, Select, TextInput, TriState } from "@/components/field";
 import { AllDone, NothingMatches, NothingYet } from "@/components/empty-state";
 import { KeyValue } from "@/components/key-value";
 import { LinkCard } from "@/components/link-card";
@@ -16,8 +17,11 @@ import { Money, MoneyProvider, MoneyToggle } from "@/components/money";
 import { PhotoSlot } from "@/components/photo-slot";
 import { ProgressWithCount } from "@/components/progress";
 import { ReadinessBanner } from "@/components/readiness-banner";
+import { Sheet, SheetChoice } from "@/components/sheet";
+import { Stepper } from "@/components/stepper";
 import { TabBar } from "@/components/tab-bar";
 import { ThingRow } from "@/components/thing-row";
+import { VerdictCard } from "@/components/verdict-card";
 import { assessCover } from "@/domain/insurance";
 import { countdownLine } from "@/domain/age";
 
@@ -31,6 +35,7 @@ const ORIGIN = { dueDate: "2026-10-14", birthDate: null };
 
 export default function Gallery() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [sheet, setSheet] = useState(false);
 
   function flip() {
     const next = theme === "light" ? "dark" : "light";
@@ -174,22 +179,6 @@ export default function Gallery() {
             </p>
           </Section>
 
-          <Section label="Computed insurance sentence">
-            <Card className="border-ink">
-              <p className="text-[16.5px] font-medium tracking-[-0.01em]">
-                {verdict.headline}
-              </p>
-              {verdict.reason && (
-                <p className="text-ink2 mt-[6px] text-[13px]">{verdict.reason}</p>
-              )}
-              {verdict.consequence && (
-                <p className="text-ink2 mt-[4px] text-[13px]">
-                  {verdict.consequence}
-                </p>
-              )}
-            </Card>
-          </Section>
-
           <Section label="7 · Date blocks — a period is a different shape">
             <Card className="flex items-center gap-[16px]">
               <span className="flex items-center gap-[12px]">
@@ -268,6 +257,57 @@ export default function Gallery() {
               </Card>
             </Stack>
           </Section>
+
+          <Section label="Form controls — every label is a question">
+            <Card>
+              <Field label="What sort of thing?">
+                <Select
+                  name="gallery-category"
+                  options={[
+                    { value: "feeding", label: "Nursing & Feeding" },
+                    { value: "clothing", label: "Clothing" },
+                  ]}
+                />
+              </Field>
+              <Field label="Do they take your insurance?">
+                <TriState name="gallery-tristate" defaultValue={null} />
+              </Field>
+              <Field label="What is it?">
+                <TextInput name="gallery-name" placeholder="Bedong instan" />
+              </Field>
+            </Card>
+          </Section>
+
+          <Section label="Stepper — 68px on the screen used one-handed">
+            <Stack>
+              <Card>
+                <p className="mb-[9px] text-[15.5px] font-medium">
+                  How many did you get?
+                </p>
+                <Stepper name="gallery-large" defaultValue={1} min={1} size="large" />
+              </Card>
+              <Card>
+                <p className="mb-[9px] text-[15.5px] font-medium">
+                  How many do we need?
+                </p>
+                <Stepper name="gallery-form" defaultValue={6} min={0} />
+              </Card>
+            </Stack>
+          </Section>
+
+          <Section label="Computed insurance sentence — never two dates">
+            <VerdictCard verdict={verdict} />
+          </Section>
+
+          <Section label="Sheet — one entry point, never a permanent bar">
+            <button
+              type="button"
+              onClick={() => setSheet(true)}
+              className="border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
+            >
+              Open the branch question
+            </button>
+          </Section>
         </main>
 
         <div className="mt-auto">
@@ -280,6 +320,23 @@ export default function Gallery() {
           </BottomBar>
           <TabBar />
         </div>
+
+        {sheet && (
+          <Sheet title="Add" onClose={() => setSheet(false)}>
+            <p className="mb-[16px] text-center text-[24px] leading-[1.2] font-semibold tracking-[-0.02em]">
+              Already got it, or still looking?
+            </p>
+            <div className="flex flex-col gap-[12px]">
+              <SheetChoice tone="primary" onClick={() => setSheet(false)}>
+                Already got it
+              </SheetChoice>
+              <SheetChoice onClick={() => setSheet(false)}>Still looking</SheetChoice>
+            </div>
+            <p className="text-ink3 mt-[16px] text-center text-[13px]">
+              One question. Everything else follows from the answer.
+            </p>
+          </Sheet>
+        )}
       </div>
     </MoneyProvider>
   );

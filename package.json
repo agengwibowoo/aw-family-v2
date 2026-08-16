@@ -16,7 +16,9 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "db:check": "node scripts/check-db.mjs",
     "db:invariants": "node scripts/verify-invariants.mjs",
-    "test:db": "TEST_DB=1 vitest run"
+    "test:db": "TEST_DB=1 vitest run",
+    "demo:seed": "node scripts/seed-demo.mjs",
+    "demo:clear": "node scripts/clear-demo.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

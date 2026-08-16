@@ -16,25 +16,32 @@ Deadlines that cannot move: a hospital picked by **~7 Sep**, the papers pack com
 
 | | |
 |---|---|
-| Schema | 23 tables live in Supabase, with the invariants in Postgres |
+| Schema | 23 tables live in Supabase, with the invariants in Postgres. Migration 0001 applied |
 | Reference data | 7 age bands, 9 categories, 3 priorities, 9 papers, 14 materials |
-| Design system | Tokens in `globals.css`, all 16 components, `/gallery` renders them |
-| Domain logic | age, dates, insurance cover, money, status words — with tests |
+| Design system | Tokens in `globals.css`, all 16 components plus Select, Stepper, Sheet and the verdict card; `/gallery` renders them |
+| Domain logic | age, dates, insurance, money, status, search, the antenatal pattern, Today's ranking — with tests |
 | Auth | Google sign-in, approval gate, middleware, S14 with all three states |
-| S2 · S3 | Where to give birth; one hospital, all seven groups |
-| S5 | Papers for the hospital, including the no-hospital-picked state |
-| Insurance | The policy screen and the computed sentence |
-| Partial S15 | `/who` — approve, block, ask again |
+| S1 | Today — the ranked cards, the appointment as a fact, `Later`, the derived empty sentence |
+| S2 · S3 · S4 | Where to give birth; one hospital; compare, with the ranked insurance card |
+| S5 | Papers, including the no-hospital state and the hospital-changed banner |
+| S6 · S7 | Dates and one date, all three variants, plus the antenatal pattern in one tap |
+| S8 · S9 · S10 | The list, one thing, add or change. Search with synonym substitution |
+| S11 | Add what we got, with Undo in the confirmation card |
+| S12 · S13 | Money and the registry. Money is the fourth tab; `who` picks the landing tab |
+| S15 | `/who` — approve, block, ask again, let back in |
+| Services | things, purchases and units, schedule, money, scans, links, materials |
+| Scans | The service and the upload path. Needs the bucket (0.4) before photos appear |
 
-**Shells with nothing in them**
+Verified with `pnpm lint && typecheck && test && build`, plus `pnpm test:db` — 166 tests
+against the cloud database — and `db:check` / `db:invariants`.
 
-`/` (Today — countdown only), `/list`, `/dates`.
+`pnpm demo:seed` puts eleven made-up things and two dates in so the screens can be looked
+at; `pnpm demo:clear` takes them away. Everything it writes is named `Demo · …`.
 
 **Not started**
 
-S4 compare · S6 dates · S7 one date · S8 the list · S9 one thing · S10 add or change ·
-S11 add what we got · S12 money · S13 registry · search · scans · undo · offline · the PWA ·
-the app icon · `/api/mcp` · the legacy import.
+Offline · the PWA · the app icon · `/api/mcp` · the legacy import · the week-36 hospital
+bag · the IDAI generator · everything in Part 6.
 
 ---
 
@@ -71,8 +78,9 @@ KTP, Kartu Keluarga, the marriage book and insurance cards. See ADR-0007.
 
 ### 0.5 Apply the storage policies
 
-I'll generate the SQL once the bucket exists; you paste and run it. Same rule as migrations —
-I write it, you apply it.
+`supabase/storage-policies.sql` is written and waiting. Paste it into the SQL editor after
+the bucket exists. It refuses to run if the bucket is missing or public, so it doubles as
+the check on 0.4.
 
 ### 0.6 Apply every future migration by hand
 
