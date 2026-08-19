@@ -88,7 +88,7 @@ it — just add the new redirect URL to it. Otherwise:
 3. Paste the client ID and client secret back into Supabase.
 
 Then, still under **Authentication** → **URL Configuration**, set **Site URL** to
-`http://localhost:3000` for now. We change it at deploy.
+`http://localhost:3000` for now. Section 8 changes it to the production host.
 
 - [ ] Google sign-in enabled
 
@@ -170,6 +170,81 @@ Say so and I'll wire the connection up and start reading from it.
 
 **Don't paste any key into the chat.** I read them from `.env.local` myself when I need
 them, and a key in a transcript is a key you have to rotate.
+
+---
+
+## 8. Deploy
+
+Do this when the app is worth putting on a phone, not before. Every step here is yours — I
+have no access to either dashboard.
+
+### The four variables
+
+Vercel → **New Project** → import `agengwibowoo/aw-family-v2`. It detects Next.js and pnpm
+on its own; leave the framework preset, build command and output directory alone.
+
+Add these four **before the first build**, scoped to **Production**. They are the values
+already in `.env.local` — the same Supabase project backs production.
+
+| Variable | Note |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | as-is |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | as-is |
+| `SUPABASE_SECRET_KEY` | as-is |
+| `DATABASE_URL` | the **transaction pooler** one, port `6543` |
+
+The pooler is not a preference here. Vercel's functions have no IPv6 route to Supabase, so
+the direct connection on port `5432` fails there even though it works from your laptop.
+
+Leave the `LEGACY_*` variables out entirely — the import script runs from your laptop.
+
+Set the function region to the one the Supabase project is in, **Singapore** if you took the
+default. Every screen in this app is a round trip to Postgres, so the wrong region is felt on
+every tap.
+
+- [ ] Four variables set, Production scope
+- [ ] Region matches the Supabase project
+
+### Point Supabase at the new host
+
+**Authentication** → **URL Configuration**:
+
+- **Site URL** → `https://<your-project>.vercel.app`, replacing the localhost one from step 4
+- **Redirect URLs** → add `https://<your-project>.vercel.app/auth/callback`, and keep
+  `http://localhost:3000/auth/callback` or local sign-in breaks
+
+Do not add a `https://*.vercel.app` wildcard. It would let every preview build sign in, and
+each one is a live door to photographs of KTP, Kartu Keluarga and the marriage book.
+
+- [ ] Site URL is the production host
+- [ ] Both redirect URLs listed, no wildcard
+
+### Check the Google client
+
+Probably nothing to do — Google redirects to Supabase, not to the app, and that URL has not
+changed. Open <https://console.cloud.google.com/apis/credentials> and confirm
+`https://<project-ref>.supabase.co/auth/v1/callback` is still listed. Thirty seconds now
+against a sign-in that is broken on the day you need it.
+
+- [ ] Supabase callback still listed
+
+### Sanity check, on a phone
+
+A desktop browser will not tell you much — the whole app is a 420px shell.
+
+1. Open the production URL. It should send you to sign-in rather than error.
+2. Sign in with Google. Coming back to sign-in with `?error=exchange_failed` means the
+   redirect URL does not match.
+3. You should land on the tab `who` picked, not always on Today. That proves the session
+   reached the database and not only Supabase Auth.
+4. Open **Papers** and check a photo renders. That is the one path using
+   `SUPABASE_SECRET_KEY` and the private bucket.
+5. Add something, reload, confirm it is still there.
+
+A 500 reading "`.env.local` is not right yet" is `src/server/env.ts` doing its job: one of the
+four is missing or is the wrong key, and the Vercel log says which.
+
+- [ ] Signed in on a phone, papers photo renders
 
 ---
 

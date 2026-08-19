@@ -20,7 +20,7 @@ Deadlines that cannot move: a hospital picked by **~7 Sep**, the papers pack com
 | | 4.1 The import script | The design system, all 16 |
 | | 4.2 The count check | Auth and the approval gate |
 | | 4.3 Dry run, then the real run | Scan photos — bucket and policies live |
-| | 0.10 Deploy | 0.1 – 0.6 · 0.8 |
+| | 0.10 Deploy · setup.md §8 | 0.1 – 0.6 · 0.8 |
 | | 2.14 The one-tap sheet | |
 
 **Ask before starting:** Part 7, `/api/mcp`. The spec's scope split assigns Part II to its
@@ -118,11 +118,18 @@ The old app is not being used, so there is nothing to freeze. ADR-0001's constra
 writes arriving after the dry run; with no writes happening, the dry run and the real run can
 follow each other the same day. 4.4 becomes retiring a thing nobody is on rather than a cutover.
 
-### 0.10 Deploy — unblocked
+### 0.10 Deploy — unblocked, and now written down
 
-Vercel project, environment variables, domain. Then go back to Supabase → URL Configuration and
-change Site URL to the production host, and add the production redirect URI to the Google OAuth
-client. Forgetting the second half is the classic way to break sign-in on launch day.
+Every step is `docs/setup.md` section 8: four environment variables on Vercel, then Site URL and
+the redirect URLs in Supabase, then a look at the Google client. All of it is yours — I have no
+access to either dashboard.
+
+Nothing in the repo has to change first. `pnpm verify` passes as it stands, uploads go from the
+browser straight to Supabase Storage so Vercel's request size ceiling never comes into it, and the
+app reads its own host from the browser, so there is no site-URL variable to set.
+
+The half that gets forgotten is the Supabase one. A deploy with the old localhost Site URL still
+builds and still serves pages; it just cannot sign anyone in.
 
 ### 0.11 Check the IDAI immunisation schedule against a live source — **blocks the generator**
 
