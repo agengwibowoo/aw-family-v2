@@ -9,6 +9,11 @@ import {
   createHospital,
   getHospital,
   getPickedHospital,
+  hospitalCounts,
+  listHospitals,
+  listHospitalsForCompare,
+  removeHospital,
+  restoreHospital,
   setDecision,
   setHospitalDocuments,
   upsertInsurer,
@@ -119,6 +124,92 @@ describe("picking a hospital", () => {
     const row = await getHospital(id);
     assert.equal(row?.hospital.decision, "ruled_out");
     assert.equal(row?.hospital.decisionReason, "Peak drive over 45 minutes");
+  });
+});
+
+describe("taking a place off the list", () => {
+  it("hides it from every screen that counts or compares", async () => {
+    const id = await makeHospital("R1");
+
+    const before = (await hospitalCounts()).shortlisted ?? 0;
+    await removeHospital(id, ACTOR);
+
+    const listed = await listHospitals();
+    assert.equal(
+      listed.some((h) => h.id === id),
+      false,
+      "a removed place is still on the list",
+    );
+
+    const compared = await listHospitalsForCompare();
+    assert.equal(
+      compared.some((c) => c.hospital.id === id),
+      false,
+      "a removed place is still in compare",
+    );
+
+    assert.equal((await hospitalCounts()).shortlisted ?? 0, before - 1);
+
+    // Its own screen still renders it — that is where putting it back happens.
+    const row = await getHospital(id);
+    assert.equal(row?.hospital.name.startsWith(PREFIX), true);
+    assert.notEqual(row?.hospital.removedAt, null);
+
+    const removedOnly = await listHospitals({ removedOnly: true });
+    assert.equal(
+      removedOnly.some((h) => h.id === id),
+      true,
+      "a removed place is missing from the removed list",
+    );
+  });
+
+  it("keeps its prices and its insurers, and gives them back", async () => {
+    const id = await makeHospital("R2");
+
+    await upsertQuote({
+      hospitalId: id,
+      deliveryType: "Normal",
+      roomClass: "Kelas 1",
+      priceIdr: "18000000",
+    });
+    await upsertInsurer({ hospitalId: id, insurerName: "ztest-Insurer", accepted: true });
+
+    await removeHospital(id, ACTOR);
+
+    // Nothing cascaded — this is the whole reason removal is not a delete.
+    const whileGone = await getHospital(id);
+    assert.equal(whileGone?.quotes.length, 1);
+    assert.equal(whileGone?.insurers.length, 1);
+
+    await restoreHospital(id, ACTOR);
+
+    const back = await getHospital(id);
+    assert.equal(back?.hospital.removedAt, null);
+    assert.equal(back?.quotes.length, 1);
+    assert.equal(back?.insurers.length, 1);
+    assert.equal(
+      (await listHospitals()).some((h) => h.id === id),
+      true,
+      "a restored place did not come back to the list",
+    );
+  });
+
+  it("refuses to take the picked place off the list", async () => {
+    const id = await makeHospital("R3");
+    await setDecision(id, "picked", ACTOR);
+
+    await assert.rejects(() => removeHospital(id, ACTOR));
+
+    // And Postgres refuses it too, so a hand-written statement cannot erase
+    // the record the papers pack is scored against.
+    await assert.rejects(() =>
+      db
+        .update(hospitals)
+        .set({ removedAt: new Date() })
+        .where(eq(hospitals.id, id)),
+    );
+
+    assert.equal((await getPickedHospital())?.id, id);
   });
 });
 

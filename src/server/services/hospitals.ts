@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, inArray, isNotNull, ne, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, ne, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import {
@@ -60,8 +60,25 @@ export function completeness(h: Hospital): number {
   }).length;
 }
 
-export async function listHospitals(): Promise<Hospital[]> {
-  const rows = await db.select().from(hospitals).orderBy(asc(hospitals.name));
+/**
+ * The places on the list.
+ *
+ * Removed ones are off every screen that counts, compares or ranks — they were
+ * never candidates. `removedOnly` is how the screen that offers to put them
+ * back gets at them.
+ */
+export async function listHospitals(
+  opts: { removedOnly?: boolean } = {},
+): Promise<Hospital[]> {
+  const rows = await db
+    .select()
+    .from(hospitals)
+    .where(
+      opts.removedOnly
+        ? isNotNull(hospitals.removedAt)
+        : isNull(hospitals.removedAt),
+    )
+    .orderBy(asc(hospitals.name));
 
   // Picked, then shortlisted, then ruled out — where you are up to, not what
   // these places are.
@@ -167,7 +184,9 @@ export async function listHospitalsForCompare(): Promise<ComparedHospital[]> {
 
 export async function getPickedHospital(): Promise<Hospital | null> {
   const row = await db.query.hospitals.findFirst({
-    where: eq(hospitals.decision, "picked"),
+    // A removed place cannot be picked — the check constraint says so — but
+    // reading it that way keeps this true of any future write path too.
+    where: and(eq(hospitals.decision, "picked"), isNull(hospitals.removedAt)),
   });
   return row ?? null;
 }
@@ -243,6 +262,66 @@ export async function setDecision(
   if (decision === "picked") {
     await notePickedHospitalForPapers(id, by);
   }
+}
+
+/**
+ * "This shouldn't be on the list."
+ *
+ * Not ruling out, which is a decision worth keeping and showing. This is for a
+ * duplicate or a typo — something that was never a candidate — so it leaves
+ * every screen rather than moving to a quieter one.
+ *
+ * Nothing underneath is touched. The quotes, the insurer checks and the papers
+ * requirements all survive, which is what makes putting it back cost nothing
+ * and what keeps the fifteen-minute Undo honest.
+ *
+ * The picked place is exempt: the papers pack follows it and remembers which
+ * place it was last scored against, so removing it would re-score the pack
+ * without saying so.
+ */
+export async function removeHospital(id: string, by: string): Promise<void> {
+  await db.transaction(async (tx) => {
+    const row = await tx.query.hospitals.findFirst({
+      columns: { decision: true },
+      where: eq(hospitals.id, id),
+    });
+    if (!row) return;
+
+    if (row.decision === "picked") {
+      throw new Error(
+        "Pick somewhere else first — the papers pack follows the picked place.",
+      );
+    }
+
+    await tx
+      .update(hospitals)
+      .set({
+        removedAt: new Date(),
+        removedBy: by,
+        updatedBy: by,
+        updatedAt: new Date(),
+      })
+      .where(eq(hospitals.id, id));
+  });
+}
+
+/**
+ * Put it back, with everything it ever knew.
+ *
+ * No window on this one. Undo is the fifteen-minute path, but the removed
+ * places screen offers the same action for as long as the row exists, so the
+ * window belongs to the card rather than to the write.
+ */
+export async function restoreHospital(id: string, by: string): Promise<void> {
+  await db
+    .update(hospitals)
+    .set({
+      removedAt: null,
+      removedBy: null,
+      updatedBy: by,
+      updatedAt: new Date(),
+    })
+    .where(eq(hospitals.id, id));
 }
 
 /* ---------------------------------------------------------------------------
@@ -407,10 +486,12 @@ export async function cheapestNormalPrice(): Promise<Map<string, string>> {
       priceIdr: sql<string>`min(${hospitalQuotes.priceIdr})`,
     })
     .from(hospitalQuotes)
+    .innerJoin(hospitals, eq(hospitals.id, hospitalQuotes.hospitalId))
     .where(
       and(
         eq(hospitalQuotes.deliveryType, "Normal"),
         isNotNull(hospitalQuotes.priceIdr),
+        isNull(hospitals.removedAt),
       ),
     )
     .groupBy(hospitalQuotes.hospitalId);
@@ -426,6 +507,7 @@ export async function hospitalCounts() {
       n: sql<number>`count(*)::int`,
     })
     .from(hospitals)
+    .where(isNull(hospitals.removedAt))
     .groupBy(hospitals.decision);
   return Object.fromEntries(rows.map((r) => [r.decision, r.n])) as Partial<
     Record<"picked" | "shortlisted" | "ruled_out", number>

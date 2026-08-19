@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
+import { UNDO_BUTTON } from "@/components/confirmation";
 import { KeyValue } from "@/components/key-value";
 import { Money, MoneyToggle } from "@/components/money";
 import { VerdictCard } from "@/components/verdict-card";
@@ -21,7 +22,11 @@ import {
   getPolicy,
 } from "@/server/services/hospitals";
 
-import { setDecisionAction } from "../actions";
+import {
+  removeHospitalAction,
+  restoreHospitalAction,
+  setDecisionAction,
+} from "../actions";
 
 /**
  * S3 — One hospital.
@@ -87,6 +92,25 @@ export default async function OneHospital({
               dates and a subtraction. */}
           {verdict && <VerdictCard verdict={verdict} />}
 
+          {/* Taken off the list, so there is no decision to make about it —
+              only the one way back. */}
+          {hospital.removedAt !== null && (
+            <Card>
+              <SectionLabel>Off the list</SectionLabel>
+              <p className="mt-[6px] text-[14.5px]">
+                This place was taken off the list. Everything it knew is still
+                here — its prices, its insurers and the papers it wants.
+              </p>
+              <form action={restoreHospitalAction} className="mt-[14px]">
+                <input type="hidden" name="id" value={hospital.id} />
+                <SubmitButton busyLabel="Putting it back…" className={UNDO_BUTTON}>
+                  Put it back
+                </SubmitButton>
+              </form>
+            </Card>
+          )}
+
+          {hospital.removedAt === null && (
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-wrap gap-[8px]">
               {(["picked", "shortlisted", "ruled_out"] as const).map((d) => (
@@ -120,6 +144,7 @@ export default async function OneHospital({
               {filled} of {COMPLETENESS_TOTAL} filled in
             </span>
           </div>
+          )}
 
           {hospital.decision === "ruled_out" && hospital.decisionReason && (
             <Card>
@@ -295,6 +320,34 @@ export default async function OneHospital({
               <p className="mt-[6px] text-[14.5px] whitespace-pre-wrap">
                 {hospital.notes}
               </p>
+            </Card>
+          )}
+
+          {/* Last on the screen, and only while it is on the list. Not behind a
+              confirm — the card it leaves behind is what takes it back. */}
+          {hospital.removedAt === null && (
+            <Card>
+              <SectionLabel>Take it off the list</SectionLabel>
+              <p className="text-ink2 mt-[6px] text-[13px]">
+                For a duplicate or a mistake. If you considered this place and
+                said no, rule it out instead — that keeps the reason.
+              </p>
+              {hospital.decision === "picked" ? (
+                <p className="mt-[12px] text-[14.5px]">
+                  This is the place you picked, and the papers list follows it.
+                  Pick somewhere else first.
+                </p>
+              ) : (
+                <form action={removeHospitalAction} className="mt-[12px]">
+                  <input type="hidden" name="id" value={hospital.id} />
+                  <SubmitButton
+                    busyLabel="Removing…"
+                    className="text-ink2 min-h-[52px] text-[14.5px] underline underline-offset-2"
+                  >
+                    Remove this place
+                  </SubmitButton>
+                </form>
+              )}
             </Card>
           )}
         </Stack>

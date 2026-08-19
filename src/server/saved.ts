@@ -63,6 +63,53 @@ export async function forgetSaved(): Promise<void> {
 }
 
 /* ---------------------------------------------------------------------------
+   A place just taken off the list
+   --------------------------------------------------------------------------- */
+
+const REMOVED = "np_removed_place";
+
+/**
+ * Its own cookie rather than a wider `Saved`, because the two have nothing in
+ * common but a duration: one is a purchase whose count can be put back, this
+ * is a place that left the list.
+ *
+ * A pointer, never the authority — the row itself is what says whether the
+ * place is still removed, and `restoreHospital` reads that, not this.
+ */
+export type RemovedPlace = { hospitalId: string; name: string };
+
+export async function rememberRemovedPlace(place: RemovedPlace): Promise<void> {
+  const jar = await cookies();
+  jar.set(REMOVED, JSON.stringify(place), {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: UNDO_WINDOW_MINUTES * 60,
+  });
+}
+
+export async function readRemovedPlace(): Promise<RemovedPlace | null> {
+  const jar = await cookies();
+  const raw = jar.get(REMOVED)?.value;
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as RemovedPlace;
+    if (!parsed?.hospitalId || !parsed?.name) return null;
+    return parsed;
+  } catch {
+    // She loses the undo affordance, not the row. It is still on the removed
+    // places screen, which is the path that does not expire.
+    return null;
+  }
+}
+
+export async function forgetRemovedPlace(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(REMOVED);
+}
+
+/* ---------------------------------------------------------------------------
    "Later", on Today
    --------------------------------------------------------------------------- */
 

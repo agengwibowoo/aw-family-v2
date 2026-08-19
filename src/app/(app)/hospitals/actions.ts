@@ -5,8 +5,12 @@ import { redirect } from "next/navigation";
 
 import { number, text, tristate } from "@/lib/form";
 import { requireApproved } from "@/server/auth";
+import { forgetRemovedPlace, rememberRemovedPlace } from "@/server/saved";
 import {
   createHospital,
+  getHospital,
+  removeHospital,
+  restoreHospital,
   setDecision,
   updateHospital,
 } from "@/server/services/hospitals";
@@ -77,4 +81,48 @@ export async function setDecisionAction(formData: FormData) {
   revalidatePath(`/hospitals/${id}`);
   // The papers pack is generated from whichever place is picked.
   revalidatePath("/papers");
+}
+
+/** Refreshes every screen that counts, compares or lists the places. */
+function refreshPlaces(id: string) {
+  revalidatePath("/hospitals");
+  revalidatePath("/hospitals/removed");
+  revalidatePath("/hospitals/ruled-out");
+  revalidatePath(`/hospitals/${id}`);
+  revalidatePath("/compare");
+}
+
+/**
+ * "This shouldn't be on the list."
+ *
+ * An ordinary action, not a destructive one behind a confirm — the card it
+ * leaves behind on the way out is what takes it back.
+ */
+export async function removeHospitalAction(formData: FormData) {
+  const user = await requireApproved();
+  const id = text(formData.get("id"));
+  if (!id) return;
+
+  // Read the name before the row leaves the lists, so the card can say which
+  // place it was.
+  const found = await getHospital(id);
+  if (!found) return;
+
+  await removeHospital(id, user.id);
+  await rememberRemovedPlace({ hospitalId: id, name: found.hospital.name });
+
+  refreshPlaces(id);
+  redirect("/hospitals");
+}
+
+export async function restoreHospitalAction(formData: FormData) {
+  const user = await requireApproved();
+  const id = text(formData.get("id"));
+  if (!id) return;
+
+  await restoreHospital(id, user.id);
+  await forgetRemovedPlace();
+
+  refreshPlaces(id);
+  redirect(`/hospitals/${id}`);
 }

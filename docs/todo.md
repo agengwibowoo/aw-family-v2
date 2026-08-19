@@ -325,7 +325,8 @@ yours at all before I start. If it is, the build order is fixed:
 9. `chat_logs` channel column and a 90-day retention policy
 
 Hard rules: no write tool accepts a thing by name, ever. Summaries are generated server-side, not
-paraphrased by the agent. Hospitals stay read-only over MCP. There is no delete. `show_prices`
+paraphrased by the agent. Hospitals stay read-only over MCP — taking a place off the list is a
+web-only action, and there is no delete anywhere, over MCP or otherwise. `show_prices`
 defaults false and the server **omits** price fields rather than asking the agent to withhold them.
 
 ---

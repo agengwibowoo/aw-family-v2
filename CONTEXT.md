@@ -83,6 +83,15 @@ it can care for a sick newborn, what insurance will pay, and what it costs. Exac
 be picked.
 _Avoid_: clinic, provider, facility, venue
 
+**Removed**:
+A place that should never have been on the list — a duplicate, a typo. Not the same as
+**Ruled out**, and the two must never be offered as one control: ruling a place out is a
+decision worth reading back six weeks later, removing one is tidying up a mistake. A removed
+place leaves every screen that counts, compares or ranks, keeps its prices, its insurer
+checks and its papers, and can be put back. The picked place cannot be removed — the papers
+list follows it, and losing that link would re-score the list in silence.
+_Avoid_: delete, archive, trash, hide
+
 **Quote**:
 A hospital's price for one delivery type and one room class, as told to us on a given day.
 Quotes go stale — past sixty days the app says so in words.

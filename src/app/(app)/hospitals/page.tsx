@@ -6,6 +6,7 @@ import { Chip } from "@/components/chip";
 import { EmptyState } from "@/components/empty-state";
 import { Money, MoneyToggle } from "@/components/money";
 import { ProgressBar } from "@/components/progress";
+import { RemovedPlaceConfirmation } from "@/components/removed-place-confirmation";
 import { assessCover } from "@/domain/insurance";
 import { HOSPITAL_DECISION_WORDS, type HospitalDecision } from "@/domain/status";
 import { requireApproved } from "@/server/auth";
@@ -31,8 +32,9 @@ import {
 export default async function Hospitals() {
   await requireApproved("/hospitals");
 
-  const [rows, policy, origin] = await Promise.all([
+  const [rows, removed, policy, origin] = await Promise.all([
     listHospitals(),
+    listHospitals({ removedOnly: true }),
     getPolicy(),
     getOrigin(),
   ]);
@@ -57,6 +59,12 @@ export default async function Hospitals() {
       </header>
 
       <div className="px-[18px]">
+        {/* Empty on every visit but the one straight after a removal, so it
+            carries its own spacing rather than the page reserving room. */}
+        <div className="empty:hidden mb-[13px]">
+          <RemovedPlaceConfirmation />
+        </div>
+
         {rows.length === 0 ? (
           <Card>
             <EmptyState
@@ -100,6 +108,20 @@ export default async function Hospitals() {
               </Link>
             )}
           </Stack>
+        )}
+
+        {/* Outside the branch above: if every place has been taken off, the
+            list is empty and this is the only way back to them. */}
+        {removed.length > 0 && (
+          <Link
+            href="/hospitals/removed"
+            className="text-ink2 border-ln mt-[13px] flex min-h-[52px] items-center justify-between rounded-[14px] border px-[16px] text-[14.5px]"
+          >
+            <span>
+              {removed.length === 1 ? "1 removed" : `${removed.length} removed`}
+            </span>
+            <span aria-hidden>›</span>
+          </Link>
         )}
       </div>
 

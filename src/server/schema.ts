@@ -541,6 +541,14 @@ export const hospitals = pgTable(
 
     decision: text("decision").notNull().default("shortlisted"),
     decisionReason: text("decision_reason"),
+
+    /** Removed is not ruled out. Ruling a place out is a decision we keep and
+        show; removing one says it should never have been on the list — a
+        duplicate, a typo. Its quotes, insurers and papers survive underneath,
+        and it can be put back. */
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removedBy: uuid("removed_by"),
+
     notes: text("notes"),
     ...audit,
   },
@@ -557,6 +565,17 @@ export const hospitals = pgTable(
       "hospitals_ruled_out_needs_reason",
       sql`${t.decision} <> 'ruled_out' or ${t.decisionReason} is not null`,
     ),
+    /** The papers pack follows the picked place, and remembers which place it
+        was last scored against so the screen can name what changed. Removing
+        that place would erase the record and re-score the pack in silence, so
+        Postgres refuses it — even to a hand-written statement. */
+    check(
+      "hospitals_removed_not_picked",
+      sql`${t.removedAt} is null or ${t.decision} <> 'picked'`,
+    ),
+    index("hospitals_live_idx")
+      .on(t.decision)
+      .where(sql`${t.removedAt} is null`),
   ],
 );
 

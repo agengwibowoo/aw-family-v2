@@ -124,6 +124,14 @@ try {
         (t) =>
           t`insert into hospitals (name, decision) values ('Test C', 'ruled_out')`,
       );
+      // The papers pack follows the picked place and remembers which one it
+      // was scored against. Taking that place off the list would re-score the
+      // pack in silence, so Postgres refuses it and not just the service.
+      await rejects(
+        tx,
+        "taking the picked hospital off the list is refused",
+        (t) => t`update hospitals set removed_at = now() where decision = 'picked'`,
+      );
 
       /* --- polymorphic parents: exactly one -------------------------------- */
 
