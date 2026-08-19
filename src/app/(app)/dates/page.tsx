@@ -4,6 +4,7 @@ import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { DateBlock, WindowBlock } from "@/components/date-block";
 import { EmptyState } from "@/components/empty-state";
+import { SubmitButton } from "@/components/submit-button";
 import {
   formatTimeInHousehold,
   formatWeekdayDayMonth,
@@ -136,12 +137,12 @@ export default async function Dates() {
               inside, not a day you have been given.
             </p>
             <form action={createSeriesAction} className="mt-[13px]">
-              <button
-                type="submit"
+              <SubmitButton
+                busyLabel="Putting them in…"
                 className="border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
               >
                 Put all {proposal.length} in
-              </button>
+              </SubmitButton>
             </form>
           </Card>
         )}

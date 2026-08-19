@@ -7,6 +7,7 @@ import { Chip } from "@/components/chip";
 import { KeyValue } from "@/components/key-value";
 import { Money, MoneyToggle } from "@/components/money";
 import { VerdictCard } from "@/components/verdict-card";
+import { SubmitButton } from "@/components/submit-button";
 import { assessCover, quoteAgeNote } from "@/domain/insurance";
 import { todayInHousehold } from "@/domain/dates";
 import { HOSPITAL_DECISION_WORDS, type HospitalDecision } from "@/domain/status";
@@ -99,7 +100,7 @@ export default async function OneHospital({
                       value={hospital.decisionReason ?? "Ruled out"}
                     />
                   )}
-                  <button type="submit" disabled={hospital.decision === d}>
+                  <SubmitButton disabled={hospital.decision === d}>
                     <Chip
                       tone={
                         hospital.decision === d
@@ -111,7 +112,7 @@ export default async function OneHospital({
                     >
                       {HOSPITAL_DECISION_WORDS[d as HospitalDecision]}
                     </Chip>
-                  </button>
+                  </SubmitButton>
                 </form>
               ))}
             </div>

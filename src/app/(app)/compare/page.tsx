@@ -353,7 +353,9 @@ export default async function Compare({
         ) : leader ? (
           <form action={pickAction} className="flex-1">
             <input type="hidden" name="id" value={leader.id} />
-            <BarPrimary type="submit">Pick {leader.name}</BarPrimary>
+            <BarPrimary type="submit" busyLabel="Picking…">
+              Pick {leader.name}
+            </BarPrimary>
           </form>
         ) : (
           <BarPrimary href="/hospitals">Back to the places</BarPrimary>
@@ -361,7 +363,7 @@ export default async function Compare({
         {leader && !decided && (
           <form action={ruleOutAction}>
             <input type="hidden" name="id" value={leader.id} />
-            <BarSecondary type="submit" width={104}>
+            <BarSecondary type="submit" width={104} busyLabel="Saving…">
               Rule out
             </BarSecondary>
           </form>

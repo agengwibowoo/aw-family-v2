@@ -32,9 +32,15 @@ export function ScanUpload({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [problem, setProblem] = useState<string | null>(null);
+  // The transition only covers the write at the end. The slow part is the
+  // signing round-trip and the PUT, so the button has to be dead for those
+  // too — otherwise a second tap on a bad connection uploads the photo twice.
+  const [sending, setSending] = useState(false);
+  const busy = sending || pending;
 
   async function upload(file: File) {
     setProblem(null);
+    setSending(true);
     try {
       const target = await signAction(file.name);
       if (!target) {
@@ -60,6 +66,8 @@ export function ScanUpload({
       // Offline, or the signed URL expired while she was choosing. Say so
       // rather than leaving the slot looking like it worked.
       setProblem("That didn't upload. Try once more.");
+    } finally {
+      setSending(false);
     }
   }
 
@@ -79,14 +87,15 @@ export function ScanUpload({
       />
       <button
         type="button"
-        disabled={pending}
+        disabled={busy}
+        aria-busy={busy || undefined}
         onClick={() => input.current?.click()}
         className={cn(
           "bg-sf2 border-ln2 text-ink3 grid h-[132px] w-[104px] shrink-0 place-items-center rounded-[8px] border border-dashed text-[11px]",
-          pending && "opacity-55",
+          busy && "opacity-60",
         )}
       >
-        {pending ? "Saving" : label}
+        {busy ? "Saving…" : label}
       </button>
       {problem && <p className="text-ink2 mt-[6px] text-[12px]">{problem}</p>}
     </div>

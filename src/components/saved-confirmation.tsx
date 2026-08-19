@@ -1,6 +1,7 @@
 import { undoAction } from "@/app/(app)/add/actions";
 import { readSaved } from "@/server/saved";
 import { ConfirmationCard, UNDO_BUTTON } from "./confirmation";
+import { SubmitButton } from "./submit-button";
 
 /**
  * The confirmation card, wherever she landed.
@@ -34,9 +35,9 @@ export async function SavedConfirmation({ offline = false }: { offline?: boolean
         <form action={undoAction}>
           <input type="hidden" name="purchaseId" value={saved.purchaseId} />
           <input type="hidden" name="itemId" value={saved.itemId} />
-          <button type="submit" className={UNDO_BUTTON}>
+          <SubmitButton busyLabel="Undoing…" className={UNDO_BUTTON}>
             Undo
-          </button>
+          </SubmitButton>
         </form>
       }
       againHref={`/add?thing=${saved.itemId}`}

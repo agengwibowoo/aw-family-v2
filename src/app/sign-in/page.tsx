@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Card } from "@/components/card";
+import { SubmitButton } from "@/components/submit-button";
 import {
   formatFullDate,
   plainDateInHousehold,
@@ -100,12 +101,12 @@ async function Waiting({
 
       <div className="mt-[26px] flex flex-col gap-[12px]">
         <form action={askAgainAction}>
-          <button
-            type="submit"
+          <SubmitButton
+            busyLabel="Asking…"
             className="bg-ac flex min-h-[52px] w-full items-center justify-center rounded-[11px] px-4 text-[14.5px] font-medium whitespace-nowrap text-white"
           >
             Ask again
-          </button>
+          </SubmitButton>
         </form>
         <SignOutButton />
       </div>

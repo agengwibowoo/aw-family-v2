@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/cn";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 9 — tab bar.
@@ -52,6 +53,7 @@ export function TabBar() {
             >
               {tab.label}
             </span>
+            <LinkPending />
           </Link>
         );
       })}

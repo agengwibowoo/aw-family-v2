@@ -97,7 +97,7 @@ function userVisibleStrings(source: string): string[] {
 
   // Props that become words on screen.
   const WORD_PROPS =
-    /\b(label|headline|sub|title|reason|hint|placeholder|actionLabel|againLabel|closeLabel|summary|blank|aria-label|alt|note)\s*=\s*(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\}|\{"([^"]*)"\})/g;
+    /\b(label|busyLabel|headline|sub|title|reason|hint|placeholder|actionLabel|againLabel|closeLabel|summary|blank|aria-label|alt|note)\s*=\s*(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\}|\{"([^"]*)"\})/g;
   for (const m of withoutComments.matchAll(WORD_PROPS)) {
     const text = (m[2] ?? m[3] ?? m[4] ?? m[5] ?? "").trim();
     if (text) found.push(text);

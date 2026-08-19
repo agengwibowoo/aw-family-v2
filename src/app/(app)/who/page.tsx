@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BarPrimary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
+import { SubmitButton } from "@/components/submit-button";
 import { formatFullDate, plainDateInHousehold } from "@/domain/dates";
 import { requireAdmin } from "@/server/auth";
 import { listMembers, type AppUserRow } from "@/server/services/members";
@@ -68,21 +69,21 @@ export default async function Who({
                 <div className="mt-[13px] flex gap-[12px]">
                   <form action={approveAction} className="flex-1">
                     <input type="hidden" name="id" value={m.id} />
-                    <button
-                      type="submit"
+                    <SubmitButton
+                      busyLabel="Letting them in…"
                       className="bg-ac flex min-h-[52px] w-full items-center justify-center rounded-[11px] px-4 text-[14.5px] font-medium whitespace-nowrap text-white"
                     >
                       Let them in
-                    </button>
+                    </SubmitButton>
                   </form>
                   <form action={blockAction}>
                     <input type="hidden" name="id" value={m.id} />
-                    <button
-                      type="submit"
+                    <SubmitButton
+                      busyLabel="Saving…"
                       className="border-ln2 text-ink2 min-h-[52px] w-[112px] rounded-[11px] border text-[14.5px] font-medium whitespace-nowrap"
                     >
                       Turn off
-                    </button>
+                    </SubmitButton>
                   </form>
                 </div>
               </Card>
@@ -107,12 +108,9 @@ export default async function Who({
                 {m.id !== admin.id && (
                   <form action={blockAction}>
                     <input type="hidden" name="id" value={m.id} />
-                    <button
-                      type="submit"
-                      className="text-ink2 text-[13px] underline underline-offset-2"
-                    >
+                    <SubmitButton className="text-ink2 text-[13px] underline underline-offset-2">
                       Turn off
-                    </button>
+                    </SubmitButton>
                   </form>
                 )}
               </span>
@@ -135,12 +133,9 @@ export default async function Who({
                 <Person member={m} />
                 <form action={unblockAction} className="shrink-0">
                   <input type="hidden" name="id" value={m.id} />
-                  <button
-                    type="submit"
-                    className="text-acl text-[13px] underline underline-offset-2"
-                  >
+                  <SubmitButton className="text-acl text-[13px] underline underline-offset-2">
                     Let back in
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
             ))}

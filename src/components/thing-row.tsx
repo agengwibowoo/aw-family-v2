@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { countOf, ITEM_STATUS_WORDS, type ItemStatus } from "@/domain/status";
 import { Chip, type ChipTone } from "./chip";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 1 — the row for one thing.
@@ -55,6 +56,7 @@ export function ThingRow({
       </span>
       {/* Never shrinks, truncates or wraps, however long the name is. */}
       <Chip tone={TONE[status]}>{ITEM_STATUS_WORDS[status]}</Chip>
+      <LinkPending />
     </Link>
   );
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { NOT_FILLED_IN } from "@/domain/status";
 import { Chip } from "./chip";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 13 — comparison cell.
@@ -37,6 +38,7 @@ export function CompareCell({
     return fillHref ? (
       <Link href={fillHref} className={box}>
         {inner}
+        <LinkPending />
       </Link>
     ) : (
       <div className={box}>{inner}</div>

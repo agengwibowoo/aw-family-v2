@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 14 — empty states.
@@ -34,6 +35,7 @@ export function EmptyState({
           className="text-acl mt-[14px] inline-block text-[14.5px] font-medium"
         >
           {action.label}
+          <LinkPending />
         </Link>
       )}
     </div>

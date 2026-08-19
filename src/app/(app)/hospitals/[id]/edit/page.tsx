@@ -160,7 +160,9 @@ export default async function EditHospital({
       </div>
 
       <BottomBar>
-        <BarPrimary type="submit">Save it</BarPrimary>
+        <BarPrimary type="submit" busyLabel="Saving…">
+          Save it
+        </BarPrimary>
         <BarSecondary href={`/hospitals/${h.id}`} width={126}>
           Cancel
         </BarSecondary>

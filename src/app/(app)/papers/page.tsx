@@ -3,6 +3,7 @@ import { Chip } from "@/components/chip";
 import { PhotoSlot } from "@/components/photo-slot";
 import { ScanUpload } from "@/components/scan-upload";
 import { ReadinessBanner } from "@/components/readiness-banner";
+import { SubmitButton } from "@/components/submit-button";
 import { todayInHousehold } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
 import { getOrigin } from "@/server/services/household";
@@ -71,12 +72,12 @@ export default async function Papers() {
           </p>
           <form action={seenChangeAction} className="mt-[13px]">
             <input type="hidden" name="hospitalId" value={pack.hospitalId} />
-            <button
-              type="submit"
+            <SubmitButton
+              busyLabel="Saving…"
               className="border-ln2 text-ink min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
             >
               Seen it
-            </button>
+            </SubmitButton>
           </form>
         </Card>
       )}
@@ -199,8 +200,8 @@ function PaperCard({
         <form action={toggleHaveAction}>
           <input type="hidden" name="documentId" value={line.documentId} />
           <input type="hidden" name="have" value={String(!line.haveOriginal)} />
-          <button
-            type="submit"
+          <SubmitButton
+            busyLabel="Saving…"
             className={
               line.haveOriginal
                 ? "border-ln2 text-ink2 min-h-[52px] rounded-[11px] border px-4 text-[14.5px] font-medium whitespace-nowrap"
@@ -208,33 +209,31 @@ function PaperCard({
             }
           >
             {line.haveOriginal ? "Haven't got it" : "We have it"}
-          </button>
+          </SubmitButton>
         </form>
 
         {line.copiesRequired > 0 && (
           <form action={setCopiesAction} className="flex items-center gap-[8px]">
             <input type="hidden" name="documentId" value={line.documentId} />
-            <button
-              type="submit"
+            <SubmitButton
               name="copies"
               value={Math.max(0, line.copiesMade - 1)}
               aria-label="One fewer copy"
               className="border-ln2 text-ink grid h-[52px] w-[52px] place-items-center rounded-[11px] border text-[18px]"
             >
               −
-            </button>
+            </SubmitButton>
             <span className="tabular w-[56px] text-center text-[15.5px]">
               {line.copiesMade} of {line.copiesRequired}
             </span>
-            <button
-              type="submit"
+            <SubmitButton
               name="copies"
               value={line.copiesMade + 1}
               aria-label="One more copy"
               className="border-ln2 text-ink grid h-[52px] w-[52px] place-items-center rounded-[11px] border text-[18px]"
             >
               +
-            </button>
+            </SubmitButton>
           </form>
         )}
       </div>

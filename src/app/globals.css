@@ -129,3 +129,11 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* A tapped link, still fetching.
+   The design's loading state is content at reduced opacity, in place — never a
+   spinner, never a skeleton. `LinkPending` renders the marker; this dims the
+   link around it, so no wrapper element disturbs the layout. */
+a:has([data-pending]) {
+  opacity: 0.6;
+}

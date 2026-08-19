@@ -7,6 +7,7 @@ import { DateBlock, WindowBlock } from "@/components/date-block";
 import { EmptyState } from "@/components/empty-state";
 import { ProgressBar } from "@/components/progress";
 import { SavedConfirmation } from "@/components/saved-confirmation";
+import { SubmitButton } from "@/components/submit-button";
 import { bandRange, countdownLine, currentBand } from "@/domain/age";
 import {
   formatTimeInHousehold,
@@ -113,12 +114,9 @@ export default async function Today() {
                       // Hides it for seven days and promotes the next one.
                       <form action={laterAction}>
                         <input type="hidden" name="id" value={card.id} />
-                        <button
-                          type="submit"
-                          className="border-ln2 text-ink2 min-h-[52px] shrink-0 basis-[84px] rounded-[11px] border text-[14.5px] font-medium whitespace-nowrap"
-                        >
+                        <SubmitButton className="border-ln2 text-ink2 min-h-[52px] shrink-0 basis-[84px] rounded-[11px] border text-[14.5px] font-medium whitespace-nowrap">
                           Later
-                        </button>
+                        </SubmitButton>
                       </form>
                     }
                   />

@@ -5,6 +5,7 @@ import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
 import { Field, Select, TextInput, TriState } from "@/components/field";
 import { Money, MoneyToggle } from "@/components/money";
+import { SubmitButton } from "@/components/submit-button";
 import { todayInHousehold } from "@/domain/dates";
 import { quoteAgeNote } from "@/domain/insurance";
 import {
@@ -88,12 +89,9 @@ export default async function HospitalMoney({
                     <form action={deleteQuoteAction} className="shrink-0">
                       <input type="hidden" name="id" value={q.id} />
                       <input type="hidden" name="hospitalId" value={hospital.id} />
-                      <button
-                        type="submit"
-                        className="text-ink2 text-[13px] underline underline-offset-2"
-                      >
+                      <SubmitButton className="text-ink2 text-[13px] underline underline-offset-2">
                         Remove
-                      </button>
+                      </SubmitButton>
                     </form>
                   </div>
                 );
@@ -123,12 +121,12 @@ export default async function HospitalMoney({
               <Field label="How did you find out?">
                 <Select name="source" options={QUOTE_SOURCES} />
               </Field>
-              <button
-                type="submit"
+              <SubmitButton
+                busyLabel="Adding…"
                 className="bg-ac mt-[6px] min-h-[52px] w-full rounded-[11px] px-4 text-[14.5px] font-medium text-white"
               >
                 Add this price
-              </button>
+              </SubmitButton>
             </form>
           </Card>
 
@@ -173,12 +171,9 @@ export default async function HospitalMoney({
                   <form action={deleteInsurerAction} className="shrink-0">
                     <input type="hidden" name="id" value={i.id} />
                     <input type="hidden" name="hospitalId" value={hospital.id} />
-                    <button
-                      type="submit"
-                      className="text-ink2 text-[13px] underline underline-offset-2"
-                    >
+                    <SubmitButton className="text-ink2 text-[13px] underline underline-offset-2">
                       Remove
-                    </button>
+                    </SubmitButton>
                   </form>
                 </div>
               ))
@@ -218,12 +213,12 @@ export default async function HospitalMoney({
               <Field label="How many days ahead?">
                 <TextInput name="preauthLeadDays" type="number" mono />
               </Field>
-              <button
-                type="submit"
+              <SubmitButton
+                busyLabel="Adding…"
                 className="bg-ac mt-[6px] min-h-[52px] w-full rounded-[11px] px-4 text-[14.5px] font-medium text-white"
               >
                 Add this insurer
-              </button>
+              </SubmitButton>
             </form>
           </Card>
 

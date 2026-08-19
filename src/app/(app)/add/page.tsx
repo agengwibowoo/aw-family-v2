@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Card } from "@/components/card";
 import { EmptyState } from "@/components/empty-state";
 import { Stepper } from "@/components/stepper";
+import { SubmitButton } from "@/components/submit-button";
 import { countOf } from "@/domain/status";
 import { requireApproved } from "@/server/auth";
 import { currentBand } from "@/domain/age";
@@ -134,12 +135,12 @@ export default async function AddWhatWeGot({
 
       {/* One button, 56px. Land, tap Save. */}
       <div className="border-ln bg-bg mt-auto sticky bottom-0 border-t px-[16px] pt-[12px] pb-[max(26px,env(safe-area-inset-bottom))]">
-        <button
-          type="submit"
+        <SubmitButton
+          busyLabel="Saving…"
           className="bg-ac flex min-h-[56px] w-full items-center justify-center rounded-[11px] text-[17px] font-medium text-white"
         >
           Save it
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );

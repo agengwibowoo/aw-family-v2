@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card } from "@/components/card";
 import { Field, TextArea, TextInput } from "@/components/field";
+import { SubmitButton } from "@/components/submit-button";
 import {
   formatTimeInHousehold,
   plainDateInHousehold,
@@ -95,7 +96,9 @@ export default async function EditDate({
         </div>
 
         <BottomBar>
-          <BarPrimary type="submit">Save it</BarPrimary>
+          <BarPrimary type="submit" busyLabel="Saving…">
+            Save it
+          </BarPrimary>
           <BarSecondary href={`/dates/${id}`} width={126}>
             Cancel
           </BarSecondary>
@@ -116,23 +119,20 @@ export default async function EditDate({
                 placeholder="Growing well, 2.1 kg. Head down already. Iron tablets, one a day."
               />
             </Field>
-            <button
-              type="submit"
+            <SubmitButton
+              busyLabel="Saving…"
               className="border-ln2 text-ink mt-[6px] min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
             >
               Save the note
-            </button>
+            </SubmitButton>
           </Card>
         </form>
 
         <form action={deleteEventAction} className="mt-[13px]">
           <input type="hidden" name="id" value={id} />
-          <button
-            type="submit"
-            className="text-ink2 text-[14.5px] font-medium underline underline-offset-2"
-          >
+          <SubmitButton className="text-ink2 text-[14.5px] font-medium underline underline-offset-2">
             This is not happening
-          </button>
+          </SubmitButton>
           <p className="text-ink3 mt-[4px] text-[13px]">
             Takes it off the list for good.
           </p>

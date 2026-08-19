@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 
 import { cn } from "@/lib/cn";
+
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 8 — bottom action bar.
@@ -26,23 +31,37 @@ export function BarPrimary({
   href,
   onClick,
   type = "button",
+  busyLabel,
 }: {
   children: React.ReactNode;
   href?: string;
   onClick?: () => void;
   type?: "button" | "submit";
+  /** What it says while the action is in flight. */
+  busyLabel?: string;
 }) {
-  const className = cn(BASE, "bg-ac flex-1 text-white");
+  const { pending } = useFormStatus();
+  const base = cn(BASE, "bg-ac flex-1 text-white");
+
+  // A link out of a submitting form still works, so it is never dimmed for
+  // the form's sake — only for its own navigation.
   if (href) {
     return (
-      <Link href={href} className={className}>
+      <Link href={href} className={base}>
         {children}
+        <LinkPending />
       </Link>
     );
   }
   return (
-    <button type={type} onClick={onClick} className={className}>
-      {children}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={pending}
+      aria-busy={pending || undefined}
+      className={cn(base, pending && "opacity-60")}
+    >
+      {pending && busyLabel ? busyLabel : children}
     </button>
   );
 }
@@ -54,25 +73,37 @@ export function BarSecondary({
   type = "button",
   /** 126–140px for a two-word label. */
   width = 134,
+  busyLabel,
 }: {
   children: React.ReactNode;
   href?: string;
   onClick?: () => void;
   type?: "button" | "submit";
   width?: number;
+  busyLabel?: string;
 }) {
-  const className = cn(BASE, "border-ln2 text-ink shrink-0 border");
+  const { pending } = useFormStatus();
+  const base = cn(BASE, "border-ln2 text-ink shrink-0 border");
   const style = { flexBasis: width };
+
   if (href) {
     return (
-      <Link href={href} className={className} style={style}>
+      <Link href={href} className={base} style={style}>
         {children}
+        <LinkPending />
       </Link>
     );
   }
   return (
-    <button type={type} onClick={onClick} className={className} style={style}>
-      {children}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={pending}
+      aria-busy={pending || undefined}
+      className={cn(base, pending && "opacity-60")}
+      style={style}
+    >
+      {pending && busyLabel ? busyLabel : children}
     </button>
   );
 }

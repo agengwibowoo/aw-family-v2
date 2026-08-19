@@ -80,7 +80,9 @@ export default async function StillLooking({
       </div>
 
       <BottomBar>
-        <BarPrimary type="submit">Save it</BarPrimary>
+        <BarPrimary type="submit" busyLabel="Saving…">
+          Save it
+        </BarPrimary>
       </BottomBar>
     </form>
   );

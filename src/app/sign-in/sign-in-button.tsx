@@ -35,6 +35,7 @@ export function SignInButton({
       type="button"
       onClick={signIn}
       disabled={busy}
+      aria-busy={busy || undefined}
       className={
         variant === "primary"
           ? "bg-ac flex min-h-[52px] w-full items-center justify-center rounded-[11px] px-4 text-[14.5px] font-medium whitespace-nowrap text-white disabled:opacity-60"
@@ -64,9 +65,10 @@ export function SignOutButton({ label = "Sign in as someone else" }: { label?: s
       type="button"
       onClick={signOut}
       disabled={busy}
+      aria-busy={busy || undefined}
       className="border-ln2 text-ink flex min-h-[52px] w-full items-center justify-center rounded-[11px] border px-4 text-[14.5px] font-medium whitespace-nowrap disabled:opacity-60"
     >
-      {label}
+      {busy ? "Signing out…" : label}
     </button>
   );
 }

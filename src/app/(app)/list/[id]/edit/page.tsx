@@ -5,6 +5,7 @@ import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card } from "@/components/card";
 import { Field, Select, TextArea, TextInput } from "@/components/field";
 import { Stepper } from "@/components/stepper";
+import { SubmitButton } from "@/components/submit-button";
 import { requireApproved } from "@/server/auth";
 import { listAgeBands } from "@/server/services/household";
 import {
@@ -151,7 +152,9 @@ export default async function EditThing({
         </div>
 
         <BottomBar>
-          <BarPrimary type="submit">Save it</BarPrimary>
+          <BarPrimary type="submit" busyLabel="Saving…">
+            Save it
+          </BarPrimary>
           <BarSecondary href={`/list/${id}`} width={126}>
             Cancel
           </BarSecondary>
@@ -173,12 +176,12 @@ export default async function EditThing({
                 placeholder="https://tiktok.com/…"
               />
             </Field>
-            <button
-              type="submit"
+            <SubmitButton
+              busyLabel="Saving…"
               className="border-ln2 text-ink mt-[6px] min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
             >
               Keep this link
-            </button>
+            </SubmitButton>
           </Card>
         </form>
 
@@ -198,12 +201,12 @@ export default async function EditThing({
                   placeholder="Katun, PPSU"
                 />
               </Field>
-              <button
-                type="submit"
+              <SubmitButton
+                busyLabel="Saving…"
                 className="border-ln2 text-ink mt-[6px] min-h-[52px] w-full rounded-[11px] border text-[14.5px] font-medium"
               >
                 Save what it&rsquo;s made of
-              </button>
+              </SubmitButton>
             </Card>
           </form>
         )}
@@ -214,23 +217,17 @@ export default async function EditThing({
         {detail.archivedAt ? (
           <form action={unarchiveThingAction}>
             <input type="hidden" name="id" value={id} />
-            <button
-              type="submit"
-              className="text-acl text-[14.5px] font-medium underline underline-offset-2"
-            >
+            <SubmitButton className="text-acl text-[14.5px] font-medium underline underline-offset-2">
               We need these again
-            </button>
+            </SubmitButton>
           </form>
         ) : (
           <form action={archiveThingAction}>
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="reason" value="not_needed" />
-            <button
-              type="submit"
-              className="text-ink2 text-[14.5px] font-medium underline underline-offset-2"
-            >
+            <SubmitButton className="text-ink2 text-[14.5px] font-medium underline underline-offset-2">
               We don&rsquo;t need any more of these
-            </button>
+            </SubmitButton>
             <p className="text-ink3 mt-[4px] text-[13px]">
               It leaves the list and the counts. Nothing is deleted.
             </p>

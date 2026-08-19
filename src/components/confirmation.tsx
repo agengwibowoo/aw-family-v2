@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 15 — confirmation card with Undo.
@@ -48,6 +49,7 @@ export function ConfirmationCard({
             className="border-ac text-acl flex min-h-[52px] flex-1 items-center justify-center rounded-[11px] border px-4 text-[14.5px] font-medium whitespace-nowrap"
           >
             {againLabel}
+            <LinkPending />
           </Link>
         )}
       </div>

@@ -162,7 +162,9 @@ export default async function Insurance() {
       </div>
 
       <BottomBar>
-        <BarPrimary type="submit">Save it</BarPrimary>
+        <BarPrimary type="submit" busyLabel="Saving…">
+          Save it
+        </BarPrimary>
         <BarSecondary href="/hospitals" width={126}>
           Places
         </BarSecondary>

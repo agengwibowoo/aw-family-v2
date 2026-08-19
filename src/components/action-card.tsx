@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Card } from "./card";
+import { LinkPending } from "./link-pending";
 
 /**
  * Component 2 — action card. Used only on Today.
@@ -35,6 +36,7 @@ export function ActionCard({
           className="bg-ac flex min-h-[52px] flex-1 items-center justify-center rounded-[11px] px-4 text-[14.5px] font-medium whitespace-nowrap text-white"
         >
           {actionLabel}
+          <LinkPending />
         </Link>
         {onLater}
       </div>

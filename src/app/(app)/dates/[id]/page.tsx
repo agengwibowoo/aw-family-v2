@@ -177,7 +177,9 @@ async function BeforeVariant({
       <BottomBar>
         <form action={markDoneAction} className="flex-1">
           <input type="hidden" name="id" value={event.id} />
-          <BarPrimary type="submit">It&rsquo;s done</BarPrimary>
+          <BarPrimary type="submit" busyLabel="Saving…">
+            It&rsquo;s done
+          </BarPrimary>
         </form>
         <BarSecondary href={`/dates/${event.id}/edit`} width={126}>
           Change it
@@ -372,11 +374,13 @@ function WindowVariant({
         <form action={setDayAction} className="flex-1">
           <input type="hidden" name="id" value={event.id} />
           <input type="hidden" name="date" value={from} />
-          <BarPrimary type="submit">Set a day</BarPrimary>
+          <BarPrimary type="submit" busyLabel="Saving…">
+            Set a day
+          </BarPrimary>
         </form>
         <form action={markDoneAction}>
           <input type="hidden" name="id" value={event.id} />
-          <BarSecondary type="submit" width={104}>
+          <BarSecondary type="submit" width={104} busyLabel="Saving…">
             It&rsquo;s done
           </BarSecondary>
         </form>

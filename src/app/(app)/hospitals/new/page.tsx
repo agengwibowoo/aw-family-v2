@@ -33,7 +33,9 @@ export default async function NewHospital() {
       </div>
 
       <BottomBar>
-        <BarPrimary type="submit">Add it</BarPrimary>
+        <BarPrimary type="submit" busyLabel="Adding…">
+          Add it
+        </BarPrimary>
         <BarSecondary href="/hospitals" width={126}>
           Cancel
         </BarSecondary>
