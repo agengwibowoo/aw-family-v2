@@ -1,12 +1,47 @@
 # Everything left to do
 
-**16 August 2026 · about 59 days to go.**
+**17 August 2026 · about 58 days to go.**
 
-Read this top to bottom once. After that, work Part 0 first — most of the build is blocked
-behind three of those items.
+Read the board first. Everything below it is detail.
 
 Deadlines that cannot move: a hospital picked by **~7 Sep**, the papers pack complete by
 **~20 Sep** (week 36), no risky changes after **30 Sep**, due date **14 Oct**.
+
+---
+
+## The board
+
+| Blocked — can't start | Ready now | Shipped |
+|---|---|---|
+| Part 5 · the week-36 bag · needs 0.7 | 3.1 Offline | S1 · S2 · S3 · S4 · S5 |
+| Part 5 · immunisations · needs 0.11 then 0.13 | 3.2 The offline wording | S6 · S7 · S8 · S9 · S10 |
+| | 3.3 PWA and the install sheet | S11 · S12 · S13 · S14 · S15 |
+| | 3.4 The app icon | Every service, with tests |
+| | 4.1 The import script | The design system, all 16 |
+| | 4.2 The count check | Auth and the approval gate |
+| | 4.3 Dry run, then the real run | Scan photos — bucket and policies live |
+| | 0.10 Deploy | 0.1 – 0.6 · 0.8 |
+| | 2.14 The one-tap sheet | |
+
+**Ask before starting:** Part 7, `/api/mcp`. The spec's scope split assigns Part II to its
+author, so whether this is mine at all is an open question, not a green light.
+
+**Not before the due date:** all of Part 6. Deliberately.
+
+### What each of your remaining tasks releases
+
+- **0.7 the real data** → the hospital pick, the papers pack, and Part 5's week-36 bag, which
+  seeds from the picked hospital's document requirements. The only thing still gating work,
+  and the only one on the 7 Sep deadline.
+- **0.11 checking the IDAI schedule**, then **0.13 the birth date** → the immunisation
+  generator, in that order.
+
+0.1 through 0.6 and 0.8 are done: the household row is in, Google sign-in works, you are an
+admin, the `media` bucket exists with its policies applied, and the legacy credentials are in
+`.env.local`. 0.9 no longer applies — the old app is not being used, so there is nothing to
+freeze and the import can run for real whenever 4.1 and the dry run are ready.
+
+The rest of Part 0 is a standing rule or a single moment, and gates nothing.
 
 ---
 
@@ -30,7 +65,7 @@ Deadlines that cannot move: a hospital picked by **~7 Sep**, the papers pack com
 | S12 · S13 | Money and the registry. Money is the fourth tab; `who` picks the landing tab |
 | S15 | `/who` — approve, block, ask again, let back in |
 | Services | things, purchases and units, schedule, money, scans, links, materials |
-| Scans | The service and the upload path. Needs the bucket (0.4) before photos appear |
+| Scans | The service, the upload path, and the private `media` bucket with its policies |
 
 Verified with `pnpm lint && typecheck && test && build`, plus `pnpm test:db` — 166 tests
 against the cloud database — and `db:check` / `db:invariants`.
@@ -40,56 +75,31 @@ at; `pnpm demo:clear` takes them away. Everything it writes is named `Demo · �
 
 **Not started**
 
-Offline · the PWA · the app icon · `/api/mcp` · the legacy import · the week-36 hospital
-bag · the IDAI generator · everything in Part 6.
+Offline · the PWA · the app icon · S11's one-tap sheet · `/api/mcp` · the legacy import ·
+the week-36 hospital bag · the IDAI generator · everything in Part 6.
 
 ---
 
 ## Part 0 — Only you can do these
 
-Nothing here can be done by an agent. Three of them block everything else.
+**This whole part is the list of things no agent can do.** Not one of them leaves a trace in
+the repo, so the state below is what you told me on 17 August, not something I checked.
 
-### 0.1 Put the household row in — **blocks Today, the list, every date, the insurance sentence**
+### 0.1 – 0.5 — done
 
-Open `supabase/seed-household.sql`, change the due date if `2026-10-14` is wrong, paste it into
-the Supabase SQL editor and run it. Today currently says *"Run supabase/seed-household.sql and
-this screen fills in"* because it hasn't been run.
+The household row is in, Google sign-in is on, you are an approved admin, and the private
+`media` bucket exists with `supabase/storage-policies.sql` applied. Today reads from real data
+and scan photos appear. Nothing downstream of these is blocked any more.
 
-### 0.2 Turn on Google sign-in — **blocks every screen behind the gate**
+### 0.6 Apply every future migration by hand — standing rule, done as it arises
 
-Supabase → Authentication → Sign In / Providers → Google. Needs a Google OAuth client with the
-Supabase callback URL as an authorised redirect URI. Then URL Configuration → Site URL →
-`http://localhost:3000`. `docs/setup.md` §4 has the click path.
+From `CLAUDE.md`. I edit `src/server/schema.ts`, run `pnpm db:generate`, and tell you which
+numbered file in `supabase/migrations/` to paste in. I never apply one. Migration 0001 is in.
 
-### 0.3 Let yourself in — **blocks everything, and nobody else can do it**
+### 0.7 Gather the real data — **blocks the hospital pick, the papers pack and Part 5** · open
 
-Nobody is an admin yet, so nobody can approve the first person. Sign in once, then in the SQL
-editor:
-
-```sql
-update app_users set status = 'approved', is_admin = true
-where email = 'agengwibowo2@gmail.com';
-```
-
-### 0.4 Create the `media` bucket — blocks scans, ultrasound photos, receipts, link thumbnails
-
-Storage → New bucket → name `media` → **public off**. Private is not optional: this bucket holds
-KTP, Kartu Keluarga, the marriage book and insurance cards. See ADR-0007.
-
-### 0.5 Apply the storage policies
-
-`supabase/storage-policies.sql` is written and waiting. Paste it into the SQL editor after
-the bucket exists. It refuses to run if the bucket is missing or public, so it doubles as
-the check on 0.4.
-
-### 0.6 Apply every future migration by hand
-
-Standing rule from `CLAUDE.md`. I edit `src/server/schema.ts`, run `pnpm db:generate`, and tell
-you which numbered file in `supabase/migrations/` to paste in. I never apply one.
-
-### 0.7 Gather the real data — this is most of your remaining calendar time
-
-No amount of code substitutes for this, and the 7 Sep deadline is really this list's deadline:
+This is most of your remaining calendar time. No amount of code substitutes for it, and the
+7 Sep deadline is really this list's deadline:
 
 - The hospital shortlist — name and address per place, then the ~30 fields
 - Ring or DM each place for package prices by delivery type × room class, plus the deposit
@@ -97,34 +107,36 @@ No amount of code substitutes for this, and the 7 Sep deadline is really this li
   entitlement, whether the baby is covered from birth
 - Photograph each paper and count the photocopies actually made
 
-### 0.8 Legacy read-only credentials
+### 0.8 Legacy read-only credentials — done
 
-Fill `LEGACY_DATABASE_URL`, `LEGACY_SUPABASE_URL`, `LEGACY_SUPABASE_SECRET_KEY` in `.env.local`
-before the cutover import. Read-only credentials, please.
+`LEGACY_DATABASE_URL`, `LEGACY_SUPABASE_URL` and `LEGACY_SUPABASE_SECRET_KEY` are in
+`.env.local`. 4.1 and the dry run are unblocked.
 
-### 0.9 Freeze the old app
+### 0.9 Freeze the old app — no longer applies
 
-ADR-0001 makes this a real constraint, not a courtesy: anything written to the old app after the
-dry run has to be re-imported. Pick a date and stop writing to it.
+The old app is not being used, so there is nothing to freeze. ADR-0001's constraint was about
+writes arriving after the dry run; with no writes happening, the dry run and the real run can
+follow each other the same day. 4.4 becomes retiring a thing nobody is on rather than a cutover.
 
-### 0.10 Deploy
+### 0.10 Deploy — unblocked
 
 Vercel project, environment variables, domain. Then go back to Supabase → URL Configuration and
 change Site URL to the production host, and add the production redirect URI to the Google OAuth
 client. Forgetting the second half is the classic way to break sign-in on launch day.
 
-### 0.11 Check the IDAI immunisation schedule against a live source
+### 0.11 Check the IDAI immunisation schedule against a live source — **blocks the generator**
 
-When I build the generator, verify the current schedule yourself. A hardcoded list written today
-may be wrong by the time it fires, and this is the one place in the app where being wrong is a
-medical matter rather than a cosmetic one. The spec makes this an explicit accuracy requirement.
+Before I build the generator, verify the current schedule yourself. A hardcoded list written
+today may be wrong by the time it fires, and this is the one place in the app where being wrong
+is a medical matter rather than a cosmetic one. The spec makes this an explicit accuracy
+requirement.
 
 ### 0.12 Test S11 one-handed on a real phone
 
 The three-second claim is untested. The handoff names it as the most likely thing in the whole
 document to be wrong. Nobody can do this from a laptop.
 
-### 0.13 Set the birth date the day it happens
+### 0.13 Set the birth date the day it happens — **fires the generator**
 
 ```sql
 update children set birth_date = date '2026-10-XX';
@@ -135,201 +147,51 @@ generates off it.
 
 ---
 
-## Part 1 — Wave 1, deadline-critical
+## Shipped
 
-Everything here should be done before ~7 Sep. It is what the two fixed dates need.
+Parts 1 and 2 are done. They were twenty items of design detail; what follows is one line each,
+with the commit that built it. The exact pixel values, row order and wording rules that used to
+live here are in `design-handoff/Newborn Prep Hi-Fi.dc.html` and `docs/newborn-prep-v2-spec.md`,
+which win over this file anyway under ADR-0006. This was never their home.
 
-### 1.1 Today's action cards
+| | | |
+|---|---|---|
+| 1.1 | Today's action cards, ranked, with `Later` and the derived empty sentence | `a8044fb` |
+| 1.2 | S4 Compare — the ranked insurance card above a table that slides sideways | `8b90fb4` |
+| 1.3 | Scans — the service, signed upload and read URLs, `PhotoSlot` in the papers rows | `8bfa7b4` |
+| 1.4 | S6 Dates and S7 one date, all three variants | `529aee9` |
+| 1.5 | The antenatal pattern, proposed as a whole series in one tap | `529aee9` |
+| 1.6 | S15 finished — waiting requests, the household, and letting someone back in | `ee7c270` |
+| 1.7 | Papers — the banner that names what changed when the hospital changes | `ee7c270` |
+| 2.1 | The things service, counting from units rather than purchases | `6fa437e` |
+| 2.2 | Purchases and units, with deletion retiring units instead of removing them | `6fa437e` |
+| 2.3 | S8 The list, opening on the band you are in | `87f3bfc` |
+| 2.4 | Search, matching after synonym substitution so `bottle` finds *Botol susu* | `87f3bfc` |
+| 2.5 | S9 One thing, with his comparison density as a layer at the same URL | `87f3bfc` |
+| 2.6 | S10 Add or change a thing, four questions above the fold | `87f3bfc` |
+| 2.7 | S11 Add what we got — both fields pre-answered, land and tap Save | `7e9bf86` |
+| 2.8 | Undo, in the confirmation card, shipped in the same commit as the write path | `7e9bf86` |
+| 2.9 | Links — oEmbed, tracking parameters stripped, cards rather than embeds | `8bfa7b4` |
+| 2.10 | Materials, prompted for four categories only, never blocking a save | `8bfa7b4` |
+| 2.11 | S12 Money, and the fourth tab | `c1237b9` |
+| 2.12 | S13 Things family could give, with no prices at all | `c1237b9` |
+| 2.13 | The landing tab by account | `c1237b9` |
 
-The screen exists; it has no cards. Build the deterministic ranking — essential things unbought
-in a band whose deadline is within 30 days, then essential in the current band, then recommended
-in the current band. At most three, ties broken by band order then category order, so "why is
-this here?" always has an answer.
+Item numbers 3.1 through 7.9 keep the values they have always had, and the gap where 1 and 2
+used to be is deliberate — other documents and commit messages cite these numbers, so nothing
+gets renumbered.
 
-Plus: the next appointment as a card that is a *fact, not a task* (no "Later", doesn't count
-against the three); the band progress card; `Later` suppressing a card for 7 days; and the
-**derived** empty-state sentence — it must consult the real counts, because "the hospital bag is
-done" over a 38% bar is the one thing this screen cannot say.
+### 2.14 The one-tap sheet — still open
 
-### 1.2 S4 — Compare
-
-New route. The "Compare" button on the hospital detail screen currently goes nowhere.
-
-- The ranked insurance card, full width, **above** the table — one row per place with name,
-  reason and status chip. It is lifted out of the table on purpose.
-- The table: horizontally scrollable, `min-width: 544px`, label column `flex: 0 0 96px`
-  `position: sticky; left: 0` **as the first cell of each row**, value columns `flex: 0 0 112px`,
-  rows alternating `--sf` / `--bg`, `box-sizing: border-box` everywhere.
-- Ten rows, then `6 more rows` as a chip. Picked place always first. Blanks are the
-  `not filled in` chip and are tappable. Rows where every place is blank are dropped.
-- `slide the table sideways ›` written out as a chip — it is the app's one gesture, so it gets
-  words.
-- Nothing below 13px, no value below 14px.
-- Bottom bar: `Pick <name>` naming the leader, plus `Rule out`.
-- Desktop at 880px: four columns, no horizontal scroll, identical row order and wording.
-
-Reuses `CompareCell`, `assessCover`, `quoteAgeNote`, `listHospitals`, `setDecision`.
-
-### 1.3 Scans
-
-Needs 0.4 and 0.5.
-
-A `src/server/services/scans.ts` that issues a short-lived signed upload URL, verifies the object
-exists and is within size limits, and writes the path onto `document_status.image_paths`. Reading
-uses short-lived signed URLs — never long-lived ones. Wire `PhotoSlot` into the papers rows at
-104×132px.
-
-### 1.4 S6 — Dates, and S7 — One date
-
-A `src/server/services/schedule.ts` first: list, create, update, mark done.
-
-**S6:** `N coming up` in mono in the header. Tomorrow's event promoted out of the list into a
-card with what to bring. Then `Coming up`, then a single `Been and done` row that says what is
-in it, then the line about the first-year immunisation list appearing after the birth. Windows
-get the two-number `WindowBlock` **and** the words "Any day between 10 and 24 Sep" — a different
-shape, never a different colour. Rows say what is still needed of you ("Nothing booked yet",
-"Your paediatrician decides"). Recurring events say so in a 12px line. No money toggle.
-
-**S7:** one screen, halves swapped **by the date, never by a tab**. Before: time as the largest
-thing on screen at 32–34px, who, where, travel time, a tickable `Bring` checklist that reaches
-into the papers pack rather than repeating it, a `Before you go` card in plain sentences, likely
-cost, `It's done` + `Change it`. After: scan photos first at 104×132px, the doctor's note as one
-paragraph in her words, cost, a `Next one` row, `Add a photo` + `Add a note`. Window variant: the
-period as a 23–24px sentence, "There is no single right day", an empty progress bar between the
-two dates that fills as the period passes, and two endings — `Set a day` and `It's done`.
-
-### 1.5 The antenatal pattern
-
-Every 4 weeks to 28 weeks, every 2 weeks to 36, then weekly. Proposed as a whole series in one
-tap from the due date. Don't make anyone type fifteen appointments.
-
-### 1.6 Finish S15 — Who can get in
-
-Waiting requests at the top (the only rows that ever need action), then the household, then
-turned-off accounts with a "let back in" affordance. `members.ts` has approve, block and
-ask-again; it needs unblock. The "Manage" seam is where a future limited role would go — leave
-the seam, don't build the role.
-
-### 1.7 Papers — the hospital-changed banner
-
-When the picked hospital changes, name what changed: *"RS Pondok also wants a referral letter"*.
-Never a silent re-score.
-
----
-
-## Part 2 — Wave 2, the daily loop
-
-Target: done before the 30 Sep freeze.
-
-### 2.1 The things service
-
-`src/server/services/things.ts` — list by band, get one, create, update, archive. Counts come
-from `count(units where retired_on is null)`, not from purchases (ADR-0003).
-
-### 2.2 Purchases and units
-
-A purchase of six spawns six unit rows in the same transaction. Deleting a purchase **retires**
-its units rather than deleting them, so history survives. Units can exist with no purchase at all
-— that is how gifts and hand-me-downs get expressed, and it matters from day one because of the
-registry. A bug here corrupts the count on the most-used screen in the app.
-
-### 2.3 S8 — The list
-
-Opens on the band you are in — about eleven rows — so it never needs a filter bar. Header names
-the band as context, not as a control: `Hospital bag · wanted by 15 Sep`. Band progress card,
-then the rows, then a `Show the other 106 things` ghost button leading to a jump-to list (bands,
-things family could give, everything, don't-need-any-more) — never a wall of 500 rows.
-
-Three facts per row: name, `have of need` in mono, one status word. Gift-eligibility is a phrase
-in the meta line, not a badge column. Bottom bar: `Find a thing` primary, `Narrow it` opening a
-sheet. Desktop at 880px: the sheet becomes a persistent left column — the one place in the app a
-permanent filter surface is allowed.
-
-### 2.4 Search
-
-Substring match on the name, case-insensitive, **after synonym substitution**, so `bottle` finds
-*Botol susu*. Minimum map: bottle→botol, nappy/diaper→popok, wipe/washcloth→waslap, pad→pembalut,
-swaddle→bedong, brush→sikat, corset→korset, clothes/shirt→baju. Photos appear in search results
-but not in the list. An empty query shows a jump-to list, not a blank screen. No results always
-offers the way onward: add it as a new thing.
-
-### 2.5 S9 — One thing
-
-Count card (`4` big, `of 6`, status chip, progress bar, band and category). Then **What we have**,
-then **Ones we're looking at** — titled in her words, and she is never asked to classify anything.
-**One `Add` button**; the branch is a question, not a concept. Nothing on screen is called an
-option, a candidate or a purchase.
-
-Then link cards, then material chips, then notes, then the spent / remaining summary with
-`see the detail` — which opens his density, a comparison table with rough prices, **in place, at
-the same URL**. His view is a layer, not a second app. Ruled-out candidates stay at 55% opacity
-with an outline chip; his comparison work gets quieter, never deleted.
-
-### 2.6 S10 — Add or change a thing
-
-Four questions above the fold: what is it, how many do we need (stepper), what sort of thing,
-what age is it for, could family give this. Everything else in a dashed card marked optional. A
-thing can exist with a name and a number. "Don't need any more" lives on the edit version as an
-ordinary action — not destructive, not behind a confirm.
-
-### 2.7 S11 — Add what we got · *the most important screen in the app*
-
-Three seconds, one hand, thumb never leaving the bottom third, usually arrived at cold from a
-chat link.
-
-- `Close`, not a back arrow — there is no history.
-- Identity card: count block, name, a "not this?" escape hatch.
-- `How many did you get?` — 68px −/+ stepper, 30px mono count, **starting at 1**.
-- `What did it cost?` labelled *you can skip this*. **Price can never block the save.**
-- One 56px `Save it`.
-- **Both fields are pre-answered. Land, tap Save.**
-- Money hidden does not change this screen: she can enter a price she will never be shown back.
-- Where it lands after saving depends on how she arrived — from a chat link → Today; from inside
-  the app → back to the thing. **Both show the confirmation card with Undo.**
-- Item-not-known variant: the same screen opening on a short list of things still needed.
-- The one-tap sheet (`1 / 2 / 3 / more`) is an optimisation. Build the full screen first.
-
-### 2.8 Undo — ships with 2.7, not after
-
-15-minute window, lives **in the confirmation card** where she is already looking, restores the
-previous count exactly. It survives navigation. It is not a toast. There are no confirm dialogs
-anywhere in the app, so this is the only safety mechanism there is — which is why it cannot slip
-to a later release than the write path it protects.
-
-### 2.9 Links
-
-oEmbed for title and thumbnail at save time, thumbnail cached to `media`. Tracking parameters
-stripped (`utm_*`, `gclid`, `srsltid`, the Shopee tail). Link cards, not embeds — tapping opens
-the native app and falls back to the browser. YouTube is the one exception where inline playback
-is allowed; don't build a generic embed system for it. Same URL twice on the same target does not
-duplicate. A failed preview still saves, with the raw URL as the title.
-
-### 2.10 Materials
-
-Prompted only for clothing, feeding, toiletries and bath — nobody will fill this in for 120
-things, and it must never block a save. `commonly_irritant` shows as a plain extra chip: no icon,
-no colour, no alert. Typing a new material adds it to the lookup table.
-
-### 2.11 S12 — Money, and the fourth tab
-
-Band roll-up with spent and still-to-come, then by category with bars, then by importance, then
-links out to hospitals, registry and access. Percentages scope to the current band by default,
-with an explicit way out to all-time. The bars still work with money hidden, because they measure
-things rather than rupiah. Adding the tab is additive — `tab-bar.tsx` is already written for it.
-
-### 2.12 S13 — Things family could give
-
-Read-only for guests, behind the same gate. **No prices at all — not even behind the toggle.**
-Sorted by what is still needed.
-
-### 2.13 Landing tab by account
-
-`who` = her | him, and it chooses the landing tab only. Nothing else differs between the two
-accounts.
+The `1 / 2 / 3 / more` sheet on S11. It was always described as an optimisation to build after
+the full screen, and the full screen is built. Small, unblocked, and worth doing only once 0.12
+says the three-second claim is real.
 
 ---
 
 ## Part 3 — The shell
+
+Nothing here is blocked. It is the only large block of work I can start today.
 
 ### 3.1 Offline
 
@@ -343,7 +205,7 @@ Scan **bytes** are cached keyed by object path, not signed URLs — a cached URL
 Offline is scoped deliberately: Today, the list, one thing, add what we got and the papers pack
 work without signal; compare, money and the admin screens require it **and say so in words**.
 
-### 3.2 The offline copy
+### 3.2 The offline wording
 
 Today gets a `.o` header chip: `Offline · showing what we had at 1am`. The save confirmation
 sub-line becomes "Saved on your phone. It'll go up when you have signal." The papers screen says
@@ -367,7 +229,7 @@ I can draw it; you decide it's right.
 
 ## Part 4 — Cutover
 
-### 4.1 The import script
+### 4.1 The import script — unblocked, 0.8 is in
 
 `scripts/import-from-legacy.ts`, reading the legacy database read-only. It has to:
 
@@ -381,15 +243,16 @@ I can draw it; you decide it's right.
   automatically — guessing where the brand ends produces silent errors
 - copy scans into the new private bucket
 
-### 4.2 The count check — not optional
+### 4.2 The count check — not optional, and not blocked
 
 Every thing's count must match the legacy value exactly. ADR-0003 says so in those words, because
-a unit-spawning bug corrupts the number on the screen used most.
+a unit-spawning bug corrupts the number on the screen used most. This can be written before the
+credentials arrive, so it should be.
 
 ### 4.3 Dry run, then the real run
 
-Dry run early enough to find the mapping problems. Real run after the freeze (0.9), because
-anything written to the old app afterwards has to be re-imported.
+Both are unblocked. Dry run first, still — it is where the mapping problems show up, not a
+scheduling constraint. Nothing waits between the two now that the old app is idle.
 
 ### 4.4 Retire the old app
 
@@ -399,16 +262,17 @@ anything written to the old app afterwards has to be re-imported.
 
 **30 Sep — freeze.** No risky changes from here.
 
-**~20 Sep, week 36 — the hospital bag.** Papers and objects on one screen with one readiness
-sentence, seeded from the hospital-bag pack plus the picked hospital's document requirements. A
-line is blocked when the required number isn't available, and it says why. `packs` and
-`pack_items` already exist in the schema.
+**~20 Sep, week 36 — the hospital bag.** Needs 0.7. Papers and objects on one screen with one
+readiness sentence, seeded from the hospital-bag pack plus the picked hospital's document
+requirements. A line is blocked when the required number isn't available, and it says why.
+`packs` and `pack_items` already exist in the schema.
 
 **The day it happens — the birth date (0.13).** Setting it generates the first-year immunisation
 schedule as `planned` events with date **windows**, each naming its source (IDAI schedule) and
 deferring to the paediatrician. Editing one marks it `manual`. Regenerating never touches an event
 already done or hand-edited. A scaffold, never medical instruction. Verify the schedule first
-(0.11).
+(0.11) — the `idai_schedule` source value exists in `schedule.ts`, but nothing emits the schedule
+yet, and nothing should until you have checked it against a live source.
 
 ---
 
@@ -440,8 +304,8 @@ Track 3 early a risk worth weeks of wasted work.
 
 ## Part 7 — `/api/mcp`
 
-Note the spec's scope split assigns Part II to its author, so check whether this is yours at all
-before starting. If it is, the build order is fixed:
+Nothing built. Note the spec's scope split assigns Part II to its author, so check whether this is
+yours at all before I start. If it is, the build order is fixed:
 
 1. `whoami`, `get_briefing`, `resolve_item` — read-only, and `resolve_item` gates everything after
 2. Scopes and read-only tokens — blast radius before writes exist
@@ -482,9 +346,7 @@ defaults false and the server **omits** price fields rather than asking the agen
 
 **Housekeeping**
 
-7. **The whole rebuild is uncommitted** — one working tree on top of `f0a7b7d Initial commit from
-   Create Next App`. Say the word and I'll commit it in sensible pieces.
-8. **Adinda's account.** Which email, and confirm she lands on Today while you land on Money.
+7. **Adinda's account.** Which email, and confirm she lands on Today while you land on Money.
 
 **Already resolved — recorded so nobody reopens them**
 
@@ -492,22 +354,25 @@ defaults false and the server **omits** price fields rather than asking the agen
 - Deleting a purchase → **retire** its units, don't delete them (ADR-0003).
 - UI language → **English chrome, bilingual data.** Never translate a name someone typed.
 - Where the spec and the design handoff disagree on wording → **the handoff wins** (ADR-0006).
+- The rebuild being uncommitted → committed, in fifteen pieces, on `finish-the-handoff`.
 
 ---
 
 ## The order I'd actually work in
 
-1. **0.1 → 0.2 → 0.3 → 0.4** — thirty minutes of your time, and it unblocks everything
-2. **0.7**, continuously, in parallel with all of the below — it is the real critical path to 7 Sep
-3. 1.2 compare, then 1.3 scans, then 1.7 — the hospital decision and the papers pack
-4. 1.4 / 1.5 dates
-5. 1.1 Today's cards, 1.6 access
-6. 2.1 → 2.2 → 2.3 → 2.4 → 2.5 → 2.6 → 2.7 + 2.8 — the daily loop, in that order
-7. 2.9 / 2.10 / 2.11 / 2.12 / 2.13
-8. Part 3, the shell
-9. Part 4, cutover — dry run well before the freeze
-10. Freeze 30 Sep. Part 5 only.
-11. Part 6 after the birth. Not before.
+1. **0.7**, continuously, in parallel with everything below — the real critical path to 7 Sep,
+   and now the only task of yours that gates anything
+2. 4.2 the count check, then 4.1 the import, then 4.3's dry run and the real run, then 4.4.
+   This moved up: 0.8 is in and nothing waits on a freeze any more, so the cutover can finish
+   in one stretch instead of straddling a date
+3. Part 3, the shell — 3.1 offline, then 3.2, then 3.3, then 3.4. Large, unblocked, and the
+   thing that makes the app usable at 3am
+4. 0.10 deploy, once Part 3 is worth putting on a phone
+5. Part 5's week-36 bag from ~20 Sep, once 0.7 has given it something to seed from
+6. Freeze 30 Sep. Part 5 only from there
+7. Part 6 after the birth. Not before
+
+2.14 and Part 7 slot in wherever you want them; neither is on the path to anything.
 
 ---
 
