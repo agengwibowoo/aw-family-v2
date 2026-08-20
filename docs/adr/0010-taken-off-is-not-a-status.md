@@ -29,10 +29,12 @@ The copy that said "this is not happening" is gone from the button, the Undo car
 detail screen: it was a claim about what happened, and taking off no longer makes one.
 
 The card is the last thing on a date's own screen, not on the edit screen where the control
-first lived. A date marked done reaches edit only through "Add a photo" and "Add a note", so
+first lived. A date marked done reached edit only through "Add a photo" and "Add a note", so
 the sole route to taking one off the list was a button promising to add something. An action
 nobody can find is the same as one that is not there. Places have always put it on the
-detail screen; dates now match.
+detail screen; dates now match. (Those two buttons have since been made honest — "Add a
+photo" opens the camera without leaving, and the secondary says "Change it" — which changes
+nothing here: the card stays on the date's own screen.)
 
 No partial index, unlike `hospitals_live_idx`. `listEvents` has no `WHERE` — it reads every
 row and buckets them in TypeScript — so there is nothing for an index to help.

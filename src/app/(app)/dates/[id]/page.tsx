@@ -74,9 +74,9 @@ export default async function OneDate({
 /**
  * Last on the screen, and on every date that is on the list — one marked done
  * included, because a date written down twice is still a date that should come
- * off. Here rather than behind "Change it": a done date's only routes to the
- * edit screen are "Add a photo" and "Add a note", and an action nobody can find
- * is the same as one that is not there.
+ * off. Here rather than behind "Change it": a done date reaches the edit screen
+ * by one route, and an action nobody can find is the same as one that is not
+ * there.
  *
  * Not behind a confirm. The card it leaves behind is what takes it back.
  */
@@ -310,11 +310,14 @@ async function AfterVariant({ event }: { event: ScheduledEvent }) {
 
       {/* "Add a photo" opens the camera here rather than going anywhere: the
           edit screen has no photo field, so sending her there was a promise the
-          next screen could not keep. "Add a note" lands on the note itself. */}
+          next screen could not keep. The secondary names the screen it opens
+          rather than one card on it — the note lives there along with
+          everything else, so "Add a note" was a smaller promise than the whole
+          form it actually landed on. */}
       <BottomBar>
         <ScanUpload variant="bar" signAction={sign} attachAction={attach} />
-        <BarSecondary href={`/dates/${event.id}/edit#note`} width={112}>
-          Add a note
+        <BarSecondary href={`/dates/${event.id}/edit`} width={126}>
+          Change it
         </BarSecondary>
       </BottomBar>
     </>
