@@ -59,9 +59,15 @@ function hasHappened(e: ScheduledEvent): boolean {
   return e.status === "done" || e.status === "missed";
 }
 
-/** Taken off the list — not happening, and not deleted either. */
+/**
+ * Taken off the list — and not deleted either.
+ *
+ * Its own column rather than a status, because being off the list and what
+ * happened are independent facts. Folding one into the other is what made
+ * putting a date back lossy. See ADR-0010.
+ */
 function isOff(e: ScheduledEvent): boolean {
-  return e.status === "cancelled";
+  return e.takenOffAt !== null;
 }
 
 export async function listEvents(
@@ -313,22 +319,29 @@ export async function setWindowDay(
  * which is what makes putting it back cost nothing.
  */
 export async function takeEventOff(id: string, by: string): Promise<void> {
+  const now = new Date();
   await db
     .update(scheduleEvents)
-    .set({ status: "cancelled", updatedBy: by, updatedAt: new Date() })
+    .set({ takenOffAt: now, takenOffBy: by, updatedBy: by, updatedAt: now })
     .where(eq(scheduleEvents.id, id));
 }
 
 /**
  * Put it back, with everything it ever knew.
  *
- * Back to `planned` rather than to whatever it was: nothing in the app ever
- * writes `confirmed`, so there is no earlier state to lose.
+ * `status` is not touched, so a date that had been and gone comes back reading
+ * done, with its scan photos and the note still meaning what they meant. That
+ * is the whole reason taking off is a column and not a status.
  */
 export async function putEventBack(id: string, by: string): Promise<void> {
   await db
     .update(scheduleEvents)
-    .set({ status: "planned", updatedBy: by, updatedAt: new Date() })
+    .set({
+      takenOffAt: null,
+      takenOffBy: null,
+      updatedBy: by,
+      updatedAt: new Date(),
+    })
     .where(eq(scheduleEvents.id, id));
 }
 

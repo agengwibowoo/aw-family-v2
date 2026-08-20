@@ -29,6 +29,13 @@
       "when": 1787194897470,
       "tag": "0003_true_jazinda",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787234932671,
+      "tag": "0004_hard_frog_thor",
+      "breakpoints": true
     }
   ]
 }

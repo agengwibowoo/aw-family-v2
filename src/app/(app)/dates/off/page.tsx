@@ -11,8 +11,8 @@ import { datesScreen } from "@/server/services/schedule";
  * row was typed twice.
  *
  * Not the same screen as Been and done, and deliberately not the same word.
- * That one means it happened. This one means it did not, and everything the
- * date knew is still underneath it.
+ * That one says what happened; this one says whether it is on the list, which
+ * is why a date can be both. Everything the date knew is still underneath it.
  *
  * The design handoff has no screen for this. Until it does, this takes its
  * values verbatim from `/hospitals/removed` and invents nothing — the same

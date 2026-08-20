@@ -56,7 +56,7 @@ export default async function OneDate({
   const isDone = event.status === "done";
   const isPast = !event.isWindow && event.onDate < today;
 
-  if (event.status === "cancelled") return <OffTheListVariant event={event} />;
+  if (event.takenOffAt) return <OffTheListVariant event={event} />;
   if (event.isWindow && !isDone) return <WindowVariant event={event} today={today} />;
   if (isDone || isPast) return <AfterVariant event={event} />;
   return <BeforeVariant event={event} today={today} />;
@@ -267,9 +267,9 @@ function AfterVariant({ event }: { event: ScheduledEvent }) {
 /**
  * Taken off the list.
  *
- * Nothing underneath it was touched, so the only thing this screen has to do is
- * say so and offer the way back. It is the path that does not expire, once the
- * fifteen-minute card has gone.
+ * Nothing underneath it was touched — not even whether it happened — so the
+ * only thing this screen has to do is say so and offer the way back. It is the
+ * path that does not expire, once the fifteen-minute card has gone.
  */
 function OffTheListVariant({ event }: { event: ScheduledEvent }) {
   return (
@@ -280,8 +280,8 @@ function OffTheListVariant({ event }: { event: ScheduledEvent }) {
         <Card>
           <SectionLabel>Off the list</SectionLabel>
           <p className="mt-[6px] text-[14.5px] leading-[1.45]">
-            This one is not happening. Everything it knew is still here — what
-            it was going to cost, what to bring, and any photos and notes on it.
+            Everything it knew is still here — what it was going to cost, what
+            to bring, and any photos and notes on it.
           </p>
           <form action={putDateBackAction} className="mt-[14px]">
             <input type="hidden" name="id" value={event.id} />

@@ -1,5 +1,11 @@
 # A date that is not happening is taken off, not deleted
 
+> **Superseded in part by ADR-0010.** The words here still hold, including the argument
+> for one control rather than two. The mechanism does not: `status = 'cancelled'` folded
+> being off the list together with what happened, which is why the control had to be
+> hidden on a date marked done. It is now `taken_off_at`, and the control is offered on
+> every date.
+
 ADR-0008 already made this argument about places. It applies unchanged to dates, and this
 records that it now holds everywhere: **there is no hard delete left in the app.**
 

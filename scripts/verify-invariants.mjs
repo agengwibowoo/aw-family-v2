@@ -164,6 +164,19 @@ try {
           t`insert into schedule_events (type, title) values ('antenatal', 'Neither')`,
       );
 
+      /* --- taken off is a column, not a status ----------------------------- */
+
+      // 'cancelled' used to mean off the list. It is now taken_off_at, and a
+      // row left on the old status would read as coming up rather than as off,
+      // so Postgres refuses the word outright.
+      await rejects(
+        tx,
+        "an event with the retired 'cancelled' status is refused",
+        (t) =>
+          t`insert into schedule_events (type, title, starts_at, status)
+             values ('antenatal', 'Cancelled', now(), 'cancelled')`,
+      );
+
       /* --- archiving is a pair -------------------------------------------- */
 
       await rejects(

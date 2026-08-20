@@ -735,6 +735,10 @@ export const scheduleEvents = pgTable(
     prepNotes: text("prep_notes"),
     costIdr: money("cost_idr"),
     status: text("status").notNull().default("planned"),
+    /** Off the list, and orthogonal to status: a date that has been and gone
+        can come off too, and must still read as done when it is put back. */
+    takenOffAt: timestamp("taken_off_at", { withTimezone: true }),
+    takenOffBy: uuid("taken_off_by"),
     outcomeNotes: text("outcome_notes"),
     imagePaths: text("image_paths").array(),
     recurrenceId: uuid("recurrence_id"),
@@ -753,7 +757,7 @@ export const scheduleEvents = pgTable(
     ),
     check(
       "schedule_events_status_check",
-      sql`${t.status} in ('planned', 'confirmed', 'done', 'missed', 'cancelled')`,
+      sql`${t.status} in ('planned', 'confirmed', 'done', 'missed')`,
     ),
     check(
       "schedule_events_source_check",

@@ -245,11 +245,60 @@ describe("taken off the list", () => {
 
     const back = await getEvent(id);
     assert.ok(back);
-    assert.equal(back.status, "planned");
+    assert.equal(back.takenOffAt, null);
+    assert.equal(
+      back.status,
+      "planned",
+      "the status it always had, untouched by coming off and going back",
+    );
     const screen = await datesScreen("2026-09-15");
     assert.ok(
       screen.coming.some((e) => e.id === id),
       "and it is back where it was",
+    );
+  });
+
+  it("does not un-done a date that had been and gone", async () => {
+    const id = await make({
+      type: "antenatal",
+      title: "done-then-off",
+      startsAt: instantFromHouseholdTime("2026-08-04", "09:00"),
+    });
+    await markDone(id, "Growing well, 2.1 kg.", ACTOR);
+    await db
+      .update(scheduleEvents)
+      .set({ imagePaths: ["ztest/scan-done.jpg"] })
+      .where(eq(scheduleEvents.id, id));
+
+    await takeEventOff(id, ACTOR);
+
+    const off = await datesScreen("2026-09-15");
+    assert.ok(off.off.some((e) => e.id === id), "it is off the list");
+    assert.ok(
+      !off.past.some((e) => e.id === id),
+      "and off the list is not the archive",
+    );
+
+    const whileOff = await getEvent(id);
+    assert.ok(whileOff);
+    assert.equal(
+      whileOff.status,
+      "done",
+      "it still happened — coming off the list says nothing about that",
+    );
+
+    await putEventBack(id, ACTOR);
+
+    const back = await getEvent(id);
+    assert.ok(back);
+    assert.equal(back.status, "done");
+    assert.equal(back.outcomeNotes, "Growing well, 2.1 kg.");
+    assert.deepEqual(back.imagePaths, ["ztest/scan-done.jpg"]);
+
+    const after = await datesScreen("2026-09-15");
+    assert.ok(
+      after.past.some((e) => e.id === id),
+      "and it is back in Been and done, not reading as nothing booked yet",
     );
   });
 
