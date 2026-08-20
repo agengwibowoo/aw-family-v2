@@ -7,6 +7,7 @@ import { number, oneOf, text } from "@/lib/form";
 import { instantFromHouseholdTime } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
 import { forgetDateOff, rememberDateOff } from "@/server/saved";
+import { attachScan, signUpload } from "@/server/services/scans";
 import {
   createAntenatalSeries,
   createEvent,
@@ -183,6 +184,29 @@ export async function putDateBackAction(formData: FormData) {
 
   refresh(id);
   redirect(`/dates/${id}`);
+}
+
+/**
+ * Somewhere to put a photo of a scan.
+ *
+ * Returns null rather than throwing when storage is not set up yet: the date
+ * screen has to keep working without photos, exactly as the papers screen does.
+ * The bytes go from the phone straight to storage, never through this app.
+ */
+export async function signDateScanAction(eventId: string, filename: string) {
+  await requireApproved();
+  try {
+    const { path, url } = await signUpload({ kind: "date", eventId }, filename);
+    return { path, url };
+  } catch {
+    return null;
+  }
+}
+
+export async function attachDateScanAction(eventId: string, path: string) {
+  const user = await requireApproved();
+  await attachScan({ kind: "date", eventId }, path, user.id);
+  refresh(eventId);
 }
 
 /** Fifteen appointments in one tap, from the due date. */

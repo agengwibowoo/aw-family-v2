@@ -10,13 +10,17 @@ export function Card({
   children,
   className,
   as: As = "div",
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
   as?: "div" | "section" | "article" | "li";
+  /** So a card can be linked to directly. */
+  id?: string;
 }) {
   return (
     <As
+      id={id}
       className={cn(
         "bg-sf border-ln rounded-[14px] border px-[16px] py-[15px]",
         className,

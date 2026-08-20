@@ -10,6 +10,7 @@ import {
 } from "@/domain/dates";
 import { requireApproved } from "@/server/auth";
 import { datesScreen } from "@/server/services/schedule";
+import { signedScanUrls } from "@/server/services/scans";
 
 /**
  * Been and done.
@@ -23,6 +24,13 @@ export default async function PastDates() {
 
   const { past } = await datesScreen(todayInHousehold());
   const inOrder = [...past].sort((a, b) => b.onDate.localeCompare(a.onDate));
+
+  // One signing round-trip for the whole screen. The bucket is private, so the
+  // stored path is not something an <img> can load on its own.
+  const covers = inOrder
+    .map((e) => e.imagePaths?.[0])
+    .filter((p): p is string => !!p);
+  const scanUrls = await signedScanUrls(covers);
 
   return (
     <>
@@ -53,7 +61,14 @@ export default async function PastDates() {
                 href={`/dates/${event.id}`}
                 className="border-ln flex items-center gap-[12px] border-b py-[12px] last:border-b-0"
               >
-                <PhotoSlot size="row" src={event.imagePaths?.[0] ?? null} />
+                <PhotoSlot
+                  size="row"
+                  src={
+                    event.imagePaths?.[0]
+                      ? (scanUrls.get(event.imagePaths[0]) ?? null)
+                      : null
+                  }
+                />
                 <span className="flex min-w-0 flex-1 flex-col gap-[2px]">
                   <span className="text-[15.5px] font-medium">
                     {event.title}

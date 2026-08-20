@@ -148,9 +148,10 @@ export default async function EditDate({
       </form>
 
       <div className="px-[18px] pb-[20px]">
+        {/* The date screen's "Add a note" links straight here. */}
         <form action={addNoteAction}>
           <input type="hidden" name="id" value={id} />
-          <Card>
+          <Card id="note" className="scroll-mt-[20px]">
             <Field
               label="What the doctor said"
               hint="One paragraph, in her words. No fields."

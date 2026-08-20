@@ -23,7 +23,8 @@ export function BottomBar({ children }: { children: React.ReactNode }) {
   );
 }
 
-const BASE =
+/** Shared so anything that has to sit in the bar matches it exactly. */
+export const BAR_BUTTON =
   "flex min-h-[52px] items-center justify-center rounded-[11px] px-4 text-[14.5px] font-medium whitespace-nowrap";
 
 export function BarPrimary({
@@ -41,7 +42,7 @@ export function BarPrimary({
   busyLabel?: string;
 }) {
   const { pending } = useFormStatus();
-  const base = cn(BASE, "bg-ac flex-1 text-white");
+  const base = cn(BAR_BUTTON, "bg-ac flex-1 text-white");
 
   // A link out of a submitting form still works, so it is never dimmed for
   // the form's sake — only for its own navigation.
@@ -83,7 +84,7 @@ export function BarSecondary({
   busyLabel?: string;
 }) {
   const { pending } = useFormStatus();
-  const base = cn(BASE, "border-ln2 text-ink shrink-0 border");
+  const base = cn(BAR_BUTTON, "border-ln2 text-ink shrink-0 border");
   const style = { flexBasis: width };
 
   if (href) {

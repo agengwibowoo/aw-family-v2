@@ -8,6 +8,7 @@ import { Chip } from "@/components/chip";
 import { KeyValue } from "@/components/key-value";
 import { Money, MoneyToggle } from "@/components/money";
 import { PhotoSlot } from "@/components/photo-slot";
+import { ScanUpload } from "@/components/scan-upload";
 import { ProgressBar } from "@/components/progress";
 import { SubmitButton } from "@/components/submit-button";
 import {
@@ -23,12 +24,15 @@ import {
 import { requireApproved } from "@/server/auth";
 import { getEvent, type ScheduledEvent } from "@/server/services/schedule";
 import { getPapersPack } from "@/server/services/papers";
+import { signedScanUrls } from "@/server/services/scans";
 import { getOrigin } from "@/server/services/household";
 
 import {
+  attachDateScanAction,
   markDoneAction,
   putDateBackAction,
   setDayAction,
+  signDateScanAction,
   takeDateOffAction,
 } from "../actions";
 
@@ -235,8 +239,13 @@ async function BeforeVariant({
 }
 
 /** What happened. The scan photos come first — they are what she comes back for. */
-function AfterVariant({ event }: { event: ScheduledEvent }) {
+async function AfterVariant({ event }: { event: ScheduledEvent }) {
   const photos = event.imagePaths ?? [];
+  // The bucket is private, so a raw object path is not something an <img> can
+  // load. Signed, short-lived, and re-signed on the next render (ADR-0007).
+  const scanUrls = await signedScanUrls(photos);
+  const sign = signDateScanAction.bind(null, event.id);
+  const attach = attachDateScanAction.bind(null, event.id);
 
   return (
     <>
@@ -258,9 +267,14 @@ function AfterVariant({ event }: { event: ScheduledEvent }) {
             </div>
             <div className="flex gap-[9px] overflow-x-auto">
               {photos.map((path) => (
-                <PhotoSlot key={path} size="scan" src={path} alt="" />
+                <PhotoSlot
+                  key={path}
+                  size="scan"
+                  src={scanUrls.get(path) ?? null}
+                  alt=""
+                />
               ))}
-              <PhotoSlot size="scan" />
+              <ScanUpload signAction={sign} attachAction={attach} label="+ Add" />
             </div>
           </section>
 
@@ -294,9 +308,12 @@ function AfterVariant({ event }: { event: ScheduledEvent }) {
         </Stack>
       </div>
 
+      {/* "Add a photo" opens the camera here rather than going anywhere: the
+          edit screen has no photo field, so sending her there was a promise the
+          next screen could not keep. "Add a note" lands on the note itself. */}
       <BottomBar>
-        <BarPrimary href={`/dates/${event.id}/edit`}>Add a photo</BarPrimary>
-        <BarSecondary href={`/dates/${event.id}/edit`} width={112}>
+        <ScanUpload variant="bar" signAction={sign} attachAction={attach} />
+        <BarSecondary href={`/dates/${event.id}/edit#note`} width={112}>
           Add a note
         </BarSecondary>
       </BottomBar>

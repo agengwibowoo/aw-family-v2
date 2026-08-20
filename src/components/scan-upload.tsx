@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+import { BAR_BUTTON } from "@/components/bottom-bar";
 import { cn } from "@/lib/cn";
 
 /**
@@ -19,6 +20,7 @@ export function ScanUpload({
   signAction,
   attachAction,
   label = "Add a photo",
+  variant = "slot",
   className,
 }: {
   /** Asks the server where to put it. */
@@ -26,6 +28,8 @@ export function ScanUpload({
   /** Tells the server it landed. */
   attachAction: (path: string) => Promise<void>;
   label?: string;
+  /** An empty slot in a strip of photos, or the primary action in the bar. */
+  variant?: "slot" | "bar";
   className?: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
@@ -72,7 +76,7 @@ export function ScanUpload({
   }
 
   return (
-    <div className={className}>
+    <div className={cn(variant === "bar" && "flex-1", className)}>
       <input
         ref={input}
         type="file"
@@ -91,7 +95,9 @@ export function ScanUpload({
         aria-busy={busy || undefined}
         onClick={() => input.current?.click()}
         className={cn(
-          "bg-sf2 border-ln2 text-ink3 grid h-[132px] w-[104px] shrink-0 place-items-center rounded-[8px] border border-dashed text-[11px]",
+          variant === "bar"
+            ? cn(BAR_BUTTON, "bg-ac w-full text-white")
+            : "bg-sf2 border-ln2 text-ink3 grid h-[132px] w-[104px] shrink-0 place-items-center rounded-[8px] border border-dashed text-[11px]",
           busy && "opacity-60",
         )}
       >
