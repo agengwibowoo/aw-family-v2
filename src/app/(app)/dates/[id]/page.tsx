@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card, SectionLabel, Stack } from "@/components/card";
+import { UNDO_BUTTON } from "@/components/confirmation";
 import { Chip } from "@/components/chip";
 import { KeyValue } from "@/components/key-value";
 import { Money, MoneyToggle } from "@/components/money";
 import { PhotoSlot } from "@/components/photo-slot";
 import { ProgressBar } from "@/components/progress";
+import { SubmitButton } from "@/components/submit-button";
 import {
   daysBetween,
   formatDayMonth,
@@ -23,7 +25,7 @@ import { getEvent, type ScheduledEvent } from "@/server/services/schedule";
 import { getPapersPack } from "@/server/services/papers";
 import { getOrigin } from "@/server/services/household";
 
-import { markDoneAction, setDayAction } from "../actions";
+import { markDoneAction, putDateBackAction, setDayAction } from "../actions";
 
 /**
  * S7 — One date.
@@ -34,6 +36,10 @@ import { markDoneAction, setDayAction } from "../actions";
  *
  * A period is a third variant with two honest endings, because a window can
  * either be given a day or be over.
+ *
+ * A date taken off the list gets a fourth, because every bottom bar here offers
+ * something — "It's done", "Set a day" — that means nothing for something that
+ * is not happening. The only thing left to say about it is the way back.
  */
 export default async function OneDate({
   params,
@@ -50,6 +56,7 @@ export default async function OneDate({
   const isDone = event.status === "done";
   const isPast = !event.isWindow && event.onDate < today;
 
+  if (event.status === "cancelled") return <OffTheListVariant event={event} />;
   if (event.isWindow && !isDone) return <WindowVariant event={event} today={today} />;
   if (isDone || isPast) return <AfterVariant event={event} />;
   return <BeforeVariant event={event} today={today} />;
@@ -258,6 +265,43 @@ function AfterVariant({ event }: { event: ScheduledEvent }) {
 }
 
 /**
+ * Taken off the list.
+ *
+ * Nothing underneath it was touched, so the only thing this screen has to do is
+ * say so and offer the way back. It is the path that does not expire, once the
+ * fifteen-minute card has gone.
+ */
+function OffTheListVariant({ event }: { event: ScheduledEvent }) {
+  return (
+    <>
+      <Header event={event} supporting="Off the list" />
+
+      <div className="px-[18px] pb-[20px]">
+        <Card>
+          <SectionLabel>Off the list</SectionLabel>
+          <p className="mt-[6px] text-[14.5px] leading-[1.45]">
+            This one is not happening. Everything it knew is still here — what
+            it was going to cost, what to bring, and any photos and notes on it.
+          </p>
+          <form action={putDateBackAction} className="mt-[14px]">
+            <input type="hidden" name="id" value={event.id} />
+            <SubmitButton busyLabel="Putting it back…" className={UNDO_BUTTON}>
+              Put it back
+            </SubmitButton>
+          </form>
+        </Card>
+      </div>
+
+      <BottomBar>
+        <BarSecondary href="/dates" width={160}>
+          All dates
+        </BarSecondary>
+      </BottomBar>
+    </>
+  );
+}
+
+/**
  * A period.
  *
  * The bar between the two dates fills as the period passes — it measures time
@@ -282,6 +326,17 @@ function WindowVariant({
         event={event}
         supporting={
           event.type === "immunisation" ? "For the baby" : "Sometime in here"
+        }
+        // Not in the bottom bar. A period has exactly two honest endings —
+        // pin it to a day, or record that it happened — and a third button
+        // there would make editing look like one of them.
+        right={
+          <Link
+            href={`/dates/${event.id}/edit`}
+            className="text-ink2 shrink-0 text-[13px] font-semibold"
+          >
+            Change it
+          </Link>
         }
       />
 

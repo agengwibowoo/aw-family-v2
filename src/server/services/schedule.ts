@@ -49,8 +49,23 @@ function decorate(
   };
 }
 
+/**
+ * Been and gone: it happened, or nobody went.
+ *
+ * Taken off is deliberately not in here. A date that did not happen has no
+ * business in a list that means it did.
+ */
+function hasHappened(e: ScheduledEvent): boolean {
+  return e.status === "done" || e.status === "missed";
+}
+
+/** Taken off the list — not happening, and not deleted either. */
+function isOff(e: ScheduledEvent): boolean {
+  return e.status === "cancelled";
+}
+
 export async function listEvents(
-  opts: { from?: PlainDate; done?: boolean } = {},
+  opts: { from?: PlainDate; done?: boolean; off?: boolean } = {},
 ): Promise<ScheduledEvent[]> {
   const rows = await db
     .select({
@@ -65,13 +80,10 @@ export async function listEvents(
     decorate({ ...r.event, hospitalName: r.hospitalName }),
   );
 
-  const done = (e: ScheduledEvent) =>
-    e.status === "done" || e.status === "missed" || e.status === "cancelled";
-
-  const filtered =
-    opts.done === undefined
-      ? all
-      : all.filter((e) => (opts.done ? done(e) : !done(e)));
+  // Each option left out means "no opinion", so a bare call is still everything.
+  const filtered = all
+    .filter((e) => (opts.done === undefined ? true : opts.done === hasHappened(e)))
+    .filter((e) => (opts.off === undefined ? true : opts.off === isOff(e)));
 
   return opts.from
     ? filtered.filter((e) => e.onDate >= opts.from!)
@@ -79,27 +91,33 @@ export async function listEvents(
 }
 
 /**
- * What is still ahead, and what has been and gone.
+ * What is still ahead, what has been and gone, and what came off the list.
  *
  * The past collapses to one row that says what is in it — an archive, not a
  * truncation. It is where the scan photos live, which is the real reason
  * anybody goes back.
+ *
+ * Three buckets rather than two, because a date that is not happening belongs
+ * in neither of the first ones: it is not coming up, and filing it under "been
+ * and done" would say it happened.
  */
 export async function datesScreen(today: PlainDate = todayInHousehold()) {
   const all = await listEvents();
 
-  const finished = (e: ScheduledEvent) =>
-    e.status === "done" || e.status === "missed" || e.status === "cancelled";
+  const off = all.filter(isOff);
 
   const coming = all
-    .filter((e) => !finished(e) && endOf(e) >= today)
+    .filter((e) => !isOff(e) && !hasHappened(e) && endOf(e) >= today)
     .sort((a, b) => a.onDate.localeCompare(b.onDate));
 
-  const past = all.filter((e) => finished(e) || endOf(e) < today);
+  const past = all.filter(
+    (e) => !isOff(e) && (hasHappened(e) || endOf(e) < today),
+  );
 
   return {
     coming,
     past,
+    off,
     withPhotos: past.filter((e) => (e.imagePaths?.length ?? 0) > 0).length,
   };
 }
@@ -282,8 +300,36 @@ export async function setWindowDay(
     .where(eq(scheduleEvents.id, id));
 }
 
-export async function deleteEvent(id: string): Promise<void> {
-  await db.delete(scheduleEvents).where(eq(scheduleEvents.id, id));
+/**
+ * "This is not happening."
+ *
+ * Soft, and for the reason ADR-0008 gives about places: the fifteen-minute Undo
+ * card is the app's only safety mechanism, and a hard delete cannot be undone,
+ * so it would have to grow a confirm dialog. It also carries the scan photos and
+ * the note, which are the two things anybody ever comes back for.
+ *
+ * No guard and no transaction. Unlike the picked place there is nothing
+ * downstream that a date holds up, and nothing underneath the row is touched —
+ * which is what makes putting it back cost nothing.
+ */
+export async function takeEventOff(id: string, by: string): Promise<void> {
+  await db
+    .update(scheduleEvents)
+    .set({ status: "cancelled", updatedBy: by, updatedAt: new Date() })
+    .where(eq(scheduleEvents.id, id));
+}
+
+/**
+ * Put it back, with everything it ever knew.
+ *
+ * Back to `planned` rather than to whatever it was: nothing in the app ever
+ * writes `confirmed`, so there is no earlier state to lose.
+ */
+export async function putEventBack(id: string, by: string): Promise<void> {
+  await db
+    .update(scheduleEvents)
+    .set({ status: "planned", updatedBy: by, updatedAt: new Date() })
+    .where(eq(scheduleEvents.id, id));
 }
 
 /* ---------------------------------------------------------------------------

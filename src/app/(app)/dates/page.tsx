@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
+import { DateOffConfirmation } from "@/components/date-off-confirmation";
 import { DateBlock, WindowBlock } from "@/components/date-block";
 import { EmptyState } from "@/components/empty-state";
 import { SubmitButton } from "@/components/submit-button";
@@ -42,7 +43,7 @@ export default async function Dates() {
   await requireApproved("/dates");
 
   const today = todayInHousehold();
-  const [{ coming, past, withPhotos }, origin, proposal] = await Promise.all([
+  const [{ coming, past, off, withPhotos }, origin, proposal] = await Promise.all([
     datesScreen(today),
     getOrigin(),
     previewAntenatalSeries(today),
@@ -73,6 +74,12 @@ export default async function Dates() {
           <Chip tone="outline">+ Add</Chip>
         </Link>
       </header>
+
+      {/* Empty on every visit but the one straight after a date comes off, so
+          it carries its own spacing rather than the page reserving room. */}
+      <div className="empty:hidden mb-[13px]">
+        <DateOffConfirmation />
+      </div>
 
       <Stack>
         {promoted && (
@@ -162,6 +169,18 @@ export default async function Dates() {
                 ›
               </span>
             </Card>
+          </Link>
+        )}
+
+        {off.length > 0 && (
+          <Link
+            href="/dates/off"
+            className="text-ink2 border-ln flex min-h-[52px] items-center justify-between rounded-[14px] border px-[16px] text-[14.5px]"
+          >
+            <span className="tabular">
+              {off.length === 1 ? "1 off the list" : `${off.length} off the list`}
+            </span>
+            <span aria-hidden>›</span>
           </Link>
         )}
 

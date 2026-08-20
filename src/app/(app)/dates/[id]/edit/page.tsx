@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { BarPrimary, BarSecondary, BottomBar } from "@/components/bottom-bar";
 import { Card } from "@/components/card";
-import { Field, TextArea, TextInput } from "@/components/field";
+import { Field, Select, TextArea, TextInput } from "@/components/field";
 import { SubmitButton } from "@/components/submit-button";
 import {
   formatTimeInHousehold,
@@ -12,7 +12,7 @@ import {
 import { requireApproved } from "@/server/auth";
 import { getEvent } from "@/server/services/schedule";
 
-import { addNoteAction, deleteEventAction, saveEventAction } from "../../actions";
+import { addNoteAction, saveEventAction, takeDateOffAction } from "../../actions";
 
 /**
  * Changing a date, and writing down what happened.
@@ -20,6 +20,12 @@ import { addNoteAction, deleteEventAction, saveEventAction } from "../../actions
  * The note is one paragraph in her words rather than a set of fields: structure
  * here would be blank most of the time, and what the doctor actually said does
  * not fit a form.
+ *
+ * The when-fields follow the shape the date already has: a fixed day gets a day
+ * and a time, a period gets a From and a To. Never both, because a period
+ * offered a time is how somebody turns up on a day that was never required —
+ * and turning a period into a fixed day already has its own control, "Set a
+ * day", on the screen before this one.
  */
 export default async function EditDate({
   params,
@@ -58,7 +64,24 @@ export default async function EditDate({
               <TextInput name="title" defaultValue={event.title} />
             </Field>
 
-            {event.startsAt && (
+            <Field label="What sort of thing is it?">
+              <Select
+                name="type"
+                defaultValue={event.type}
+                options={[
+                  { value: "antenatal", label: "A check-up" },
+                  { value: "lab", label: "A test" },
+                  { value: "class", label: "A class" },
+                  { value: "hospital", label: "Something at the hospital" },
+                  { value: "immunisation", label: "An immunisation" },
+                  { value: "paediatric", label: "The baby's doctor" },
+                  { value: "postpartum", label: "After the birth" },
+                  { value: "other", label: "Something else" },
+                ]}
+              />
+            </Field>
+
+            {event.startsAt ? (
               <>
                 <Field label="Which day?">
                   <TextInput
@@ -75,6 +98,25 @@ export default async function EditDate({
                     defaultValue={formatTimeInHousehold(event.startsAt)}
                     aria-label="What time"
                     className="bg-sf border-ln2 text-ink tabular min-h-[52px] w-full rounded-[11px] border px-[12px] text-[15.5px]"
+                  />
+                </Field>
+              </>
+            ) : (
+              <>
+                <Field label="From">
+                  <TextInput
+                    name="windowStart"
+                    type="date"
+                    defaultValue={event.windowStart ?? undefined}
+                    mono
+                  />
+                </Field>
+                <Field label="To">
+                  <TextInput
+                    name="windowEnd"
+                    type="date"
+                    defaultValue={event.windowEnd ?? undefined}
+                    mono
                   />
                 </Field>
               </>
@@ -128,15 +170,24 @@ export default async function EditDate({
           </Card>
         </form>
 
-        <form action={deleteEventAction} className="mt-[13px]">
-          <input type="hidden" name="id" value={id} />
-          <SubmitButton className="text-ink2 text-[14.5px] font-medium underline underline-offset-2">
-            This is not happening
-          </SubmitButton>
-          <p className="text-ink3 mt-[4px] text-[13px]">
-            Takes it off the list for good.
-          </p>
-        </form>
+        {/* Not offered on a date that has been and gone: it carries the scan
+            photos and the note, which are the reason anybody comes back to it,
+            and "this is not happening" is a false sentence about something
+            that did. */}
+        {event.status !== "done" && (
+          <form action={takeDateOffAction} className="mt-[13px]">
+            <input type="hidden" name="id" value={id} />
+            <SubmitButton
+              busyLabel="Taking it off…"
+              className="text-ink2 text-[14.5px] font-medium underline underline-offset-2"
+            >
+              This is not happening
+            </SubmitButton>
+            <p className="text-ink3 mt-[4px] text-[13px]">
+              It comes off the list. Its photos and its notes stay.
+            </p>
+          </form>
+        )}
       </div>
     </>
   );

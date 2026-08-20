@@ -9,7 +9,9 @@ import {
   datesScreen,
   getEvent,
   markDone,
+  putEventBack,
   setWindowDay,
+  takeEventOff,
   updateEvent,
 } from "./schedule";
 import { instantFromHouseholdTime } from "@/domain/dates";
@@ -188,5 +190,117 @@ describe("what is still ahead", () => {
       after.past.some((e) => e.id === id),
       "done is done, whatever the calendar says",
     );
+  });
+});
+
+describe("taken off the list", () => {
+  it("leaves what is coming up without joining what has been and done", async () => {
+    const id = await make({
+      type: "class",
+      title: "off-the-list",
+      startsAt: instantFromHouseholdTime("2026-12-02", "10:00"),
+    });
+
+    const before = await datesScreen("2026-09-15");
+    assert.ok(before.coming.some((e) => e.id === id));
+
+    await takeEventOff(id, ACTOR);
+
+    const after = await datesScreen("2026-09-15");
+    assert.ok(
+      !after.coming.some((e) => e.id === id),
+      "it is not coming up",
+    );
+    assert.ok(
+      !after.past.some((e) => e.id === id),
+      "and it did not happen, so it is not in the archive either",
+    );
+    assert.ok(
+      after.off.some((e) => e.id === id),
+      "it is on its own screen",
+    );
+  });
+
+  it("keeps everything it knew, and gives it back", async () => {
+    const id = await make({
+      type: "antenatal",
+      title: "keeps-its-history",
+      startsAt: instantFromHouseholdTime("2026-11-20", "09:30"),
+      practitioner: "dr. Sari",
+      prepNotes: "Nothing to eat for 8 hours.",
+      costIdr: 350_000,
+    });
+    await updateEvent(id, { outcomeNotes: "Rescheduled by the clinic." }, ACTOR);
+
+    await takeEventOff(id, ACTOR);
+
+    const off = await getEvent(id);
+    assert.ok(off);
+    assert.equal(off.practitioner, "dr. Sari");
+    assert.equal(off.prepNotes, "Nothing to eat for 8 hours.");
+    assert.equal(off.outcomeNotes, "Rescheduled by the clinic.");
+    assert.equal(Number(off.costIdr), 350_000);
+
+    await putEventBack(id, ACTOR);
+
+    const back = await getEvent(id);
+    assert.ok(back);
+    assert.equal(back.status, "planned");
+    const screen = await datesScreen("2026-09-15");
+    assert.ok(
+      screen.coming.some((e) => e.id === id),
+      "and it is back where it was",
+    );
+  });
+
+  it("does not count its photos among the ones worth going back for", async () => {
+    const id = await make({
+      type: "lab",
+      title: "off-with-photos",
+      startsAt: instantFromHouseholdTime("2026-08-01", "08:00"),
+    });
+    await db
+      .update(scheduleEvents)
+      .set({ imagePaths: ["ztest/scan.jpg"] })
+      .where(eq(scheduleEvents.id, id));
+
+    const before = await datesScreen("2026-09-15");
+    const counted = before.withPhotos;
+
+    await takeEventOff(id, ACTOR);
+
+    const after = await datesScreen("2026-09-15");
+    assert.equal(
+      after.withPhotos,
+      counted - 1,
+      "a date that did not happen has nothing to show from it",
+    );
+  });
+});
+
+describe("changing a period", () => {
+  it("stays a period, and stops being a generated one", async () => {
+    const id = await make({
+      type: "immunisation",
+      title: "moved-window",
+      windowStart: "2026-10-14",
+      windowEnd: "2026-10-30",
+      source: "idai_schedule",
+    });
+
+    await updateEvent(
+      id,
+      { windowStart: "2026-11-01", windowEnd: "2026-11-15" },
+      ACTOR,
+    );
+
+    const event = await getEvent(id);
+    assert.ok(event);
+    assert.equal(event.isWindow, true, "a period edited is still a period");
+    assert.equal(event.startsAt, null);
+    assert.equal(event.windowStart, "2026-11-01");
+    assert.equal(event.windowEnd, "2026-11-15");
+    // Hand-edited, so regenerating the schedule never overwrites the decision.
+    assert.equal(event.source, "manual");
   });
 });

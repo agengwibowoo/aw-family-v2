@@ -125,6 +125,13 @@ A period during which something should happen, with no single right day inside i
 immunisations work this way. A window must never be shaped like an appointment.
 _Avoid_: range, deadline, due window
 
+**Taken off**:
+A date that is not happening — the clinic rang, the class was called off, the row was typed
+twice. It leaves every screen that lists or counts, keeps its cost, its prep notes and any
+photos and notes on it, and can be put back. Not deletion, and not the same as **Been and
+done**, which means it happened. The same idea as **Removed** is for a place.
+_Avoid_: delete, cancel, remove, trash, archive
+
 **Pack**:
 A named list of things and papers assembled for one trip — the hospital bag, a day out. A
 pack knows whether the things on it are actually available.

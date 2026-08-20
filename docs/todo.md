@@ -59,7 +59,8 @@ The rest of Part 0 is a standing rule or a single moment, and gates nothing.
 | S1 | Today — the ranked cards, the appointment as a fact, `Later`, the derived empty sentence |
 | S2 · S3 · S4 | Where to give birth; one hospital; compare, with the ranked insurance card |
 | S5 | Papers, including the no-hospital state and the hospital-changed banner |
-| S6 · S7 | Dates and one date, all three variants, plus the antenatal pattern in one tap |
+| S6 · S7 | Dates and one date, all four variants, plus the antenatal pattern in one tap |
+| Dates | Changing one, period or appointment, and taking one off the list with Undo — `/dates/off` is the path that does not expire. ADR-0009 |
 | S8 · S9 · S10 | The list, one thing, add or change. Search with synonym substitution |
 | S11 | Add what we got, with Undo in the confirmation card |
 | S12 · S13 | Money and the registry. Money is the fourth tab; `who` picks the landing tab |

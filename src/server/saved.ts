@@ -163,3 +163,49 @@ export async function dismissForNow(id: string): Promise<void> {
     maxAge: LATER_DAYS * 86_400,
   });
 }
+
+/* ---------------------------------------------------------------------------
+   A date just taken off the list
+   --------------------------------------------------------------------------- */
+
+const DATE_OFF = "np_date_off";
+
+/**
+ * Its own cookie again, for the same reason as the one above: a purchase, a
+ * place and a date have nothing in common but a duration.
+ *
+ * A pointer, never the authority — the row's own status is what says whether
+ * the date is off, and `putEventBack` reads that, not this.
+ */
+export type DateOff = { eventId: string; title: string };
+
+export async function rememberDateOff(date: DateOff): Promise<void> {
+  const jar = await cookies();
+  jar.set(DATE_OFF, JSON.stringify(date), {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: UNDO_WINDOW_MINUTES * 60,
+  });
+}
+
+export async function readDateOff(): Promise<DateOff | null> {
+  const jar = await cookies();
+  const raw = jar.get(DATE_OFF)?.value;
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as DateOff;
+    if (!parsed?.eventId || !parsed?.title) return null;
+    return parsed;
+  } catch {
+    // She loses the undo affordance, not the date. It is still on the screen
+    // of dates taken off, which is the path that does not expire.
+    return null;
+  }
+}
+
+export async function forgetDateOff(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(DATE_OFF);
+}
