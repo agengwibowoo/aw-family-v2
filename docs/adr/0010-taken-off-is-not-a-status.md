@@ -28,5 +28,11 @@ on the list — so every date, done or not, gets one control reading **Take it o
 The copy that said "this is not happening" is gone from the button, the Undo card and the
 detail screen: it was a claim about what happened, and taking off no longer makes one.
 
+The card is the last thing on a date's own screen, not on the edit screen where the control
+first lived. A date marked done reaches edit only through "Add a photo" and "Add a note", so
+the sole route to taking one off the list was a button promising to add something. An action
+nobody can find is the same as one that is not there. Places have always put it on the
+detail screen; dates now match.
+
 No partial index, unlike `hospitals_live_idx`. `listEvents` has no `WHERE` — it reads every
 row and buckets them in TypeScript — so there is nothing for an index to help.

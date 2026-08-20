@@ -25,7 +25,12 @@ import { getEvent, type ScheduledEvent } from "@/server/services/schedule";
 import { getPapersPack } from "@/server/services/papers";
 import { getOrigin } from "@/server/services/household";
 
-import { markDoneAction, putDateBackAction, setDayAction } from "../actions";
+import {
+  markDoneAction,
+  putDateBackAction,
+  setDayAction,
+  takeDateOffAction,
+} from "../actions";
 
 /**
  * S7 — One date.
@@ -60,6 +65,37 @@ export default async function OneDate({
   if (event.isWindow && !isDone) return <WindowVariant event={event} today={today} />;
   if (isDone || isPast) return <AfterVariant event={event} />;
   return <BeforeVariant event={event} today={today} />;
+}
+
+/**
+ * Last on the screen, and on every date that is on the list — one marked done
+ * included, because a date written down twice is still a date that should come
+ * off. Here rather than behind "Change it": a done date's only routes to the
+ * edit screen are "Add a photo" and "Add a note", and an action nobody can find
+ * is the same as one that is not there.
+ *
+ * Not behind a confirm. The card it leaves behind is what takes it back.
+ */
+function TakeItOff({ id }: { id: string }) {
+  return (
+    <Card>
+      <SectionLabel>Take it off the list</SectionLabel>
+      <p className="text-ink2 mt-[6px] text-[13px]">
+        For one that is not happening, or one written down twice. It keeps its
+        cost, what to bring, and any photos and notes on it, and you can put it
+        back.
+      </p>
+      <form action={takeDateOffAction} className="mt-[12px]">
+        <input type="hidden" name="id" value={id} />
+        <SubmitButton
+          busyLabel="Taking it off…"
+          className="text-ink2 min-h-[52px] text-[14.5px] underline underline-offset-2"
+        >
+          Take this date off
+        </SubmitButton>
+      </form>
+    </Card>
+  );
 }
 
 function Header({
@@ -178,6 +214,8 @@ async function BeforeVariant({
               <KeyValue label="Where" value={event.locationText} />
             )}
           </Card>
+
+          <TakeItOff id={event.id} />
         </Stack>
       </div>
 
@@ -251,6 +289,8 @@ function AfterVariant({ event }: { event: ScheduledEvent }) {
               mono
             />
           </Card>
+
+          <TakeItOff id={event.id} />
         </Stack>
       </div>
 
@@ -421,6 +461,8 @@ function WindowVariant({
               />
             </form>
           </Card>
+
+          <TakeItOff id={event.id} />
         </Stack>
       </div>
 

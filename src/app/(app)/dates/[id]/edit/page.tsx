@@ -12,7 +12,7 @@ import {
 import { requireApproved } from "@/server/auth";
 import { getEvent } from "@/server/services/schedule";
 
-import { addNoteAction, saveEventAction, takeDateOffAction } from "../../actions";
+import { addNoteAction, saveEventAction } from "../../actions";
 
 /**
  * Changing a date, and writing down what happened.
@@ -168,24 +168,6 @@ export default async function EditDate({
               Save the note
             </SubmitButton>
           </Card>
-        </form>
-
-        {/* Offered on every date, whatever state it is in. One word rather
-            than two: the clinic ringing and the row being typed twice both end
-            with the same sentence, and so does a date that happened and should
-            not be on the list. Nothing underneath it is touched, so there is
-            nothing for "done" to make false. */}
-        <form action={takeDateOffAction} className="mt-[13px]">
-          <input type="hidden" name="id" value={id} />
-          <SubmitButton
-            busyLabel="Taking it off…"
-            className="text-ink2 text-[14.5px] font-medium underline underline-offset-2"
-          >
-            Take it off the list
-          </SubmitButton>
-          <p className="text-ink3 mt-[4px] text-[13px]">
-            It comes off the list. Its photos and its notes stay.
-          </p>
         </form>
       </div>
     </>
