@@ -1,10 +1,13 @@
 import { Card, SectionLabel, Stack } from "@/components/card";
 import { Chip } from "@/components/chip";
+import { Field, TextInput } from "@/components/field";
+import { GotPaperConfirmation } from "@/components/got-paper-confirmation";
 import { PhotoSlot } from "@/components/photo-slot";
 import { ScanUpload } from "@/components/scan-upload";
 import { ReadinessBanner } from "@/components/readiness-banner";
 import { SubmitButton } from "@/components/submit-button";
 import { todayInHousehold } from "@/domain/dates";
+import { NOT_FILLED_IN } from "@/domain/status";
 import { requireApproved } from "@/server/auth";
 import { getOrigin } from "@/server/services/household";
 import {
@@ -19,6 +22,7 @@ import {
   attachPaperScanAction,
   seenChangeAction,
   setCopiesAction,
+  setWhereKeptAction,
   signPaperScanAction,
   toggleHaveAction,
 } from "./actions";
@@ -57,6 +61,12 @@ export default async function Papers() {
           Papers for the hospital
         </h1>
       </header>
+
+      {/* Empty on every visit but the one straight after a tick, so it carries
+          its own spacing rather than the page reserving room. */}
+      <div className="empty:hidden mb-[13px]">
+        <GotPaperConfirmation />
+      </div>
 
       {/* Never a silent re-score. Papers going from ready to not-ready with no
           explanation is how you arrive at 3am missing a letter you had no idea
@@ -123,25 +133,7 @@ export default async function Papers() {
           </div>
           <Card className="py-0">
             {pack.ready.map((line) => (
-              <div
-                key={line.documentId}
-                className="border-ln flex items-center justify-between gap-3 border-b py-[12px] last:border-b-0"
-              >
-                <span className="flex min-w-0 flex-col gap-[2px]">
-                  <span className="text-[15.5px] font-medium">{line.name}</span>
-                  {line.copiesRequired > 0 && (
-                    <span className="text-ink2 tabular text-[13px]">
-                      {line.copiesMade} of {line.copiesRequired} copies
-                    </span>
-                  )}
-                  {line.expiryNote && (
-                    <span className="text-ink2 text-[13px]">
-                      {line.expiryNote}
-                    </span>
-                  )}
-                </span>
-                <Chip tone="solid">Got it</Chip>
-              </div>
+              <ReadyPaper key={line.documentId} line={line} />
             ))}
           </Card>
         </section>
@@ -237,6 +229,95 @@ function PaperCard({
           </form>
         )}
       </div>
+
+      <WhereKept line={line} />
     </Card>
+  );
+}
+
+/**
+ * Where the original actually lives.
+ *
+ * Its own little form, because papers have no edit screen — every control on
+ * this screen posts from the row it belongs to, which is what keeps the whole
+ * thing usable with no signal.
+ */
+function WhereKept({ line }: { line: PaperLine }) {
+  return (
+    <form action={setWhereKeptAction}>
+      <input type="hidden" name="documentId" value={line.documentId} />
+      <Field label="Where it's kept">
+        <TextInput
+          name="whereKept"
+          defaultValue={line.whereKept}
+          // A place someone typed is data, and so is the example of one.
+          placeholder="Laci lemari kamar"
+        />
+      </Field>
+      <SubmitButton
+        busyLabel="Saving…"
+        className="border-ln2 text-ink min-h-[52px] rounded-[11px] border px-4 text-[14.5px] font-medium whitespace-nowrap"
+      >
+        Save it
+      </SubmitButton>
+    </form>
+  );
+}
+
+/**
+ * A paper that is done.
+ *
+ * Closed, it is the same three-line receipt it always was — the ones that are
+ * done are proof, not work, and the Ready section has to keep reading that way
+ * at a glance. Opening it is what reveals the two things a finished paper still
+ * needs: where it is kept, and the way back from a mis-tap.
+ *
+ * A plain `details`, so it costs no JavaScript and works with no signal.
+ */
+function ReadyPaper({ line }: { line: PaperLine }) {
+  return (
+    <details className="border-ln border-b last:border-b-0">
+      <summary className="flex min-h-[52px] cursor-pointer list-none items-start justify-between gap-3 py-[12px] [&::-webkit-details-marker]:hidden">
+        <span className="flex min-w-0 flex-col gap-[2px]">
+          <span className="text-[15.5px] font-medium">{line.name}</span>
+          {line.copiesRequired > 0 && (
+            <span className="text-ink2 tabular text-[13px]">
+              {line.copiesMade} of {line.copiesRequired} copies
+            </span>
+          )}
+          {line.expiryNote && (
+            <span className="text-ink2 text-[13px]">{line.expiryNote}</span>
+          )}
+          {/* Spelled out rather than hidden when nobody has said. For a paper we
+              have, not knowing where it is, is the fact worth surfacing. */}
+          <span className="text-ink2 text-[13px]">
+            Kept · {line.whereKept ?? NOT_FILLED_IN}
+          </span>
+        </span>
+        <span className="flex shrink-0 items-center gap-[8px]">
+          <Chip tone="solid">Got it</Chip>
+          <span aria-hidden className="text-ink3">
+            ›
+          </span>
+        </span>
+      </summary>
+
+      <div className="pb-[13px]">
+        <WhereKept line={line} />
+
+        {/* The way back, present but not competing — the same quiet underline
+            that takes a place off the list. */}
+        <form action={toggleHaveAction} className="mt-[10px]">
+          <input type="hidden" name="documentId" value={line.documentId} />
+          <input type="hidden" name="have" value="false" />
+          <SubmitButton
+            busyLabel="Saving…"
+            className="text-ink2 min-h-[52px] text-[14.5px] underline underline-offset-2"
+          >
+            {"Haven't got it"}
+          </SubmitButton>
+        </form>
+      </div>
+    </details>
   );
 }

@@ -671,6 +671,10 @@ export const documentStatus = pgTable("document_status", {
   imagePaths: text("image_paths").array(),
   expiresOn: date("expires_on"),
   notes: text("notes"),
+  /** Which drawer, folder or bag the original actually lives in. "We have it"
+      is half an answer at 3am; this is the other half. Free text, and data — it
+      stays in whatever language it was typed in. */
+  whereKept: text("where_kept"),
   ...audit,
 });
 

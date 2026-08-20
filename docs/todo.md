@@ -51,14 +51,14 @@ The rest of Part 0 is a standing rule or a single moment, and gates nothing.
 
 | | |
 |---|---|
-| Schema | 23 tables live in Supabase, with the invariants in Postgres. Migration 0001 applied |
+| Schema | 23 tables live in Supabase, with the invariants in Postgres. Migrations 0001 and 0002 applied; **0003 waiting on you** |
 | Reference data | 7 age bands, 9 categories, 3 priorities, 9 papers, 14 materials |
 | Design system | Tokens in `globals.css`, all 16 components plus Select, Stepper, Sheet and the verdict card; `/gallery` renders them |
 | Domain logic | age, dates, insurance, money, status, search, the antenatal pattern, Today's ranking — with tests |
 | Auth | Google sign-in, approval gate, middleware, S14 with all three states |
 | S1 | Today — the ranked cards, the appointment as a fact, `Later`, the derived empty sentence |
 | S2 · S3 · S4 | Where to give birth; one hospital; compare, with the ranked insurance card |
-| S5 | Papers, including the no-hospital state and the hospital-changed banner |
+| S5 | Papers, including the no-hospital state, the hospital-changed banner, an Undo card and "Haven't got it" on every ready paper, and where each one is kept |
 | S6 · S7 | Dates and one date, all four variants, plus the antenatal pattern in one tap |
 | Dates | Changing one, period or appointment, and taking one off the list with Undo — `/dates/off` is the path that does not expire. ADR-0009 |
 | S8 · S9 · S10 | The list, one thing, add or change. Search with synonym substitution |
@@ -95,7 +95,11 @@ and scan photos appear. Nothing downstream of these is blocked any more.
 ### 0.6 Apply every future migration by hand — standing rule, done as it arises
 
 From `CLAUDE.md`. I edit `src/server/schema.ts`, run `pnpm db:generate`, and tell you which
-numbered file in `supabase/migrations/` to paste in. I never apply one. Migration 0001 is in.
+numbered file in `supabase/migrations/` to paste in. I never apply one. 0001 and 0002 are in.
+
+**Waiting on you now:** `supabase/migrations/0003_true_jazinda.sql` — one line, adding
+`where_kept` to `document_status`. The papers screen's new "Where it's kept" box reads and
+writes that column, so until it is pasted in, `/papers` will error.
 
 ### 0.7 Gather the real data — **blocks the hospital pick, the papers pack and Part 5** · open
 

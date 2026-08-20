@@ -6,15 +6,53 @@ import { text } from "@/lib/form";
 import { requireApproved } from "@/server/auth";
 import {
   acknowledgePapersChange,
+  paperName,
   setPaperStatus,
 } from "@/server/services/papers";
 import { attachScan, signUpload } from "@/server/services/scans";
+import { forgetGotPaper, rememberGotPaper } from "@/server/saved";
 
+/**
+ * "We have it", and the way back from it.
+ *
+ * One tap either way, with no confirm in front of it — the card it leaves
+ * behind is what takes it back, exactly as taking a place off the list does.
+ * Only the ticking direction leaves a card: un-ticking *is* the way back, and a
+ * card offering to undo the undo would be a loop.
+ */
 export async function toggleHaveAction(formData: FormData) {
   const user = await requireApproved();
   const documentId = Number(formData.get("documentId"));
   const have = formData.get("have") === "true";
-  await setPaperStatus(documentId, { haveOriginal: have }, user.id);
+
+  if (have) {
+    // Read the name before the row leaves the missing list, so the card can say
+    // which paper it was.
+    const name = await paperName(documentId);
+    await setPaperStatus(documentId, { haveOriginal: true }, user.id);
+    if (name) await rememberGotPaper({ documentId, name });
+  } else {
+    await setPaperStatus(documentId, { haveOriginal: false }, user.id);
+    await forgetGotPaper();
+  }
+
+  revalidatePath("/papers");
+}
+
+/**
+ * Where the original actually lives.
+ *
+ * `text()` turns an emptied box into null rather than into an empty string, so
+ * "nobody has said" stays distinguishable from "somebody said nothing".
+ */
+export async function setWhereKeptAction(formData: FormData) {
+  const user = await requireApproved();
+  const documentId = Number(formData.get("documentId"));
+  await setPaperStatus(
+    documentId,
+    { whereKept: text(formData.get("whereKept")) },
+    user.id,
+  );
   revalidatePath("/papers");
 }
 

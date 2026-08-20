@@ -209,3 +209,52 @@ export async function forgetDateOff(): Promise<void> {
   const jar = await cookies();
   jar.delete(DATE_OFF);
 }
+
+/* ---------------------------------------------------------------------------
+   A paper just ticked off
+   --------------------------------------------------------------------------- */
+
+const PAPER_GOT = "np_paper_got";
+
+/**
+ * Its own cookie again, for the same reason as the two above: a purchase, a
+ * place, a date and a paper have nothing in common but a duration.
+ *
+ * A pointer, never the authority — `document_status.have_original` is what says
+ * whether the paper is had, and the ready row's own control reads that, not
+ * this.
+ */
+export type GotPaper = { documentId: number; name: string };
+
+export async function rememberGotPaper(paper: GotPaper): Promise<void> {
+  const jar = await cookies();
+  jar.set(PAPER_GOT, JSON.stringify(paper), {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: UNDO_WINDOW_MINUTES * 60,
+  });
+}
+
+export async function readGotPaper(): Promise<GotPaper | null> {
+  const jar = await cookies();
+  const raw = jar.get(PAPER_GOT)?.value;
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as GotPaper;
+    // A smallint id can legitimately be 0, so this checks the type rather than
+    // the truthiness the other two get away with.
+    if (typeof parsed?.documentId !== "number" || !parsed?.name) return null;
+    return parsed;
+  } catch {
+    // She loses the undo affordance, not the tick. The paper's own row on the
+    // papers screen offers the same way back, and that one never expires.
+    return null;
+  }
+}
+
+export async function forgetGotPaper(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(PAPER_GOT);
+}

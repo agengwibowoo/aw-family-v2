@@ -26,6 +26,15 @@ export async function listDocuments() {
   return db.select().from(documents).orderBy(asc(documents.sortOrder));
 }
 
+/** Just the name, for the card left behind when a paper is ticked off. */
+export async function paperName(documentId: number): Promise<string | null> {
+  const row = await db.query.documents.findFirst({
+    columns: { name: true },
+    where: eq(documents.id, documentId),
+  });
+  return row?.name ?? null;
+}
+
 export type PaperLine = {
   documentId: number;
   name: string;
@@ -36,7 +45,10 @@ export type PaperLine = {
   haveOriginal: boolean;
   scans: string[];
   expiresOn: PlainDate | null;
-  notes: string | null;
+  /** The hospital's own note about its requirement, not the household's. */
+  requirementNote: string | null;
+  /** Which drawer, folder or bag the original lives in. Null until someone says. */
+  whereKept: string | null;
   ready: boolean;
   /** Why not, in the words the row will show. Null when ready. */
   blocker: string | null;
@@ -228,7 +240,8 @@ export async function getPapersPack(dueDate: PlainDate): Promise<PapersPack> {
       haveOriginal,
       scans,
       expiresOn,
-      notes: requirement?.notes ?? null,
+      requirementNote: requirement?.notes ?? null,
+      whereKept: status?.whereKept ?? null,
       ready,
       blocker: blockerFor(haveOriginal, copiesRequired, copiesMade),
       expiryNote: expiryNoteFor(expiresOn, dueDate),
@@ -322,6 +335,7 @@ export async function setPaperStatus(
     copiesMade?: number;
     expiresOn?: PlainDate | null;
     notes?: string | null;
+    whereKept?: string | null;
   },
   by: string,
 ): Promise<void> {

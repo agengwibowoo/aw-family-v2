@@ -1,0 +1,1 @@
+ALTER TABLE "document_status" ADD COLUMN "where_kept" text;

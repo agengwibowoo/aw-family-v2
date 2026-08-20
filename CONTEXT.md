@@ -103,6 +103,13 @@ many photocopies, is tracked once for the household — you either have your Kar
 you don't — and each hospital's requirements point at it.
 _Avoid_: documents pack, paperwork, files, attachments
 
+**Where it's kept**:
+Which drawer, folder or bag a paper's original physically lives in. Free text, and data — it
+stays in whatever language it was typed in. Tracked once for the household, like whether we
+have the paper at all. "We have it" is half an answer at 3am; a paper we have but cannot
+find is not a paper we can bring.
+_Avoid_: location, storage, filed under, place
+
 **Scan**:
 A photograph of a paper, taken by the household. The only images in the app are ones someone
 here took.
